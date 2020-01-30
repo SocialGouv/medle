@@ -2,6 +2,8 @@ require("dotenv").config()
 
 const webpack = require("webpack")
 
+const getApiUrl = () => (typeof window !== "undefined" ? "/api" : "http://localhost:3000/api")
+
 module.exports = {
    cssLoaderOptions: {
       url: false,
@@ -15,7 +17,7 @@ module.exports = {
    publicRuntimeConfig: {
       // Will be available on both server and client. Needs getInitialProps on page to be available
       POSTGRES_SSL: process.env.POSTGRES_SSL,
-      API_URL: process.env.API_URL,
+      API_URL: getApiUrl(),
       TEST_CURRENT_DATE: process.env.TEST_CURRENT_DATE,
       DEBUG_MODE: process.env.DEBUG_MODE,
    },

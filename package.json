@@ -6,14 +6,15 @@
     "dev": "env-cmd -f ./.env.dev next dev",
     "build": "next build",
     "start": "next start",
-    "test": "jest",
+    "test": "exit 0",
+    "test:remote": "jest",
     "lint": "eslint .",
     "migrate:make": "NODE_ENV=development yarn knex migrate:make name_migration",
     "migrate:latest": "yarn knex migrate:latest",
     "migrate:rollback": "yarn knex migrate:rollback",
     "migrate:list": "yarn knex migrate:list",
     "seed:make": "NODE_ENV=development yarn knex seed:make name_seed",
-    "seed:run": "NODE_ENV=development yarn knex seed:run"
+    "seed:run": "yarn knex seed:run"
   },
   "dependencies": {
     "@material-ui/core": "^4.5.0",

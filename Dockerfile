@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
 
-RUN yarn install --production --frozen-lockfile
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
@@ -31,10 +31,13 @@ ENV JWT_SECRET=$JWT_SECRET
 ARG TEST_CURRENT_DATE
 ENV TEST_CURRENT_DATE=$TEST_CURRENT_DATE
 
+ARG API_URL
+ENV API_URL=$API_URL
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN yarn build
+RUN yarn build && yarn --production
 
 USER node
 

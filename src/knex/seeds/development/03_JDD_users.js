@@ -1,4 +1,5 @@
-// NB: all passwords have the content "test" after bcrypt operations. So use medle@tours.fr/test, for example, to authenticate
+const bcrypt = require("bcryptjs")
+
 exports.seed = function(knex) {
    return knex("users")
       .del()
@@ -11,7 +12,7 @@ exports.seed = function(knex) {
                last_name: "test",
                email: "medle.test@beta.gouv.fr",
                role: "SUPER_ADMIN",
-               password: "$2a$10$RCEEeI.gFf1occ6h4DxMyuX.JhVPD3edsevOYnqICcQl5yM1LO4Vy",
+               password: bcrypt.hashSync("test", 10),
             },
             {
                id: 2,
@@ -19,7 +20,7 @@ exports.seed = function(knex) {
                first_name: "user-tours",
                last_name: "test",
                email: "medle@tours.fr",
-               password: "$2a$10$RCEEeI.gFf1occ6h4DxMyuX.JhVPD3edsevOYnqICcQl5yM1LO4Vy",
+               password: bcrypt.hashSync("test", 10),
                role: "OPERATOR_ACT",
                hospital_id: 1,
             },
@@ -29,7 +30,7 @@ exports.seed = function(knex) {
                first_name: "user-orleans",
                last_name: "test",
                email: "medle@orleans.fr",
-               password: "$2a$10$RCEEeI.gFf1occ6h4DxMyuX.JhVPD3edsevOYnqICcQl5yM1LO4Vy",
+               password: bcrypt.hashSync("test", 10),
                role: "OPERATOR_ACT",
                hospital_id: 2,
             },
@@ -39,7 +40,7 @@ exports.seed = function(knex) {
                first_name: "user-nantes",
                last_name: "test",
                email: "medle@nantes.fr",
-               password: "$2a$10$RCEEeI.gFf1occ6h4DxMyuX.JhVPD3edsevOYnqICcQl5yM1LO4Vy",
+               password: bcrypt.hashSync("test", 10),
                role: "OPERATOR_ACT",
                hospital_id: 3,
             },
@@ -49,7 +50,7 @@ exports.seed = function(knex) {
                first_name: "user-angers",
                last_name: "test",
                email: "medle@angers.fr",
-               password: "$2a$10$RCEEeI.gFf1occ6h4DxMyuX.JhVPD3edsevOYnqICcQl5yM1LO4Vy",
+               password: bcrypt.hashSync("test", 10),
                role: "OPERATOR_ACT",
                hospital_id: 4,
             },

@@ -1,8 +1,6 @@
-import getConfig from "next/config"
+const getApiUrl = () => (typeof window !== "undefined" ? "/api" : "http://localhost:3000/api")
 
-const { publicRuntimeConfig } = getConfig()
-
-export const API_URL = publicRuntimeConfig.API_URL
+export const API_URL = getApiUrl()
 export const ACT_DECLARATION_ENDPOINT = "/actDeclaration"
 export const ACT_SEARCH_ENDPOINT = "/acts/search"
 export const ACT_DETAIL_ENDPOINT = "/actDetail"

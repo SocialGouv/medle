@@ -1,0 +1,54 @@
+image:
+   repository: registry.gitlab.factory.social.gouv.fr/socialgouv/medle
+
+labels:
+   app.kubernetes.io/part-of: medle
+   owner: medle
+   team: medle
+
+deployment:
+   annotations:
+      app.gitlab.com/app: ${CI_PROJECT_PATH_SLUG}
+      app.gitlab.com/env: ${CI_ENVIRONMENT_SLUG}
+
+   port: 3000
+
+   livenessProbe:
+      periodSeconds: 20
+      port: 3000
+   readinessProbe:
+      periodSeconds: 20
+      port: 3000
+
+   resources:
+      limits:
+         memory: 128Mi
+         cpu: 300m
+      requests:
+         memory: 64Mi
+         cpu: 100m
+
+   env:
+      - name: NODE_ENV
+        value: "development"
+      - name: DATABASE_URL
+        value: postgres://user_${CI_COMMIT_SHORT_SHA}%40${PGHOST}:pass_${CI_COMMIT_SHORT_SHA}@${PGHOST}/db_${CI_COMMIT_SHORT_SHA}?ssl=true
+
+service:
+   port: 3000
+   targetPort: 3000
+
+ingress:
+   enabled: true
+   annotations:
+      appgw.ingress.kubernetes.io/ssl-redirect: "true"
+      kubernetes.io/ingress.class: "azure/application-gateway"
+   hosts:
+      - host: "medle.dev.fabrique.social.gouv.fr"
+        paths:
+           - path: /
+             servicePort: 3000
+   tls:
+      - hosts:
+           - "medle.dev.fabrique.social.gouv.fr"
+        secretName: wildcard-crt
