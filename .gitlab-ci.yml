@@ -1,0 +1,9 @@
+include:
+   - project: SocialGouv/gitlab-ci-yml
+     file: /autodevops_simple_app.yml
+     ref: v5.0.0
+
+variables:
+   PROJECT: "medle"
+   PORT: 4000
+   VALUES_FILE: ./.k8s/app.values.yml
