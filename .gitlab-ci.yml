@@ -5,5 +5,4 @@ include:
 
 variables:
    PROJECT: "medle"
-   PORT: 80
    VALUES_FILE: ./.k8s/app.values.yml
