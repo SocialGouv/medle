@@ -32,6 +32,10 @@ deployment:
       # - name: DATABASE_URL
       #   value: secret
 
+service:
+   port: 3000
+   targetPort: 3000
+
 ingress:
    enabled: true
    annotations:
@@ -41,7 +45,7 @@ ingress:
       - host: "medle.dev.fabrique.social.gouv.fr"
         paths:
            - path: /
-             servicePort: 80
+             servicePort: 3000
    tls:
       - hosts:
            - "medle.dev.fabrique.social.gouv.fr"
