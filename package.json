@@ -5,7 +5,7 @@
    "scripts": {
       "dev": "DEBUG=knex:query DATABASE_URL=psql://medle:bHrdeGk63cHQa7@localhost:5434/medle next dev",
       "build": "next build",
-      "start": "next start --port 80",
+      "start": "next start",
       "test": "jest",
       "lint": "eslint .",
       "migrate:make": "NODE_ENV=development yarn knex migrate:make name_migration",
