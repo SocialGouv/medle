@@ -1,6 +1,5 @@
-# image:
-#    repository: registry.gitlab.factory.social.gouv.fr/socialgouv/docker/nginx4spa
-#    tag: master
+image:
+   repository: registry.gitlab.factory.social.gouv.fr/socialgouv/medle
 
 labels:
    app.kubernetes.io/part-of: medle
@@ -22,14 +21,18 @@ deployment:
    resources:
       limits:
          memory: 128Mi
+         cpu: 300m
       requests:
          memory: 64Mi
+         cpu: 100m
 
    env:
       - name: PORT
         value: "80"
       - name: NODE_ENV
         value: "production"
+      # - name: DATABASE_URL
+      #   value: secret
 
 ingress:
    enabled: true
@@ -37,11 +40,11 @@ ingress:
       appgw.ingress.kubernetes.io/ssl-redirect: "true"
       kubernetes.io/ingress.class: "azure/application-gateway"
    hosts:
-      - host: "medle.fabrique.social.gouv.fr"
+      - host: "medle.dev.fabrique.social.gouv.fr"
         paths:
            - path: /
              servicePort: 80
    tls:
       - hosts:
-           - "medle.fabrique.social.gouv.fr"
+           - "medle.dev.fabrique.social.gouv.fr"
         secretName: wildcard-crt
