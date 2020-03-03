@@ -18,10 +18,10 @@ Deploy app (dev):
       - tags
       - master
   variables:
-    HOST: ${CI_ENVIRONMENT_SLUG}-${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
+    HOST: test-${CI_ENVIRONMENT_SLUG}-${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
   environment:
     name: review/${CI_COMMIT_REF_NAME}-dev
-    url: https://${CI_ENVIRONMENT_SLUG}-${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
+    url: https://test-${CI_ENVIRONMENT_SLUG}-${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
     on_stop: Stop review
 
 #
