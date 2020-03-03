@@ -10,19 +10,19 @@ variables:
 
 #
 
-Deploy app (dev):
+Deploy app (prod):
   extends:
     - .deploy_app_stage
-  except:
+  only:
     refs:
-      - tags
       - master
   variables:
-    HOST: test-${CI_ENVIRONMENT_SLUG}-${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
+    HOST: prod-${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
+    K8S_NAMESPACE: ${CI_PROJECT_NAME}
+    PRODUCTION: "true"
   environment:
-    name: review/${CI_COMMIT_REF_NAME}-dev
-    url: https://test-${CI_ENVIRONMENT_SLUG}-${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
-    on_stop: Stop review
+    name: prod
+    url: https://prod-${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
 
 #
 
