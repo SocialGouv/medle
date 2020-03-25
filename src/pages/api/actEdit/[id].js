@@ -22,7 +22,7 @@ const handler = async (req, res) => {
       const currentUser = checkValidUserWithPrivilege(ACT_MANAGEMENT, req, res)
 
       let scope = currentUser.scope || []
-      scope = [...scope, currentUser.hospitalId]
+      if (currentUser.hospital && currentUser.hospital.id) scope = [...scope, currentUser.hospital.id]
 
       // request verification
       const { id } = req.query

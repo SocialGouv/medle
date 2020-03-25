@@ -5,6 +5,7 @@ export const transform = dbData => ({
    lastName: dbData.last_name,
    email: dbData.email,
    role: dbData.role,
+   scope: dbData.scope,
    hospital: {
       id: dbData.hospital_id,
       name: dbData.hospital_name || "",
@@ -20,4 +21,5 @@ export const untransform = memData => ({
    last_name: memData.lastName,
    email: memData.email,
    role: memData.role,
+   scope: memData.scope,
 })
