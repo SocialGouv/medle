@@ -3,9 +3,6 @@ import Link from "next/link"
 import PropTypes from "prop-types"
 import {
    Collapse,
-   Container,
-   Col,
-   Row,
    Nav,
    Navbar,
    NavbarBrand,
@@ -16,18 +13,18 @@ import {
    DropdownMenu,
    DropdownItem,
 } from "reactstrap"
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline"
-import FormatListBulletedIcon from "@material-ui/icons/FormatListBulleted"
-import EqualizerIcon from "@material-ui/icons/Equalizer"
-import PhoneIcon from "@material-ui/icons/Phone"
-import SettingsIcon from "@material-ui/icons/Settings"
-import LocalLibraryIcon from "@material-ui/icons/LocalLibrary"
 import NotificationsNoneIcon from "@material-ui/icons/NotificationsNone"
 import AccountCircleIcon from "@material-ui/icons/AccountCircle"
+import ApartmentIcon from "@material-ui/icons/Apartment"
+import AccountBalanceIcon from "@material-ui/icons/AccountBalance"
+import BusinessCenterIcon from "@material-ui/icons/BusinessCenter"
+import WhatshotIcon from "@material-ui/icons/Whatshot"
+import ReceiptIcon from "@material-ui/icons/Receipt"
+import FaceIcon from "@material-ui/icons/Face"
 
+import { Footer } from "./Layout"
 import { logout } from "../utils/auth"
-import { colors } from "../theme"
-import { isAllowed, ACT_MANAGEMENT, ACT_CONSULTATION, EMPLOYMENT_CONSULTATION } from "../utils/roles"
+import { isAllowed, ADMIN, ACT_CONSULTATION, EMPLOYMENT_CONSULTATION } from "../utils/roles"
 
 const Header = ({ currentUser }) => {
    const [isOpen, setIsOpen] = useState(false)
@@ -35,8 +32,8 @@ const Header = ({ currentUser }) => {
    const toggle = () => setIsOpen(!isOpen)
 
    return (
-      <header className="border-bottom">
-         <Navbar expand="md" light>
+      <header style={{ border: "1px solid #9c27b0" }}>
+         <Navbar expand="md" className="justify-content-between align-items-center" light>
             <NavbarBrand>
                <img src={"/images/logo.png"} alt="Logo" title="Logo" width="100"></img>
             </NavbarBrand>
@@ -67,11 +64,7 @@ const Header = ({ currentUser }) => {
                                  <DropdownItem>Profil</DropdownItem>
                               </a>
                            </Link>
-                           <DropdownItem>
-                              <Link href="/administration/users">
-                                 <a>Administration</a>
-                              </Link>
-                           </DropdownItem>
+                           <DropdownItem>Administration</DropdownItem>
                            <DropdownItem divider />
                            <DropdownItem onClick={logout}>Se déconnecter</DropdownItem>
                         </DropdownMenu>
@@ -88,136 +81,89 @@ Header.propTypes = {
    currentUser: PropTypes.object,
 }
 
-export const Footer = () => (
-   <footer className="pt-4 pb-5 m-0">
-      <Container>
-         <Row>
-            <Col className="mr-5">
-               <h4>Medle.fabrique.social.gouv.fr</h4>
-               Un service proposé par la{" "}
-               <a
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  href="https://solidarites-sante.gouv.fr/ministere/organisation/directions/article/dgos-direction-generale-de-l-offre-de-soins"
-               >
-                  DGOS
-               </a>{" "}
-               et{" "}
-               <a target="_blank" href="https://incubateur.social.gouv.fr/" rel="noopener noreferrer">
-                  {" l'incubateur des ministères sociaux"}
-               </a>
-            </Col>
-            <Col className="mt-4 mt-md-0">
-               <ul className="pl-0 list-unstyled">
-                  {/* <li>
-                     <Link href={"/conditions"}>
-                        <a>{"Conditions générales d'utilisation"}</a>
-                     </Link>
-                  </li> */}
-                  <li>
-                     <Link href={"/statistics"}>
-                        <a>Statistiques</a>
-                     </Link>
-                  </li>
-                  <li>
-                     {/* <Link> */}
-                     <a href="mailto:contact.medle@fabrique.social.gouv.fr">Contactez&#8209;nous</a>
-                     {/* </Link> */}
-                  </li>
-                  <li>
-                     <Link href={"/faq"}>
-                        <a>FAQ</a>
-                     </Link>
-                  </li>
-               </ul>
-            </Col>
-         </Row>
-      </Container>
-      <style jsx>{`
-         footer {
-            background-color: ${colors.footer.background};
-            color: ${colors.footer.color};
-         }
-         footer a,
-         footer a:hover {
-            color: ${colors.footer.color};
-         }
-      `}</style>
-   </footer>
-)
-
 const Sidebar = ({ page, currentUser }) => {
    if (!currentUser) return ""
    return (
       <>
          <div className="list-group list-group-flush text-center">
-            {isAllowed(currentUser.role, ACT_MANAGEMENT) && (
-               <Link href="/actDeclaration">
+            {isAllowed(currentUser.role, ADMIN) && (
+               <Link href="/administration/users">
                   <a
                      className={
-                        "list-group-item list-group-item-action " +
-                        (page === "actDeclaration" ? "selected" : "unselected")
+                        "list-group-item list-group-item-action " + (page === "users" ? "selected" : "unselected")
                      }
                   >
-                     <AddCircleOutlineIcon width={30} />
+                     <FaceIcon className="text-black-50" width={30} />
+
                      <br />
-                     {"Ajout d'acte"}
+                     {"Utilisateurs"}
                   </a>
                </Link>
             )}
             {isAllowed(currentUser.role, ACT_CONSULTATION) && (
-               <Link href="/actsList">
+               <Link href="/administration/hospitals">
                   <a
                      className={
                         "list-group-item list-group-item-action " + (page === "actsList" ? "selected" : "unselected")
                      }
                   >
-                     <FormatListBulletedIcon width={30} /> <br />
-                     {"Tous les actes"}
+                     <ApartmentIcon width={30} /> <br />
+                     {"Établissements"}
                   </a>
                </Link>
             )}
             {isAllowed(currentUser.role, EMPLOYMENT_CONSULTATION) && (
-               <Link href="/fillEmployments">
+               <Link href="/administration/askers">
                   <a
                      className={
                         "list-group-item list-group-item-action " +
                         (page === "fillEmployments" ? "selected" : "unselected")
                      }
                   >
-                     <FormatListBulletedIcon width={30} /> <br />
-                     {"Personnel"}
+                     <AccountBalanceIcon width={30} /> <br />
+                     {"Demandeurs"}
                   </a>
                </Link>
             )}
-            <Link href="/statistics">
-               <a
-                  className={
-                     "list-group-item list-group-item-action " + (page === "statistics" ? "selected" : "unselected")
-                  }
-               >
-                  <EqualizerIcon width={30} /> <br />
-                  {"Statistiques"}
-               </a>
-            </Link>
-            {/* <Link href="/_error"> */}
-            <a className="list-group-item list-group-item-action">
-               <PhoneIcon width={30} /> <br />
-               {"Annuaire"}
-            </a>
-            {/* </Link> */}
-            {/* <Link href="/_error"> */}
-            <a className="list-group-item list-group-item-action">
-               <LocalLibraryIcon width={30} /> <br />
-               {"Ressources"}
-            </a>
-            {/* </Link> */}
-            {/* <Link href="/_error"> */}
-            <a className="list-group-item list-group-item-action">
-               <SettingsIcon width={30} /> <br />
-               {"Paramètres"}
-            </a>
-            {/* </Link> */}
+            {isAllowed(currentUser.role, EMPLOYMENT_CONSULTATION) && (
+               <Link href="/administration/attacks">
+                  <a
+                     className={
+                        "list-group-item list-group-item-action " +
+                        (page === "fillEmployments" ? "selected" : "unselected")
+                     }
+                  >
+                     <WhatshotIcon width={30} /> <br />
+                     {"Attentats"}
+                  </a>
+               </Link>
+            )}
+            {isAllowed(currentUser.role, EMPLOYMENT_CONSULTATION) && (
+               <Link href="/administration/employments">
+                  <a
+                     className={
+                        "list-group-item list-group-item-action " +
+                        (page === "fillEmployments" ? "selected" : "unselected")
+                     }
+                  >
+                     <BusinessCenterIcon width={30} /> <br />
+                     {"Emplois"}
+                  </a>
+               </Link>
+            )}
+            {isAllowed(currentUser.role, EMPLOYMENT_CONSULTATION) && (
+               <Link href="/administration/acts">
+                  <a
+                     className={
+                        "list-group-item list-group-item-action " +
+                        (page === "fillEmployments" ? "selected" : "unselected")
+                     }
+                  >
+                     <ReceiptIcon width={30} /> <br />
+                     {"Actes"}
+                  </a>
+               </Link>
+            )}
          </div>
          <style jsx>{`
             a {
