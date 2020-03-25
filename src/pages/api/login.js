@@ -14,30 +14,9 @@ import {
 import { createError, sendError, sendSuccess } from "../../utils/api"
 import { timeout } from "../../config"
 import { logError } from "../../utils/logger"
+import { transform } from "../../models/user"
 
-const validPassword = password => {
-   return password.length
-}
-
-const extractPublicData = ({
-   id,
-   first_name: firstName,
-   last_name: lastName,
-   email,
-   role,
-   hospital_id: hospitalId,
-   hospital_name: hospitalName,
-   scope,
-}) => ({
-   id,
-   firstName,
-   lastName,
-   email,
-   role,
-   hospitalId,
-   hospitalName,
-   scope,
-})
+const validPassword = password => password.length
 
 function onError(err, req, res) {
    sendError(req, res, err)
@@ -75,7 +54,7 @@ handler
          }
 
          // SQL query
-         const [user] = await knex("users")
+         const [dbUser] = await knex("users")
             .leftJoin("hospitals", "users.hospital_id", "hospitals.id")
             .where("email", email)
             .whereNull("users.deleted_at")
@@ -91,12 +70,13 @@ handler
                "users.scope",
             )
 
-         if (user && (await compareWithHash(password, user.password))) {
+         if (dbUser && (await compareWithHash(password, dbUser.password))) {
+            const user = transform(dbUser)
             const token = generateToken(user)
 
             res.setHeader("Set-Cookie", `token=${token}; Path=/; HttpOnly; Max-Age=${timeout.cookie}`)
-            return sendSuccess(req, res).json(extractPublicData(user))
-            // res.status(STATUS_200_OK).json({ token })
+
+            return sendSuccess(req, res).json(user)
          } else {
             // Unauthorized path
             return res.status(STATUS_401_UNAUTHORIZED).json({
