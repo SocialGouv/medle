@@ -15,6 +15,7 @@ import { FORMAT_DATE } from "../utils/date"
 import { ACT_CONSULTATION } from "../utils/roles"
 import { handleAPIResponse } from "../utils/errors"
 import { logError } from "../utils/logger"
+import { usePaginatedData } from "../utils/hooks"
 
 const fetchData = async ({ search, requestedPage, authHeaders }) => {
    const arr = []
@@ -30,18 +31,9 @@ const fetchData = async ({ search, requestedPage, authHeaders }) => {
    return handleAPIResponse(response)
 }
 
-const defaultPaginatedData = {
-   totalCount: 0,
-   currentPage: 1,
-   maxPage: 1,
-   acts: [],
-}
-
-const ActsListPage = ({ paginatedData: _paginatedData, currentUser }) => {
+const ActsListPage = ({ paginatedData: initialPaginatedData, currentUser }) => {
    const [search, setSearch] = useState("")
-   const [paginatedData, setPaginatedData] = useState(_paginatedData || defaultPaginatedData)
-   const [isError, setIsError] = useState()
-   const [isLoading, setIsLoading] = useState(false)
+   const [paginatedData, error, loading, fetchPage] = usePaginatedData(fetchData, initialPaginatedData)
 
    const onChange = e => {
       setSearch(e.target.value)
@@ -49,36 +41,7 @@ const ActsListPage = ({ paginatedData: _paginatedData, currentUser }) => {
 
    const onSubmit = e => {
       e.preventDefault()
-      handleSearch()
-   }
-
-   const handleSearch = async () => {
-      setIsLoading(true)
-      setIsError(false)
-
-      try {
-         const paginatedData = await fetchData({ search })
-         setPaginatedData(paginatedData)
-      } catch (error) {
-         logError("APP error", error)
-         setIsError("Erreur serveur")
-      } finally {
-         setTimeout(async () => {
-            setIsLoading(false)
-         }, 500)
-      }
-   }
-
-   const clickPage = async requestedPage => {
-      setIsError(false)
-
-      try {
-         const paginatedData = await fetchData({ search, requestedPage })
-         setPaginatedData(paginatedData)
-      } catch (error) {
-         logError("APP error", error)
-         setIsError("Erreur serveur")
-      }
+      fetchPage(search)(0)
    }
 
    return (
@@ -99,22 +62,22 @@ const ActsListPage = ({ paginatedData: _paginatedData, currentUser }) => {
                      />
                   </Col>
                   <Col sm="3" className="text-center mt-4 mt-sm-0">
-                     <Button className="w-lg-75" disabled={isLoading}>
-                        {isLoading ? <Spinner size="sm" color="light" data-testid="loading" /> : "Chercher"}
+                     <Button className="w-lg-75" disabled={loading}>
+                        {loading ? <Spinner size="sm" color="light" data-testid="loading" /> : "Chercher"}
                      </Button>
                   </Col>
                </FormGroup>
             </Form>
-            {isError && (
+            {error && (
                <Alert color="danger" className="mb-4">
-                  {isError}
+                  {error}
                </Alert>
             )}
-            {!isError && !paginatedData.acts.length && <div className="text-center">{"Aucun actes trouvés."}</div>}
+            {!error && !paginatedData.elements.length && <div className="text-center">{"Aucun actes trouvés."}</div>}
 
-            {!isError && !!paginatedData.acts.length && (
+            {!error && !!paginatedData.elements.length && (
                <>
-                  <Pagination data={paginatedData} fn={clickPage} />
+                  <Pagination data={paginatedData} fn={fetchPage(search)} />
                   <Table responsive className="table-hover">
                      <thead>
                         <tr className="table-light">
@@ -127,7 +90,7 @@ const ActsListPage = ({ paginatedData: _paginatedData, currentUser }) => {
                         </tr>
                      </thead>
                      <tbody>
-                        {paginatedData.acts.map(act => (
+                        {paginatedData.elements.map(act => (
                            <tr key={act.id}>
                               <td>
                                  <b>{act.internal_number}</b>

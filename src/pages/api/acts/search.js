@@ -75,7 +75,9 @@ const handler = async (req, res) => {
             .offset(offset)
             .select("*")
 
-         return res.status(STATUS_200_OK).json({ totalCount, currentPage: requestedPage, maxPage, byPage: LIMIT, acts })
+         return res
+            .status(STATUS_200_OK)
+            .json({ totalCount, currentPage: requestedPage, maxPage, byPage: LIMIT, elements: acts })
       } catch (error) {
          throw new APIError({
             status: STATUS_500_INTERNAL_SERVER_ERROR,
