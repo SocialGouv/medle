@@ -8,6 +8,8 @@ import { ADMIN } from "../../../../utils/roles"
 import { search } from "../../../../services/users/search"
 
 const handler = async (req, res) => {
+   res.setHeader("Content-Type", "application/json")
+
    try {
       switch (req.method) {
          case "GET": {
@@ -21,7 +23,6 @@ const handler = async (req, res) => {
             return sendMethodNotAllowedError(res)
       }
    } catch (error) {
-      console.error("error", error)
       sendAPIError(error, res)
    }
 }
