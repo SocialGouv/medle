@@ -3,7 +3,7 @@ import Cors from "micro-cors"
 import { STATUS_200_OK, METHOD_GET, METHOD_OPTIONS } from "../../../utils/http"
 import knex from "../../../knex/knex"
 import { ACT_CONSULTATION } from "../../../utils/roles"
-import { sendAPIError } from "../../../utils/api"
+import { sendAPIError } from "../../../services/errorHelpers"
 import { checkValidUserWithPrivilege } from "../../../utils/auth"
 
 const handler = async (req, res) => {

@@ -1,6 +1,6 @@
 import knex from "../../knex/knex"
 import { STATUS_200_OK } from "../../utils/http"
-import { sendAPIError } from "../../utils/api"
+import { sendAPIError } from "../../services/errorHelpers"
 import moment from "moment"
 import { FORMAT_DATE } from "../../utils/date"
 

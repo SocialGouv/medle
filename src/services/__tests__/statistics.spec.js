@@ -1,5 +1,5 @@
 import { normalizeDates } from "../statistics"
-import { now, ISO_DATE } from "../../../utils/date"
+import { now, ISO_DATE } from "../../utils/date"
 import moment from "moment"
 
 describe("tests on normalizeDates", () => {

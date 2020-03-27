@@ -2,12 +2,12 @@ import React, { useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { PropTypes } from "prop-types"
-import Layout from "../components/Layout"
+import Layout from "../../components/Layout"
 import { Container, Row } from "reactstrap"
-import { Button, Title1 } from "../components/StyledComponents"
+import { Button, Title1 } from "../../components/StyledComponents"
 import Add from "@material-ui/icons/Add"
-import { withAuthentication } from "../utils/auth"
-import { ACT_MANAGEMENT } from "../utils/roles"
+import { withAuthentication } from "../../utils/auth"
+import { ACT_MANAGEMENT } from "../../utils/roles"
 
 const IndexPage = ({ currentUser }) => {
    const router = useRouter()

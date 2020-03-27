@@ -1,18 +1,10 @@
-import Cors from "micro-cors"
+import knex from "../../knex/knex"
+import { STATUS_200_OK, STATUS_400_BAD_REQUEST, STATUS_404_NOT_FOUND } from "../../utils/http"
+import { ACT_MANAGEMENT } from "../../utils/roles"
+import { sendAPIError } from "../../services/errorHelpers"
+import { checkValidUserWithPrivilege } from "../../utils/auth"
 
-import knex from "../../../knex/knex"
-import {
-   STATUS_200_OK,
-   STATUS_400_BAD_REQUEST,
-   STATUS_404_NOT_FOUND,
-   METHOD_GET,
-   METHOD_OPTIONS,
-} from "../../../utils/http"
-import { ACT_MANAGEMENT } from "../../../utils/roles"
-import { sendAPIError } from "../../../utils/api"
-import { checkValidUserWithPrivilege } from "../../../utils/auth"
-
-const handler = async (req, res) => {
+export const del = async (req, res) => {
    try {
       // privilege verification
       checkValidUserWithPrivilege(ACT_MANAGEMENT, req, res)
@@ -36,9 +28,3 @@ const handler = async (req, res) => {
       sendAPIError(error, res)
    }
 }
-
-const cors = Cors({
-   allowMethods: [METHOD_GET, METHOD_OPTIONS],
-})
-
-export default cors(handler)

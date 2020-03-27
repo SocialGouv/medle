@@ -3,7 +3,7 @@ import Cors from "micro-cors"
 import { STATUS_200_OK, STATUS_500_INTERNAL_SERVER_ERROR, METHOD_GET, METHOD_OPTIONS } from "../../../utils/http"
 import knex from "../../../knex/knex"
 import { ACT_CONSULTATION } from "../../../utils/roles"
-import { sendAPIError } from "../../../utils/api"
+import { sendAPIError } from "../../../services/errorHelpers"
 import { checkValidUserWithPrivilege } from "../../../utils/auth"
 import { APIError } from "../../../utils/errors"
 
@@ -82,8 +82,7 @@ const handler = async (req, res) => {
          throw new APIError({
             status: STATUS_500_INTERNAL_SERVER_ERROR,
             message: "Erreur DB",
-            detailMessage: error.message,
-            uri: "https://docs.postgresql.fr/8.3/errcodes-appendix.html",
+            detail: error.message,
          })
       }
    } catch (error) {

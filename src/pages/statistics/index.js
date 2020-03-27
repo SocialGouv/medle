@@ -23,7 +23,7 @@ import { logError, logDebug } from "../../utils/logger"
 import { isEmpty, pluralize } from "../../utils/misc"
 
 import { StatBlockNumbers, StatBlockPieChart } from "../../components/StatBlock"
-import { isValidStartDate, isValidEndDate } from "../../common/api/statistics"
+import { isValidStartDate, isValidEndDate } from "../../services/statistics"
 
 // handy skeleton structure to avoid future "undefined" management
 const statisticsDefault = {

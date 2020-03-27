@@ -1,5 +1,5 @@
 import moment from "moment"
-import { now, ISO_DATE } from "../../utils/date"
+import { now, ISO_DATE } from "../utils/date"
 
 const defaultEndDate = () => now().format(ISO_DATE)
 

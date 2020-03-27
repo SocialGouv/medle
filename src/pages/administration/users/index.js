@@ -2,17 +2,19 @@ import React, { useState } from "react"
 import Link from "next/link"
 import { PropTypes } from "prop-types"
 import { Alert, Col, Form, FormGroup, Input, Spinner, Table, Container } from "reactstrap"
-import Layout from "../../components/LayoutAdmin"
+import Layout from "../../../components/LayoutAdmin"
 
-import { Button, Title1 } from "../../components/StyledComponents"
-import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../../utils/auth"
-import { API_URL, ACT_USERS_ENDPOINT } from "../../config"
-import { handleAPIResponse } from "../../utils/errors"
-import { logError } from "../../utils/logger"
-import { ADMIN, ROLES_DESCRIPTION } from "../../utils/roles"
-import { usePaginatedData } from "../../utils/hooks"
-import Pagination from "../../components/Pagination"
+import { Title1 } from "../../../components/StyledComponents"
+import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../../../utils/auth"
+import { API_URL, ADMIN_USERS_ENDPOINT } from "../../../config"
+import { handleAPIResponse } from "../../../utils/errors"
+import { logError } from "../../../utils/logger"
+import { ADMIN, ROLES_DESCRIPTION } from "../../../utils/roles"
+import { usePaginatedData } from "../../../utils/hooks"
+import Pagination from "../../../components/Pagination"
 import EditAttributesIcon from "@material-ui/icons/EditAttributes"
+import AddIcon from "@material-ui/icons/Add"
+import { SearchButton } from "../../../components/form/SearchButton"
 
 const fetchData = async ({ search, requestedPage, authHeaders }) => {
    const arr = []
@@ -23,7 +25,7 @@ const fetchData = async ({ search, requestedPage, authHeaders }) => {
       arr.push(`requestedPage=${requestedPage}`)
    }
    const bonus = arr.length ? "?" + arr.join("&") : ""
-   const response = await fetch(`${API_URL}${ACT_USERS_ENDPOINT}${bonus}`, { headers: authHeaders })
+   const response = await fetch(`${API_URL}${ADMIN_USERS_ENDPOINT}${bonus}`, { headers: authHeaders })
 
    return handleAPIResponse(response)
 }
@@ -43,12 +45,21 @@ const AdminUserPage = ({ paginatedData: initialPaginatedData, currentUser }) => 
 
    return (
       <Layout currentUser={currentUser}>
-         <Title1 className="mt-5 mb-4">{"Utilisateurs"}</Title1>
+         <Container
+            style={{ maxWidth: 980, minWidth: 740 }}
+            className="mt-5 mb-4 d-flex justify-content-between align-items-center"
+         >
+            <Title1 className="">{"Administration des utilisateurs"}</Title1>
+            <SearchButton className="mb-4 btn-outline-primary" disabled={loading}>
+               <AddIcon />
+               &nbsp; Ajouter
+            </SearchButton>
+         </Container>
 
-         <Container style={{ maxWidth: 980 }}>
+         <Container style={{ maxWidth: 980, minWidth: 740 }}>
             <Form onSubmit={onSubmit}>
-               <FormGroup row inline className="justify-content-center mb-4">
-                  <Col className="ml-auto" sm="9">
+               <FormGroup row inline className="mb-4 justify-content-center">
+                  <Col className="flex-grow-1">
                      <Input
                         type="text"
                         name="es"
@@ -59,10 +70,10 @@ const AdminUserPage = ({ paginatedData: initialPaginatedData, currentUser }) => 
                         autoComplete="off"
                      />
                   </Col>
-                  <Col sm="3" className="text-center mt-4 mt-sm-0">
-                     <Button className="w-lg-75" disabled={loading}>
+                  <Col className="flex-grow-0">
+                     <SearchButton className="w-lg-75 btn-primary" disabled={loading}>
                         {loading ? <Spinner size="sm" color="light" data-testid="loading" /> : "Chercher"}
-                     </Button>
+                     </SearchButton>
                   </Col>
                </FormGroup>
             </Form>

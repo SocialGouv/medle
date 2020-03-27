@@ -25,4 +25,4 @@ export const GLOBAL_STATISTICS_ENDPOINT = "/statistics/global"
 export const LIVING_STATISTICS_ENDPOINT = "/statistics/living"
 export const DEACEASED_STATISTICS_ENDPOINT = "/statistics/deceased"
 
-export const ACT_USERS_ENDPOINT = "/users/search"
+export const ADMIN_USERS_ENDPOINT = "/administration/users"

@@ -3,11 +3,11 @@ import Cors from "micro-cors"
 import { STATUS_200_OK, METHOD_POST, METHOD_OPTIONS } from "../../../utils/http"
 import knex from "../../../knex/knex"
 import { STATS_GLOBAL } from "../../../utils/roles"
-import { sendAPIError } from "../../../utils/api"
+import { sendAPIError } from "../../../services/errorHelpers"
 import { checkValidUserWithPrivilege, getReachableScope } from "../../../utils/auth"
 // import { logError } from "../../../utils/logger"
 import { ISO_DATE } from "../../../utils/date"
-import { normalizeInputs, averageOf } from "../../../common/api/statistics"
+import { normalizeInputs, averageOf } from "../../../services/statistics"
 
 const handler = (req, res) => {
    res.setHeader("Content-Type", "application/json")

@@ -11,7 +11,7 @@ import {
    METHOD_OPTIONS,
 } from "../../../../../../utils/http"
 import { EMPLOYMENT_CONSULTATION, EMPLOYMENT_MANAGEMENT } from "../../../../../../utils/roles"
-import { sendAPIError } from "../../../../../../utils/api"
+import { sendAPIError } from "../../../../../../services/errorHelpers"
 import { checkValidUserWithPrivilege } from "../../../../../../utils/auth"
 
 const handler = async (req, res) => {

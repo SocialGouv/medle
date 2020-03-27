@@ -4,7 +4,7 @@ import { STATUS_200_OK, STATUS_400_BAD_REQUEST, METHOD_POST, METHOD_OPTIONS } fr
 import knex from "../../../knex/knex"
 import { buildActFromJSON } from "../../../knex/models/acts"
 import { ACT_MANAGEMENT } from "../../../utils/roles"
-import { sendAPIError } from "../../../utils/api"
+import { sendAPIError } from "../../../services/errorHelpers"
 import { checkValidUserWithPrivilege } from "../../../utils/auth"
 import { logError } from "../../../utils/logger"
 
