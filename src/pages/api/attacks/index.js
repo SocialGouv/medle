@@ -11,7 +11,7 @@ const handler = async (req, res) => {
 
    try {
       switch (req.method) {
-         case "GET": {
+         case METHOD_GET: {
             checkValidUserWithPrivilege(ACT_CONSULTATION, req, res)
 
             const attacks = await knex("attacks")

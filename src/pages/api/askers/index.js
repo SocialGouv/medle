@@ -13,7 +13,7 @@ const handler = async (req, res) => {
 
    try {
       switch (req.method) {
-         case "GET": {
+         case METHOD_GET: {
             checkValidUserWithPrivilege(ACT_MANAGEMENT, req, res)
 
             const { fuzzy, all } = req.query

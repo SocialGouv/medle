@@ -16,7 +16,7 @@ const handler = async (req, res) => {
 
    try {
       switch (req.method) {
-         case "GET": {
+         case METHOD_GET: {
             checkValidUserWithPrivilege(ACT_MANAGEMENT, req, res)
 
             const { id } = req.query

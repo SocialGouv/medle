@@ -1,6 +1,13 @@
 import Cors from "micro-cors"
 
-import { STATUS_200_OK, METHOD_GET, METHOD_OPTIONS } from "../../../../utils/http"
+import {
+   STATUS_200_OK,
+   METHOD_GET,
+   METHOD_DELETE,
+   METHOD_PUT,
+   METHOD_POST,
+   METHOD_OPTIONS,
+} from "../../../../utils/http"
 import { sendAPIError, sendMethodNotAllowedError, sendNotFoundError } from "../../../../services/errorHelpers"
 import { ADMIN } from "../../../../utils/roles"
 import { checkValidUserWithPrivilege } from "../../../../utils/auth"
@@ -15,7 +22,7 @@ const handler = async (req, res) => {
 
    try {
       switch (req.method) {
-         case "GET": {
+         case METHOD_GET: {
             const currentUser = checkValidUserWithPrivilege(ADMIN, req, res)
 
             const user = await find({ ...req.query, currentUser })
@@ -24,13 +31,13 @@ const handler = async (req, res) => {
 
             return res.status(STATUS_200_OK).json(user)
          }
-         case "DELETE":
+         case METHOD_DELETE:
             del(req, res)
             break
-         case "PUT":
+         case METHOD_PUT:
             update(req, res)
             break
-         case "POST":
+         case METHOD_POST:
             create(req, res)
             break
          default:

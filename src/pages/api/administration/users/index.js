@@ -12,7 +12,7 @@ const handler = async (req, res) => {
 
    try {
       switch (req.method) {
-         case "GET": {
+         case METHOD_GET: {
             const currentUser = checkValidUserWithPrivilege(ADMIN, req, res)
 
             const { users, totalCount, currentPage, maxPage, byPage } = await search({ ...req.query, currentUser })
