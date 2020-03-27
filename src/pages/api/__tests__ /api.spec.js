@@ -9,7 +9,7 @@ import fetch from "isomorphic-unfetch"
  */
 
 const API_URL = "https://medle-dev.fabrique.social.gouv.fr/api"
-const email = "acte@tours.fr"
+const email = "acte@medle.fr"
 const password = "test"
 
 let headers
