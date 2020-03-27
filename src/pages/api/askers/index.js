@@ -1,15 +1,12 @@
 import Cors from "micro-cors"
 
-import knex from "../../../knex/knex"
 import { STATUS_200_OK, METHOD_GET, METHOD_OPTIONS } from "../../../utils/http"
+import knex from "../../../knex/knex"
 import { ACT_MANAGEMENT } from "../../../utils/roles"
-import {
-   sendAPIError,
-   sendBadRequestError,
-   sendMethodNotAllowedError,
-   sendNotFoundError,
-} from "../../../services/errorHelpers"
+import { sendAPIError, sendMethodNotAllowedError } from "../../../services/errorHelpers"
 import { checkValidUserWithPrivilege } from "../../../utils/auth"
+
+const MAX_VALUE = 100000
 
 const handler = async (req, res) => {
    res.setHeader("Content-Type", "application/json")
@@ -19,16 +16,20 @@ const handler = async (req, res) => {
          case "GET": {
             checkValidUserWithPrivilege(ACT_MANAGEMENT, req, res)
 
-            const { id } = req.query
-            if (!id || isNaN(id)) {
-               return sendBadRequestError(res)
-            }
+            const { fuzzy, all } = req.query
 
-            const [askers] = await knex("askers").where("id", id)
+            const askers = await knex("askers")
+               .whereNull("deleted_at")
+               .where(builder => {
+                  if (fuzzy) {
+                     builder.where("name", "ilike", `%${fuzzy}%`)
+                  }
+               })
+               .limit(all ? MAX_VALUE : 10)
+               .orderBy("name")
+               .select("id as value", "name as label")
 
-            if (askers) return res.status(STATUS_200_OK).json(askers)
-
-            return sendNotFoundError(res)
+            return res.status(STATUS_200_OK).json(askers)
          }
          default:
             return sendMethodNotAllowedError(res)

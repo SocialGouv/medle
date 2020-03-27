@@ -1,4 +1,9 @@
-import { STATUS_404_NOT_FOUND, STATUS_405_METHOD_NOT_ALLOWED, STATUS_500_INTERNAL_SERVER_ERROR } from "../utils/http"
+import {
+   STATUS_400_BAD_REQUEST,
+   STATUS_404_NOT_FOUND,
+   STATUS_405_METHOD_NOT_ALLOWED,
+   STATUS_500_INTERNAL_SERVER_ERROR,
+} from "../utils/http"
 import { APIError, InternalError, stringifyError } from "../utils/errors"
 import { logError } from "../utils/logger"
 
@@ -29,6 +34,15 @@ export const sendNotFoundError = res =>
       new APIError({
          status: STATUS_404_NOT_FOUND,
          message: "Resource not found",
+      }),
+      res,
+   )
+
+export const sendBadRequestError = res =>
+   sendAPIError(
+      new APIError({
+         status: STATUS_400_BAD_REQUEST,
+         message: "Bad request",
       }),
       res,
    )
