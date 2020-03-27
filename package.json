@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "env-cmd -f ./.env.dev next dev",
     "build": "node -r dotenv/config node_modules/next/dist/bin/next build",
+    "debug": "NODE_OPTIONS='--inspect' node -r dotenv/config node_modules/next/dist/bin/next dev",
     "start": "node -r dotenv/config node_modules/next/dist/bin/next start",
     "test": "jest",
     "lint": "eslint .",
@@ -31,7 +32,7 @@
     "micro-cors": "^0.1.1",
     "moize": "^5.4.5",
     "moment": "^2.24.0",
-    "next": "^9.3.0",
+    "next": "^9.2.0",
     "next-connect": "^0.6.0",
     "next-cookies": "^2.0.3",
     "pg": "^7.12.1",
