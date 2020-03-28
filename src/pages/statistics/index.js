@@ -25,6 +25,7 @@ import { isEmpty, pluralize } from "../../utils/misc"
 import { StatBlockNumbers, StatBlockPieChart } from "../../components/StatBlock"
 import { isValidStartDate, isValidEndDate } from "../../services/statistics/common"
 import { buildScope } from "../../services/scope"
+import { now, ISO_DATE } from "../../utils/date"
 
 // handy skeleton structure to avoid future "undefined" management
 const statisticsDefault = {
@@ -40,7 +41,17 @@ const statisticsDefault = {
    examinations: {},
 }
 
-const fetchStatistics = async ({ type = "Global", scopeFilter = [], startDate, endDate, authHeaders }) => {
+const defaultStartDate = now()
+   .startOf("year")
+   .format(ISO_DATE)
+
+const fetchStatistics = async ({
+   type = "Global",
+   scopeFilter = [],
+   startDate = defaultStartDate,
+   endDate = now(),
+   authHeaders,
+}) => {
    const obj = {
       Vivant: LIVING_STATISTICS_ENDPOINT,
       Thanato: DEACEASED_STATISTICS_ENDPOINT,
