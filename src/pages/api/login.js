@@ -1,4 +1,6 @@
-import { STATUS_200_OK, METHOD_POST } from "../../utils/http"
+import Cors from "micro-cors"
+
+import { STATUS_200_OK, METHOD_OPTIONS, METHOD_POST } from "../../utils/http"
 import { sendAPIError, sendMethodNotAllowedError } from "../../services/errorHelpers"
 import { authenticate } from "../../services/authentication"
 import { timeout } from "../../config"
@@ -23,4 +25,8 @@ const handler = async (req, res) => {
       return sendAPIError(error, res)
    }
 }
-export default handler
+const cors = Cors({
+   allowMethods: [METHOD_OPTIONS, METHOD_POST],
+})
+
+export default cors(handler)

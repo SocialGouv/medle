@@ -4,8 +4,7 @@ import { STATUS_200_OK, METHOD_GET, METHOD_PUT, METHOD_OPTIONS } from "../../../
 import { EMPLOYMENT_CONSULTATION, EMPLOYMENT_MANAGEMENT } from "../../../../../../utils/roles"
 import { sendAPIError, sendMethodNotAllowedError, sendNotFoundError } from "../../../../../../services/errorHelpers"
 import { checkValidUserWithPrivilege } from "../../../../../../utils/auth"
-import { find } from "../../../../../../services/employments/find"
-import { update } from "../../../../../../services/employments/update"
+import { find, update } from "../../../../../../services/employments"
 
 const handler = async (req, res) => {
    res.setHeader("Content-Type", "application/json")

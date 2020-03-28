@@ -5,7 +5,7 @@ import { sendAPIError, sendMethodNotAllowedError } from "../../../../services/er
 import { checkValidUserWithPrivilege } from "../../../../utils/auth"
 import { ADMIN } from "../../../../utils/roles"
 
-import { search } from "../../../../services/users/search"
+import { search } from "../../../../services/users"
 
 const handler = async (req, res) => {
    res.setHeader("Content-Type", "application/json")
