@@ -4,7 +4,7 @@ import { ADMIN } from "../../utils/roles"
 import { sendAPIError } from "../../services/errorHelpers"
 import { checkValidUserWithPrivilege } from "../../utils/auth"
 import { APIError } from "../../utils/errors"
-import { transformAll } from "../../models/user"
+import { transformAll } from "../../models/users"
 import { makeWhereClause } from "./common"
 import { buildScope } from "../scope"
 

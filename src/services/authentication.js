@@ -3,7 +3,7 @@ import { compareWithHash } from "../utils/bcrypt"
 import { generateToken } from "../utils/jwt"
 import { STATUS_400_BAD_REQUEST, STATUS_401_UNAUTHORIZED } from "../utils/http"
 import { APIError } from "../utils/errors"
-import { transform } from "../models/user"
+import { transform } from "../models/users"
 
 const validPassword = password => password.length
 

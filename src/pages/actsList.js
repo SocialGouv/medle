@@ -6,7 +6,7 @@ import moment from "moment"
 import { Alert, Button, Col, Container, Form, FormGroup, Input, Spinner, Table } from "reactstrap"
 
 import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../utils/auth"
-import { API_URL, ACT_SEARCH_ENDPOINT } from "../config"
+import { API_URL, ACTS_ENDPOINT } from "../config"
 import { Title1 } from "../components/StyledComponents"
 import Pagination from "../components/Pagination"
 import Layout from "../components/Layout"
@@ -26,7 +26,7 @@ const fetchData = async ({ search, requestedPage, authHeaders }) => {
       arr.push(`requestedPage=${requestedPage}`)
    }
    const bonus = arr.length ? "?" + arr.join("&") : ""
-   const response = await fetch(`${API_URL}${ACT_SEARCH_ENDPOINT}${bonus}`, { headers: authHeaders })
+   const response = await fetch(`${API_URL}${ACTS_ENDPOINT}${bonus}`, { headers: authHeaders })
 
    return handleAPIResponse(response)
 }

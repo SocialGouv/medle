@@ -9,7 +9,7 @@ import EditOutlinedIcon from "@material-ui/icons/EditOutlined"
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined"
 
 import { FORMAT_DATE } from "../../utils/date"
-import { API_URL, ACT_DETAIL_ENDPOINT, ACT_DELETE_ENDPOINT } from "../../config"
+import { API_URL, ACTS_ENDPOINT } from "../../config"
 import Layout from "../../components/Layout"
 import ColumnAct from "../../components/ColumnAct"
 import { Title1, Title2 } from "../../components/StyledComponents"
@@ -19,6 +19,7 @@ import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "..
 import { isAllowed, ACT_CONSULTATION, ACT_MANAGEMENT } from "../../utils/roles"
 import { logError } from "../../utils/logger"
 import { profiles } from "../../utils/actsConstants"
+import { METHOD_DELETE } from "../../utils/http"
 
 const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
    const router = useRouter()
@@ -36,7 +37,7 @@ const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
 
       const deleteAct = async id => {
          try {
-            await fetch(API_URL + ACT_DELETE_ENDPOINT + "/" + id)
+            await fetch(API_URL + "/" + id, { method: METHOD_DELETE })
             await router.push("/actsList")
          } catch (error) {
             logError(error)
@@ -143,7 +144,7 @@ ActDetail.getInitialProps = async ctx => {
 
    let json
    try {
-      const response = await fetch(API_URL + ACT_DETAIL_ENDPOINT + "/" + id, { headers: authHeaders })
+      const response = await fetch(API_URL + ACTS_ENDPOINT + "/" + id, { headers: authHeaders })
       json = await handleAPIResponse(response)
 
       return { initialAct: json, id }
