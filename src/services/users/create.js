@@ -5,7 +5,8 @@ import { sendAPIError } from "../../services/errorHelpers"
 import { checkValidUserWithPrivilege } from "../../utils/auth"
 import { APIError } from "../../utils/errors"
 import { transformAll } from "../../models/user"
-import { buildScope, makeWhereClause } from "./common"
+import { makeWhereClause } from "./common"
+import { buildScope } from "../scope"
 
 export const create = async (req, res) => {
    const { id } = req.query

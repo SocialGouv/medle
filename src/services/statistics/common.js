@@ -1,12 +1,7 @@
 import moment from "moment"
-import { now, ISO_DATE } from "../utils/date"
+import { now, ISO_DATE } from "../../utils/date"
 
 const defaultEndDate = () => now().format(ISO_DATE)
-
-const defaultStartDate = date =>
-   moment(date)
-      .startOf("year")
-      .format(ISO_DATE)
 
 // end date must be not null, well formatted and not in the future
 export const isValidEndDate = endDate =>
@@ -20,13 +15,13 @@ export const normalizeDates = ({ startDate, endDate } = {}) => {
    endDate = isValidEndDate(endDate) ? endDate : defaultEndDate()
 
    // get start date thrown if well formated and before end date, get 1st january of the year of end date if not
-   startDate = isValidStartDate(startDate, endDate) ? startDate : defaultStartDate(endDate)
+   startDate = isValidStartDate(startDate, endDate) ? startDate : endDate
 
    return { startDate, endDate }
 }
 
-export const normalizeInputs = ({ startDate, endDate, scopeFilter }, reachableScope, userRole) => {
-   // verification if all the scope filter is included in the reachable scope. If not, we set to [] to force to national scope
+export const normalizeInputs = ({ startDate, endDate, scopeFilter = [] }, reachableScope) => {
+   // verification if all the scope filter is included in the reachable scope
    for (let i = 0; i < scopeFilter.length; i++) {
       if (!reachableScope.includes(scopeFilter[i])) {
          scopeFilter = []

@@ -14,10 +14,3 @@ export const makeWhereClause = ({ scope, fuzzy }) => builder => {
       })
    }
 }
-
-export const buildScope = currentUser => {
-   if (!currentUser) return []
-   let scope = currentUser.scope || []
-   if (currentUser.hospital && currentUser.hospital.id) scope = [...scope, currentUser.hospital.id]
-   return scope
-}

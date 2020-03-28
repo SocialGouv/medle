@@ -8,7 +8,8 @@ import fetch from "isomorphic-unfetch"
  * - medle-dev.fabrique.social.gouv.fr
  */
 
-const API_URL = "https://medle-dev.fabrique.social.gouv.fr/api"
+// const API_URL = "https://medle-dev.fabrique.social.gouv.fr/api"
+const API_URL = "http://localhost:3000/api"
 const email = "acte@medle.fr"
 const password = "test"
 

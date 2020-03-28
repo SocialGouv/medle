@@ -18,12 +18,13 @@ import Layout from "../../components/Layout"
 import TabButton from "../../components/TabButton"
 import { Label, Title1 } from "../../components/StyledComponents"
 import { STATS_GLOBAL } from "../../utils/roles"
-import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication, getReachableScope } from "../../utils/auth"
+import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../../utils/auth"
 import { logError, logDebug } from "../../utils/logger"
 import { isEmpty, pluralize } from "../../utils/misc"
 
 import { StatBlockNumbers, StatBlockPieChart } from "../../components/StatBlock"
-import { isValidStartDate, isValidEndDate } from "../../services/statistics"
+import { isValidStartDate, isValidEndDate } from "../../services/statistics/common"
+import { buildScope } from "../../services/scope"
 
 // handy skeleton structure to avoid future "undefined" management
 const statisticsDefault = {
@@ -185,7 +186,7 @@ const StatisticsPage = ({ statistics: _statistics, currentUser }) => {
    }
 
    const toggleScopeFilter = async checked => {
-      setScopeFilter({ isNational: checked, scope: checked ? [] : getReachableScope(currentUser) })
+      setScopeFilter({ isNational: checked, scope: checked ? [] : buildScope(currentUser) })
    }
 
    return (
