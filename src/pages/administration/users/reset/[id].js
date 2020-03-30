@@ -148,7 +148,7 @@ const UserReset = ({ currentUser }) => {
                   <Button className="px-4 mt-5 mr-3" color="primary">
                      Mettre à jour
                   </Button>
-                  <Link key={"retour"} href="/administration/users/" className="pl-3">
+                  <Link href="/administration/users" className="pl-3">
                      <Button className="px-4 mt-5 " outline color="primary">
                         <a>Retour</a>
                      </Button>

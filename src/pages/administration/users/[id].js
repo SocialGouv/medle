@@ -142,12 +142,26 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                   <Button className="px-4 mt-5 mr-3" color="primary">
                      {isEmpty(initialUser) ? "Ajouter" : "Modifier"}
                   </Button>
-                  <Link key={"retour"} href="/administration/users/" className="pl-3">
+                  <Link href="/administration/users" className="pl-3">
                      <Button className="px-4 mt-5 " outline color="primary">
                         <a>Retour</a>
                      </Button>
                   </Link>
                </div>
+               {!isEmpty(initialUser) && (
+                  <div style={{ backgroundColor: "#f7d7d4" }} className="px-4 py-3 mt-5 rounded">
+                     <Title1 className="mb-4">Zone dangereuse</Title1>
+                     <div
+                        style={{ color: "#7d2a21", borderColor: "#f4c7c2" }}
+                        className="d-flex justify-content-between align-items-center"
+                     >
+                        Je souhaite supprimer cet utilisateur
+                        <Button className="" color="danger" outline>
+                           Supprimer
+                        </Button>
+                     </div>
+                  </div>
+               )}
             </Form>
          </Container>
       </Layout>
