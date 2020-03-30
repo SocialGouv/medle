@@ -18,6 +18,7 @@ export const ACTS_ENDPOINT = "/acts"
 export const ASKERS_ENDPOINT = "/askers"
 export const EMPLOYMENTS_ENDPOINT = "/employments"
 export const ATTACKS_ENDPOINT = "/attacks"
+export const HOSPITALS_ENDPOINT = "/hospitals"
 
 export const GLOBAL_STATISTICS_ENDPOINT = "/statistics/global"
 export const LIVING_STATISTICS_ENDPOINT = "/statistics/living"
