@@ -13,6 +13,7 @@ export const API_URL = publicRuntimeConfig ? publicRuntimeConfig.API_URL : "http
 
 export const LOGIN_ENDPOINT = "/login"
 export const LOGOUT_ENDPOINT = "/logout"
+export const RESET_PWD_ENDPOINT = "/reset"
 
 export const ACTS_ENDPOINT = "/acts"
 export const ASKERS_ENDPOINT = "/askers"

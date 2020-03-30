@@ -50,7 +50,7 @@ const fetchHospitals = async value => {
    return isEmpty(json) ? [] : json
 }
 
-const UserDetail = ({ initialUser, currentUser }) => {
+const UserDetail = ({ initialUser = {}, currentUser }) => {
    const [user, setUser] = useState(initialUser)
 
    const onChange = e => {
@@ -68,7 +68,7 @@ const UserDetail = ({ initialUser, currentUser }) => {
                      Id
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="id" id="id" disabled />
+                     <Input type="text" name="id" id="id" disabled value={user.id} />
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -76,7 +76,7 @@ const UserDetail = ({ initialUser, currentUser }) => {
                      Prénom
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="firstName" id="firstName" />
+                     <Input type="text" name="firstName" id="firstName" value={user.firstName} />
                      <FormFeedback>Erreur sur le prénom</FormFeedback>
                   </Col>
                </FormGroup>
@@ -85,7 +85,7 @@ const UserDetail = ({ initialUser, currentUser }) => {
                      Nom
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="lastName" id="lastName" />
+                     <Input type="text" name="lastName" id="lastName" value={user.lastName} />
                      <FormFeedback>Erreur sur le nom</FormFeedback>
                   </Col>
                </FormGroup>
@@ -94,15 +94,7 @@ const UserDetail = ({ initialUser, currentUser }) => {
                      Courriel
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="email" id="email" />
-                  </Col>
-               </FormGroup>
-               <FormGroup row>
-                  <Label for="pwd" sm={3}>
-                     Mot de passe
-                  </Label>
-                  <Col sm={9}>
-                     <Input type="password" name="pwd" id="pwd" />
+                     <Input type="text" name="email" id="email" value={user.email} />
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -110,9 +102,11 @@ const UserDetail = ({ initialUser, currentUser }) => {
                      Rôle
                   </Label>
                   <Col sm={9}>
-                     <Input type="select" name="role" id="role">
+                     <Input type="select" name="role" id="role" value={user.role}>
                         {Object.keys(ROLES).map(key => (
-                           <option key={key}>{ROLES_DESCRIPTION[key]}</option>
+                           <option key={key} value={key} selected={key === user.role}>
+                              {ROLES_DESCRIPTION[key]}
+                           </option>
                         ))}
                      </Input>
                   </Col>
@@ -144,8 +138,15 @@ const UserDetail = ({ initialUser, currentUser }) => {
                      <Input type="text" name="scope" id="scope" />
                   </Col>
                </FormGroup>
-               <div className="d-flex justify-content-end">
-                  <Button className="px-4 mt-3">Modifier</Button>
+               <div className="justify-content-center d-flex">
+                  <Button className="px-4 mt-5 mr-3" color="primary">
+                     {isEmpty(initialUser) ? "Ajouter" : "Modifier"}
+                  </Button>
+                  <Link key={"retour"} href="/administration/users/" className="pl-3">
+                     <Button className="px-4 mt-5 " outline color="primary">
+                        <a>Retour</a>
+                     </Button>
+                  </Link>
                </div>
             </Form>
          </Container>
@@ -157,6 +158,8 @@ UserDetail.getInitialProps = async ctx => {
    const authHeaders = buildAuthHeaders(ctx)
 
    const { id } = ctx.query
+
+   if (!id) return { initialUser: {} }
 
    try {
       const response = await fetch(API_URL + ADMIN_USERS_ENDPOINT + "/" + id, { headers: authHeaders })

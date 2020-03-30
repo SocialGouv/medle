@@ -9,7 +9,7 @@ export const find = async ({ id, currentUser }) => {
    if (!id || isNaN(id)) {
       throw new APIError({
          status: STATUS_400_BAD_REQUEST,
-         message: "Requête mal formée",
+         message: "Bad request",
       })
    }
 

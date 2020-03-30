@@ -3,6 +3,7 @@ import Link from "next/link"
 import { PropTypes } from "prop-types"
 import { Alert, Col, Form, FormGroup, Input, Spinner, Table, Container } from "reactstrap"
 import Layout from "../../../components/LayoutAdmin"
+import fetch from "isomorphic-unfetch"
 
 import { Title1 } from "../../../components/StyledComponents"
 import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../../../utils/auth"
@@ -14,6 +15,7 @@ import { usePaginatedData } from "../../../utils/hooks"
 import Pagination from "../../../components/Pagination"
 import EditAttributesIcon from "@material-ui/icons/EditAttributes"
 import AddIcon from "@material-ui/icons/Add"
+import DoubleArrowIcon from "@material-ui/icons/DoubleArrow"
 import { SearchButton } from "../../../components/form/SearchButton"
 
 const fetchData = async ({ search, requestedPage, authHeaders }) => {
@@ -50,10 +52,14 @@ const AdminUserPage = ({ paginatedData: initialPaginatedData, currentUser }) => 
             className="mt-5 mb-4 d-flex justify-content-between align-items-center"
          >
             <Title1 className="">{"Administration des utilisateurs"}</Title1>
-            <SearchButton className="mb-4 btn-outline-primary" disabled={loading}>
-               <AddIcon />
-               &nbsp; Ajouter
-            </SearchButton>
+            <Link href="/administration/users/[id]" as={`/administration/users/new`}>
+               <a>
+                  <SearchButton className="mb-4 btn-outline-primary">
+                     <AddIcon />
+                     &nbsp; Ajouter
+                  </SearchButton>
+               </a>
+            </Link>
          </Container>
 
          <Container style={{ maxWidth: 980, minWidth: 740 }}>
@@ -97,6 +103,7 @@ const AdminUserPage = ({ paginatedData: initialPaginatedData, currentUser }) => 
                            <th>Role</th>
                            <th>Établissement</th>
                            <th></th>
+                           <th></th>
                         </tr>
                      </thead>
                      <tbody>
@@ -111,8 +118,19 @@ const AdminUserPage = ({ paginatedData: initialPaginatedData, currentUser }) => 
                               <td>
                                  <Link href="/administration/users/[id]" as={`/administration/users/${user.id}`}>
                                     <a>
-                                       Voir détail&nbsp;
+                                       Détails&nbsp;
                                        <EditAttributesIcon />
+                                    </a>
+                                 </Link>
+                              </td>
+                              <td>
+                                 <Link
+                                    href="/administration/users/resetPassword"
+                                    as={`/administration/users/reset/${user.id}`}
+                                 >
+                                    <a>
+                                       Réinitialiser&nbsp;
+                                       <DoubleArrowIcon />
                                     </a>
                                  </Link>
                               </td>
