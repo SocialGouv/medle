@@ -37,8 +37,8 @@ const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
 
       const deleteAct = async id => {
          try {
-            await fetch(API_URL + "/" + id, { method: METHOD_DELETE })
-            await router.push("/actsList")
+            await fetch(`${API_URL}${ACTS_ENDPOINT}/${id}`, { method: METHOD_DELETE })
+            router.push("/actsList")
          } catch (error) {
             logError(error)
             setIsError(error)
@@ -67,7 +67,7 @@ const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
             <>
                <Container style={{ maxWidth: 780 }}>
                   <div className="px-2 py-2">
-                     <Title2 className="mb-4 mt-3">{"Identification de l'acte"}</Title2>
+                     <Title2 className="mt-3 mb-4">{"Identification de l'acte"}</Title2>
                      <Row>
                         <Col className="mr-3">
                            <ColumnAct header={"Numéro de PV"} content={act && act.pvNumber} />
@@ -98,13 +98,13 @@ const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
                            <Button block outline color="danger" onClick={toggle}>
                               <DeleteForeverOutlinedIcon width={24} />
                               {" Supprimer l'acte"}
-                           </Button>{" "}
+                           </Button>
                         </Col>
                         <Col>
                            <Button block outline color="info" onClick={() => editAct(id)}>
                               <EditOutlinedIcon width={24} />
                               {" Modifier l'acte"}
-                           </Button>{" "}
+                           </Button>
                            <div>
                               <Modal isOpen={modal} toggle={toggle}>
                                  <ModalHeader toggle={toggle}>Voulez-vous vraiment supprimer cet acte?</ModalHeader>
@@ -125,7 +125,7 @@ const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
                         </Col>
                      </Row>
                   )}
-                  <div className="text-center mt-5">
+                  <div className="mt-5 text-center">
                      <Link href="/actsList">
                         <a>Retour à la liste des actes</a>
                      </Link>
