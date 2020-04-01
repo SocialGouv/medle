@@ -12,6 +12,9 @@ export const ADD_TYPE_VIOLENCE = "ADD_TYPE_VIOLENCE" // peut ajouter des types d
 export const NO_PRIVILEGE_REQUIRED = "NO_PRIVILEGE_REQUIRED"
 export const ADMIN = "ADMIN"
 
+export const ADMIN_HOSPITAL = "ADMIN_HOSPITAL"
+export const SUPER_ADMIN = "SUPER_ADMIN"
+
 export const PRIVILEGES = [
    HOSPITAL_DETAILS_MANAGEMENT,
    ACT_CONSULTATION,

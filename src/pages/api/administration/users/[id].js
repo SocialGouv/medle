@@ -31,9 +31,15 @@ const handler = async (req, res) => {
 
             return res.status(STATUS_200_OK).json(user)
          }
-         case METHOD_DELETE:
-            del(req, res)
-            break
+         case METHOD_DELETE: {
+            const currentUser = checkValidUserWithPrivilege(ADMIN, req, res)
+
+            const deleted = del({ ...req.query, currentUser })
+
+            if (!deleted) return sendNotFoundError(res)
+
+            return res.status(STATUS_200_OK).json(deleted)
+         }
          case METHOD_PUT:
             update(req, res)
             break
@@ -49,7 +55,7 @@ const handler = async (req, res) => {
 }
 
 const cors = Cors({
-   allowMethods: [METHOD_GET, METHOD_OPTIONS],
+   allowMethods: [METHOD_DELETE, METHOD_GET, METHOD_OPTIONS],
 })
 
 export default cors(handler)

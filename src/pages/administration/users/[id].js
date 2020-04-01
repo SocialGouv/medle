@@ -6,7 +6,6 @@ import fetch from "isomorphic-unfetch"
 import {
    Button,
    Col,
-   Row,
    Alert,
    Container,
    Form,
@@ -19,23 +18,17 @@ import {
    ModalBody,
    ModalFooter,
 } from "reactstrap"
-import EditOutlinedIcon from "@material-ui/icons/EditOutlined"
-import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined"
-import AsyncSelect from "react-select/async"
+import { useForm } from "react-hook-form"
 
-import GroupIcon from "@material-ui/icons/Group"
-
-import { FORMAT_DATE } from "../../../utils/date"
 import { API_URL, ADMIN_USERS_ENDPOINT, HOSPITALS_ENDPOINT } from "../../../config"
 import Layout from "../../../components/LayoutAdmin"
-import ColumnAct from "../../../components/ColumnAct"
 import { Title1, Title2 } from "../../../components/StyledComponents"
 import { isEmpty } from "../../../utils/misc"
 import { handleAPIResponse } from "../../../utils/errors"
 import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../../../utils/auth"
-import { isAllowed, ADMIN, ROLES, ROLES_DESCRIPTION } from "../../../utils/roles"
+import { METHOD_DELETE } from "../../../utils/http"
+import { ADMIN, ROLES, ROLES_DESCRIPTION } from "../../../utils/roles"
 import { logError } from "../../../utils/logger"
-import { profiles } from "../../../utils/actsConstants"
 
 const fetchHospitals = async value => {
    const bonus = value ? `?fuzzy=${value}` : ""
@@ -50,11 +43,48 @@ const fetchHospitals = async value => {
    return isEmpty(json) ? [] : json
 }
 
+const MandatorySign = () => <span style={{ color: "red" }}>*</span>
+
 const UserDetail = ({ initialUser = {}, currentUser }) => {
+   const router = useRouter()
+   const { id } = router.query
+   const { handleSubmit, register, errors } = useForm()
+
    const [user, setUser] = useState(initialUser)
+   const [error, setError] = useState("")
+   const [modal, setModal] = useState(false)
+   const toggle = () => setModal(!modal)
 
    const onChange = e => {
-      dispatch({ type: "askerId", payload: { val: (e && e.value) || null } })
+      const { id, value } = e.target
+      setUser(user => ({
+         ...user,
+         [id]: value,
+      }))
+   }
+
+   const deleteUser = () => {
+      toggle()
+
+      const deleteUser = async id => {
+         try {
+            await fetch(`${API_URL}${ADMIN_USERS_ENDPOINT}/${id}`, { method: METHOD_DELETE })
+            router.push("/administration/users")
+         } catch (error) {
+            logError(error)
+            setError(error)
+         }
+      }
+
+      deleteUser(id)
+   }
+
+   const onSubmit = values => {
+      console.log(values)
+
+      if (error) {
+         setError("Erreur dans le formulaire")
+      }
    }
 
    return (
@@ -62,13 +92,15 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
          <Container style={{ maxWidth: 720 }} className="mt-5 mb-4">
             <Title1 className="mb-5">{"Utilisateur"}</Title1>
 
-            <Form>
+            {error && <Alert color="danger">{error}</Alert>}
+
+            <Form onSubmit={onSubmit}>
                <FormGroup row>
                   <Label for="id" sm={3}>
                      Id
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="id" id="id" disabled value={user.id} />
+                     <Input type="text" name="id" id="id" disabled value={user.id} onChange={onChange} />
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -76,33 +108,36 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      Prénom
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="firstName" id="firstName" value={user.firstName} />
+                     <Input type="text" name="firstName" id="firstName" value={user.firstName} onChange={onChange} />
                      <FormFeedback>Erreur sur le prénom</FormFeedback>
                   </Col>
                </FormGroup>
                <FormGroup row>
                   <Label for="lastName" sm={3}>
-                     Nom
+                     Nom&nbsp;
+                     <MandatorySign />
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="lastName" id="lastName" value={user.lastName} />
+                     <Input type="text" name="lastName" id="lastName" value={user.lastName} onChange={onChange} />
                      <FormFeedback>Erreur sur le nom</FormFeedback>
                   </Col>
                </FormGroup>
                <FormGroup row>
                   <Label for="email" sm={3}>
-                     Courriel
+                     Courriel&nbsp;
+                     <MandatorySign />
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="email" id="email" value={user.email} />
+                     <Input type="text" name="email" id="email" value={user.email} onChange={onChange} />
                   </Col>
                </FormGroup>
                <FormGroup row>
                   <Label for="role" sm={3}>
-                     Rôle
+                     Rôle&nbsp;
+                     <MandatorySign />
                   </Label>
                   <Col sm={9}>
-                     <Input type="select" name="role" id="role" value={user.role}>
+                     <Input type="select" name="role" id="role" value={user.role} onChange={onChange}>
                         {Object.keys(ROLES).map(key => (
                            <option key={key} value={key} selected={key === user.role}>
                               {ROLES_DESCRIPTION[key]}
@@ -116,7 +151,7 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      {"Établissement d'appartenance"}
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="hospital" id="hospital" />
+                     <Input type="text" name="hospital" id="hospital" onChange={onChange} />
                      {/* <AsyncSelect
                         defaultOptions={previousValues}
                         loadOptions={fetchHospitals}
@@ -135,16 +170,16 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      Établissements accessibles
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="scope" id="scope" />
+                     <Input type="text" name="scope" id="scope" onChange={onChange} />
                   </Col>
                </FormGroup>
                <div className="justify-content-center d-flex">
                   <Button className="px-4 mt-5 mr-3" color="primary">
                      {isEmpty(initialUser) ? "Ajouter" : "Modifier"}
                   </Button>
-                  <Link href="/administration/users" className="pl-3">
+                  <Link href="/administration/users">
                      <Button className="px-4 mt-5 " outline color="primary">
-                        <a>Retour</a>
+                        Retour
                      </Button>
                   </Link>
                </div>
@@ -156,13 +191,30 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                         className="d-flex justify-content-between align-items-center"
                      >
                         Je souhaite supprimer cet utilisateur
-                        <Button className="" color="danger" outline>
+                        <Button className="" color="danger" outline onClick={toggle}>
                            Supprimer
                         </Button>
                      </div>
                   </div>
                )}
             </Form>
+            <div>
+               <Modal isOpen={modal} toggle={toggle}>
+                  <ModalHeader toggle={toggle}>Voulez-vous vraiment supprimer cet utilisateur?</ModalHeader>
+                  <ModalBody>
+                     Si vous supprimez cet utilisateur, il ne serait plus visible ni modifiable dans la liste des
+                     utilisateurs. Merci de confirmer votre choix.
+                  </ModalBody>
+                  <ModalFooter>
+                     <Button color="primary" onClick={deleteUser}>
+                        Supprimer
+                     </Button>{" "}
+                     <Button color="secondary" onClick={toggle}>
+                        Annuler
+                     </Button>
+                  </ModalFooter>
+               </Modal>
+            </div>
          </Container>
       </Layout>
    )

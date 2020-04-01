@@ -125,7 +125,7 @@ const AdminUserPage = ({ paginatedData: initialPaginatedData, currentUser }) => 
                               </td>
                               <td>
                                  <Link
-                                    href="/administration/users/resetPassword"
+                                    href="/administration/users/reset/[id]"
                                     as={`/administration/users/reset/${user.id}`}
                                  >
                                     <a>

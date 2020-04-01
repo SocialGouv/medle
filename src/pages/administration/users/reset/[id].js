@@ -3,40 +3,18 @@ import { useRouter } from "next/router"
 import Link from "next/link"
 import PropTypes from "prop-types"
 import fetch from "isomorphic-unfetch"
-import {
-   Alert,
-   Button,
-   Col,
-   Row,
-   Container,
-   Form,
-   FormFeedback,
-   FormGroup,
-   Input,
-   Label,
-   Modal,
-   ModalHeader,
-   ModalBody,
-   ModalFooter,
-} from "reactstrap"
-import EditOutlinedIcon from "@material-ui/icons/EditOutlined"
-import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined"
-import AsyncSelect from "react-select/async"
-import GroupIcon from "@material-ui/icons/Group"
-
-import { FORMAT_DATE } from "../../../../utils/date"
+import { Alert, Button, Col, Container, Form, FormFeedback, FormGroup, Input, Label } from "reactstrap"
 import { METHOD_PATCH } from "../../../../utils/http"
+import { useForm } from "react-hook-form"
 
 import { API_URL, RESET_PWD_ENDPOINT } from "../../../../config"
 import Layout from "../../../../components/LayoutAdmin"
-import ColumnAct from "../../../../components/ColumnAct"
-import { Title1, Title2 } from "../../../../components/StyledComponents"
-import { isEmpty } from "../../../../utils/misc"
+import { Title1 } from "../../../../components/StyledComponents"
 import { handleAPIResponse } from "../../../../utils/errors"
-import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../../../../utils/auth"
-import { isAllowed, ADMIN, ROLES, ROLES_DESCRIPTION } from "../../../../utils/roles"
+import { withAuthentication } from "../../../../utils/auth"
+import { ADMIN } from "../../../../utils/roles"
 import { logError } from "../../../../utils/logger"
-import { profiles } from "../../../../utils/actsConstants"
+import { isEmpty } from "../../../../utils/misc"
 
 const fetchPatch = async (id, password) => {
    try {
@@ -53,47 +31,23 @@ const fetchPatch = async (id, password) => {
 }
 
 const UserReset = ({ currentUser }) => {
-   const [passwords, setPasswords] = useState({ firstValue: "", confirmedValue: "" })
+   const { handleSubmit, register, errors: formErrors, watch } = useForm()
    const [error, setError] = useState("")
    const [success, setsuccess] = useState("")
-
    const router = useRouter()
-
    const { id } = router.query
 
-   const onChange = e => {
-      // event will not be accessible in the asynchron setState format. Needs to store the value here in synchron mode
-      const { id, value } = e.target
-
-      setPasswords(passwords => ({
-         ...passwords,
-         [id]: value,
-      }))
-   }
-
-   const onSubmit = async e => {
-      e.preventDefault()
-
+   const onSubmit = async data => {
       setError("")
 
-      console.log("passwords", passwords)
-      //const { error } = schema.validate(passwords)
-
-      if (error) {
-         setError(
-            "Le mot de passe doit avoir une taille comprise entre 8 et 30 caractères composées de lettres majuscules, minuscules et de chiffres.",
-         )
-         return
+      try {
+         if (isEmpty(formErrors)) {
+            await fetchPatch(id, data.firstValue)
+            setsuccess("Mot de passe mis à jour.")
+         }
+      } catch (error) {
+         setError("Erreur serveur")
       }
-
-      if (passwords.firstValue !== passwords.confirmedValue) {
-         setError("Les mots de passe doivent correspondrent.")
-         return
-      }
-
-      await fetchPatch(id, passwords.firstValue)
-
-      setsuccess("Mot de passe mis à jour.")
    }
 
    return (
@@ -101,26 +55,31 @@ const UserReset = ({ currentUser }) => {
          <Container style={{ maxWidth: 720 }} className="mt-5 mb-4">
             <Title1 className="mb-5">{"Utilisateur"}</Title1>
 
-            {error && (
-               <Alert color="danger" className="mb-4">
-                  {error}
-               </Alert>
-            )}
+            {error && <Alert color="danger">{error}</Alert>}
+
             {success && <Alert>{success}</Alert>}
 
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
                <FormGroup row>
                   <Label for="firstValue" sm={4}>
                      Mot de passe
                   </Label>
                   <Col sm={8}>
                      <Input
-                        type="text"
+                        type="password"
                         name="firstValue"
                         id="firstValue"
-                        value={passwords.firstValue}
-                        onChange={onChange}
+                        innerRef={register({
+                           required: true,
+                           pattern: {
+                              value: /^[a-zA-Z0-9]{8,30}$/,
+                           },
+                        })}
+                        invalid={!!formErrors.firstValue}
                      />
+                     <FormFeedback>
+                        {formErrors.firstValue && "Mot de passe invalide (8 à 30 caractères avec lettres ou chiffres)."}
+                     </FormFeedback>
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -129,21 +88,29 @@ const UserReset = ({ currentUser }) => {
                   </Label>
                   <Col sm={8}>
                      <Input
-                        type="text"
+                        type="password"
                         name="confirmedValue"
                         id="confirmedValue"
-                        value={passwords.confirmedValue}
-                        onChange={onChange}
+                        innerRef={register({
+                           required: true,
+                           validate: value => {
+                              return value === watch("firstValue")
+                           },
+                        })}
+                        invalid={!!formErrors.confirmedValue}
                      />
+                     <FormFeedback>
+                        {formErrors.confirmedValue && "Les mots de passe ne correspondent pas."}
+                     </FormFeedback>
                   </Col>
                </FormGroup>
                <div className="justify-content-center d-flex">
-                  <Button className="px-4 mt-5 mr-3" color="primary">
+                  <Button className="px-4 mt-5 mr-3" color="primary" onClick={handleSubmit(onSubmit)}>
                      Mettre à jour
                   </Button>
-                  <Link href="/administration/users" className="pl-3">
+                  <Link href="/administration/users">
                      <Button className="px-4 mt-5 " outline color="primary">
-                        <a>Retour</a>
+                        Retour
                      </Button>
                   </Link>
                </div>
