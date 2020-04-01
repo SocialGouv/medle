@@ -23,7 +23,7 @@ import EditOutlinedIcon from "@material-ui/icons/EditOutlined"
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined"
 import AsyncSelect from "react-select/async"
 
-import PeopleIcon from "../../../components/icons/people"
+import GroupIcon from "@material-ui/icons/Group"
 
 import { FORMAT_DATE } from "../../../utils/date"
 import { API_URL, ADMIN_USERS_ENDPOINT, HOSPITALS_ENDPOINT } from "../../../config"

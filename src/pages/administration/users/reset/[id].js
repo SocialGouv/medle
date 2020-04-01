@@ -22,8 +22,7 @@ import {
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined"
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined"
 import AsyncSelect from "react-select/async"
-
-import PeopleIcon from "../../../../components/icons/people"
+import GroupIcon from "@material-ui/icons/Group"
 
 import { FORMAT_DATE } from "../../../../utils/date"
 import { METHOD_PATCH } from "../../../../utils/http"
@@ -38,7 +37,6 @@ import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "..
 import { isAllowed, ADMIN, ROLES, ROLES_DESCRIPTION } from "../../../../utils/roles"
 import { logError } from "../../../../utils/logger"
 import { profiles } from "../../../../utils/actsConstants"
-import Joi from "@hapi/joi"
 
 const fetchPatch = async (id, password) => {
    try {
@@ -53,11 +51,6 @@ const fetchPatch = async (id, password) => {
       logError(error)
    }
 }
-
-const schema = Joi.object({
-   firstValue: Joi.string().pattern(/^[a-zA-Z0-9]{8,30}$/),
-   confirmedValue: Joi.ref("firstValue"),
-})
 
 const UserReset = ({ currentUser }) => {
    const [passwords, setPasswords] = useState({ firstValue: "", confirmedValue: "" })
@@ -84,7 +77,7 @@ const UserReset = ({ currentUser }) => {
       setError("")
 
       console.log("passwords", passwords)
-      const { error } = schema.validate(passwords)
+      //const { error } = schema.validate(passwords)
 
       if (error) {
          setError(
