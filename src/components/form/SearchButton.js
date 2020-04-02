@@ -10,6 +10,6 @@ export const SearchButton = ({ children, className }) => {
 }
 
 SearchButton.propTypes = {
-   children: PropTypes.array,
-   className: PropTypes.array,
+   children: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
+   className: PropTypes.string,
 }
