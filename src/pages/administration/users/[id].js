@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import PropTypes from "prop-types"
@@ -19,28 +19,40 @@ import {
    ModalFooter,
 } from "reactstrap"
 import { useForm } from "react-hook-form"
+import AsyncSelect from "react-select/async"
 
 import { API_URL, ADMIN_USERS_ENDPOINT, HOSPITALS_ENDPOINT } from "../../../config"
 import Layout from "../../../components/LayoutAdmin"
-import { Title1, Title2 } from "../../../components/StyledComponents"
+import { Title1 } from "../../../components/StyledComponents"
 import { isEmpty } from "../../../utils/misc"
 import { handleAPIResponse } from "../../../utils/errors"
 import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../../../utils/auth"
-import { METHOD_DELETE } from "../../../utils/http"
-import { ADMIN, ROLES, ROLES_DESCRIPTION } from "../../../utils/roles"
+import { METHOD_DELETE, METHOD_POST, METHOD_PUT } from "../../../utils/http"
+import { ADMIN, SUPER_ADMIN, ROLES, ROLES_DESCRIPTION } from "../../../utils/roles"
 import { logError } from "../../../utils/logger"
 
 const fetchHospitals = async value => {
    const bonus = value ? `?fuzzy=${value}` : ""
 
-   let json
    try {
       const response = await fetch(`${API_URL}${HOSPITALS_ENDPOINT}${bonus}`)
-      json = await handleAPIResponse(response)
+      const hospitals = await handleAPIResponse(response)
+      return isEmpty(hospitals) ? [] : hospitals
    } catch (error) {
       logError(error)
    }
-   return isEmpty(json) ? [] : json
+}
+const fetchUpsert = async user => {
+   try {
+      const response = await fetch(`${API_URL}${ADMIN_USERS_ENDPOINT}${user.id ? `/${user.id}` : ""}`, {
+         method: user.id ? METHOD_PUT : METHOD_POST,
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify(user),
+      })
+      return await handleAPIResponse(response)
+   } catch (error) {
+      logError(error)
+   }
 }
 
 const MandatorySign = () => <span style={{ color: "red" }}>*</span>
@@ -48,20 +60,31 @@ const MandatorySign = () => <span style={{ color: "red" }}>*</span>
 const UserDetail = ({ initialUser = {}, currentUser }) => {
    const router = useRouter()
    const { id } = router.query
-   const { handleSubmit, register, errors } = useForm()
+   const { handleSubmit, register, errors: formErrors, setValue } = useForm({
+      defaultValues: {
+         id: initialUser.id,
+         firstName: initialUser.firstName,
+         lastName: initialUser.lastName,
+         email: initialUser.email,
+         role: initialUser.role,
+         scope: initialUser.scope,
+      },
+   })
+   // Special case due to react-select design : needs to store specifically the value of the select
+   const [hospital, setHospital] = useState({
+      selectedOption:
+         initialUser.hospital && initialUser.hospital.name
+            ? { value: initialUser.hospital.id, label: initialUser.hospital.name }
+            : { value: "", label: "" },
+   })
 
-   const [user, setUser] = useState(initialUser)
    const [error, setError] = useState("")
+   const [success, setsuccess] = useState("")
    const [modal, setModal] = useState(false)
+
    const toggle = () => setModal(!modal)
 
-   const onChange = e => {
-      const { id, value } = e.target
-      setUser(user => ({
-         ...user,
-         [id]: value,
-      }))
-   }
+   const disabled = currentUser.role !== SUPER_ADMIN
 
    const deleteUser = () => {
       toggle()
@@ -79,13 +102,35 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
       deleteUser(id)
    }
 
-   const onSubmit = values => {
-      console.log(values)
+   const onSubmit = async data => {
+      setError("")
 
-      if (error) {
-         setError("Erreur dans le formulaire")
+      try {
+         if (isEmpty(formErrors)) {
+            await fetchUpsert(data)
+            setsuccess(id ? "Utilisateur modifié." : "Utilisateur créé.")
+         }
+      } catch (error) {
+         setError("Erreur serveur")
       }
    }
+
+   const onHospitalChange = selectedOption => {
+      selectedOption = selectedOption || { value: "", label: "" }
+
+      // Needs transformation between format of react-select to expected format for API call
+      setValue("hospital", {
+         id: (selectedOption && selectedOption.value) || "",
+         name: (selectedOption && selectedOption.label) || "",
+      })
+      // Needs to sync specifically the value to the react-select as wells
+      setHospital(selectedOption)
+   }
+
+   useEffect(() => {
+      // Extra field in form to store the value of the hospital select
+      register({ name: "hospital" })
+   }, [register])
 
    return (
       <Layout currentUser={currentUser}>
@@ -94,13 +139,15 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
 
             {error && <Alert color="danger">{error}</Alert>}
 
-            <Form onSubmit={onSubmit}>
+            {success && <Alert color="success">{success}</Alert>}
+
+            <Form onSubmit={handleSubmit(onSubmit)}>
                <FormGroup row>
                   <Label for="id" sm={3}>
                      Id
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="id" id="id" disabled value={user.id} onChange={onChange} />
+                     <Input type="text" name="id" id="id" disabled innerRef={register} />
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -108,8 +155,7 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      Prénom
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="firstName" id="firstName" value={user.firstName} onChange={onChange} />
-                     <FormFeedback>Erreur sur le prénom</FormFeedback>
+                     <Input type="text" name="firstName" id="firstName" innerRef={register} />
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -118,8 +164,7 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      <MandatorySign />
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="lastName" id="lastName" value={user.lastName} onChange={onChange} />
-                     <FormFeedback>Erreur sur le nom</FormFeedback>
+                     <Input type="text" name="lastName" id="lastName" innerRef={register} />
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -128,7 +173,19 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      <MandatorySign />
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="email" id="email" value={user.email} onChange={onChange} />
+                     <Input
+                        type="text"
+                        name="email"
+                        id="email"
+                        innerRef={register({
+                           required: true,
+                           pattern: {
+                              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                           },
+                        })}
+                        invalid={!!formErrors.email}
+                     />
+                     <FormFeedback>{formErrors.email && "Courriel a un format incorrect."}</FormFeedback>
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -137,9 +194,9 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      <MandatorySign />
                   </Label>
                   <Col sm={9}>
-                     <Input type="select" name="role" id="role" value={user.role} onChange={onChange}>
+                     <Input type="select" name="role" id="role" innerRef={register}>
                         {Object.keys(ROLES).map(key => (
-                           <option key={key} value={key} selected={key === user.role}>
+                           <option key={key} value={key}>
                               {ROLES_DESCRIPTION[key]}
                            </option>
                         ))}
@@ -151,18 +208,16 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      {"Établissement d'appartenance"}
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="hospital" id="hospital" onChange={onChange} />
-                     {/* <AsyncSelect
-                        defaultOptions={previousValues}
+                     <AsyncSelect
                         loadOptions={fetchHospitals}
                         isClearable={true}
                         placeholder="Tapez le nom du demandeur"
                         noOptionsMessage={() => "Aucun résultat"}
                         loadingMessage={() => "Chargement..."}
-                        onChange={onChange}
                         isDisabled={disabled}
-                        value={existingValue}
-                     /> */}
+                        value={hospital.selectedOption}
+                        onChange={onHospitalChange}
+                     />
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -170,7 +225,7 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      Établissements accessibles
                   </Label>
                   <Col sm={9}>
-                     <Input type="text" name="scope" id="scope" onChange={onChange} />
+                     <Input type="text" name="scope" id="scope" innerRef={register} />
                   </Col>
                </FormGroup>
                <div className="justify-content-center d-flex">
@@ -183,6 +238,7 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      </Button>
                   </Link>
                </div>
+
                {!isEmpty(initialUser) && (
                   <div style={{ backgroundColor: "#f7d7d4" }} className="px-4 py-3 mt-5 rounded">
                      <Title1 className="mb-4">Zone dangereuse</Title1>

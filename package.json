@@ -48,7 +48,8 @@
     "recharts": "^2.0.0-beta.1",
     "remark-emoji": "^2.1.0",
     "remark-images": "^2.0.0",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "yup": "^0.28.3"
   },
   "devDependencies": {
     "@socialgouv/eslint-config-react": "^0.17.0",

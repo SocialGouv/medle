@@ -1,21 +1,11 @@
 import Cors from "micro-cors"
 
-import {
-   STATUS_200_OK,
-   METHOD_GET,
-   METHOD_DELETE,
-   METHOD_PUT,
-   METHOD_POST,
-   METHOD_OPTIONS,
-} from "../../../../utils/http"
+import { STATUS_200_OK, METHOD_GET, METHOD_DELETE, METHOD_PUT, METHOD_OPTIONS } from "../../../../utils/http"
 import { sendAPIError, sendMethodNotAllowedError, sendNotFoundError } from "../../../../services/errorHelpers"
 import { ADMIN } from "../../../../utils/roles"
 import { checkValidUserWithPrivilege } from "../../../../utils/auth"
 
-import { find } from "../../../../services/users/find"
-import { del } from "../../../../services/users/delete"
-import { update } from "../../../../services/users/update"
-import { create } from "../../../../services/users/create"
+import { find, del, update } from "../../../../services/users"
 
 const handler = async (req, res) => {
    res.setHeader("Content-Type", "application/json")
@@ -34,18 +24,21 @@ const handler = async (req, res) => {
          case METHOD_DELETE: {
             const currentUser = checkValidUserWithPrivilege(ADMIN, req, res)
 
-            const deleted = del({ ...req.query, currentUser })
+            const deleted = await del({ ...req.query, currentUser })
 
             if (!deleted) return sendNotFoundError(res)
 
             return res.status(STATUS_200_OK).json(deleted)
          }
-         case METHOD_PUT:
-            update(req, res)
-            break
-         case METHOD_POST:
-            create(req, res)
-            break
+         case METHOD_PUT: {
+            const currentUser = checkValidUserWithPrivilege(ADMIN, req, res)
+
+            const modified = await update(req.query, req.body, currentUser)
+
+            if (!modified) return sendNotFoundError(res)
+
+            return res.status(STATUS_200_OK).json(modified)
+         }
          default:
             return sendMethodNotAllowedError(res)
       }
@@ -55,7 +48,7 @@ const handler = async (req, res) => {
 }
 
 const cors = Cors({
-   allowMethods: [METHOD_DELETE, METHOD_GET, METHOD_OPTIONS],
+   allowMethods: [METHOD_DELETE, METHOD_GET, METHOD_OPTIONS, METHOD_PUT],
 })
 
 export default cors(handler)

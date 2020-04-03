@@ -2,13 +2,12 @@ import React, { useState } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import PropTypes from "prop-types"
-import moment from "moment"
 import fetch from "isomorphic-unfetch"
 import { Button, Col, Row, Alert, Container, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap"
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined"
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined"
 
-import { FORMAT_DATE } from "../../utils/date"
+import { isoToFr } from "../../utils/date"
 import { API_URL, ACTS_ENDPOINT } from "../../config"
 import Layout from "../../components/Layout"
 import ColumnAct from "../../components/ColumnAct"
@@ -78,7 +77,7 @@ const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
                         <Col className="mr-3">
                            <ColumnAct
                               header={"Date"}
-                              content={act && act.examinationDate && moment(act.examinationDate).format(FORMAT_DATE)}
+                              content={act && act.examinationDate && isoToFr(act.examinationDate)}
                            />
                         </Col>
                         <Col className="mr-3">

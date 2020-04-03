@@ -1,4 +1,5 @@
 import knex from "../../knex/knex"
+import { transformAll } from "../../models/acts"
 
 const LIMIT = 100
 
@@ -58,5 +59,5 @@ export const search = async ({ fuzzy, internalNumber, pvNumber, requestedPage },
       .offset(offset)
       .select("*")
 
-   return { totalCount, currentPage: requestedPage, maxPage, byPage: LIMIT, elements: acts }
+   return { totalCount, currentPage: requestedPage, maxPage, byPage: LIMIT, elements: transformAll(acts) }
 }

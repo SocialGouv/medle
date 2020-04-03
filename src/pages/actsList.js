@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import Link from "next/link"
 import PropTypes from "prop-types"
 import fetch from "isomorphic-unfetch"
-import moment from "moment"
 import { Alert, Button, Col, Container, Form, FormGroup, Input, Spinner, Table } from "reactstrap"
 
 import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../utils/auth"
@@ -11,7 +10,7 @@ import { Title1 } from "../components/StyledComponents"
 import Pagination from "../components/Pagination"
 import Layout from "../components/Layout"
 import { VerticalList } from "../components/VerticalList"
-import { FORMAT_DATE } from "../utils/date"
+import { isoToFr } from "../utils/date"
 import { ACT_CONSULTATION } from "../utils/roles"
 import { handleAPIResponse } from "../utils/errors"
 import { logError } from "../utils/logger"
@@ -49,7 +48,7 @@ const ActsListPage = ({ paginatedData: initialPaginatedData, currentUser }) => {
          <Title1 className="mt-5 mb-4">{"L'activité de votre UMJ/IML"}</Title1>
          <Container style={{ maxWidth: 980 }}>
             <Form onSubmit={onSubmit}>
-               <FormGroup row inline className="justify-content-center mb-4">
+               <FormGroup row inline className="mb-4 justify-content-center">
                   <Col className="ml-auto" sm="9">
                      <Input
                         type="text"
@@ -61,7 +60,7 @@ const ActsListPage = ({ paginatedData: initialPaginatedData, currentUser }) => {
                         autoComplete="off"
                      />
                   </Col>
-                  <Col sm="3" className="text-center mt-4 mt-sm-0">
+                  <Col sm="3" className="mt-4 text-center mt-sm-0">
                      <Button className="w-lg-75" disabled={loading}>
                         {loading ? <Spinner size="sm" color="light" data-testid="loading" /> : "Chercher"}
                      </Button>
@@ -93,12 +92,12 @@ const ActsListPage = ({ paginatedData: initialPaginatedData, currentUser }) => {
                         {paginatedData.elements.map(act => (
                            <tr key={act.id}>
                               <td>
-                                 <b>{act.internal_number}</b>
+                                 <b>{act.internalNumber}</b>
                               </td>
-                              <td>{act.pv_number}</td>
-                              <td>{act.examination_date && moment(act.examination_date).format(FORMAT_DATE)}</td>
+                              <td>{act.pvNumber}</td>
+                              <td>{act.examinationDate && isoToFr(act.examinationDate)}</td>
                               <td>{act.profile}</td>
-                              <td>{act.extra_data && <VerticalList content={act.extra_data.examinationTypes} />}</td>
+                              <td>{act.examinationTypes && <VerticalList content={act.examinationTypes} />}</td>
                               <td>
                                  <Link href="/actDetail/[id]" as={`/actDetail/${act.id}`}>
                                     <a>Voir&nbsp;&gt;</a>

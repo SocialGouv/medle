@@ -14,7 +14,7 @@ import ActBlock from "../components/ActBlock"
 import { Title1, Title2, Label, ValidationButton } from "../components/StyledComponents"
 import { ACT_MANAGEMENT } from "../utils/roles"
 import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../utils/auth"
-import { now, ISO_DATE } from "../utils/date"
+import { now, ISO_DATE, isoToFr } from "../utils/date"
 import { profiles, orderedProfileValues } from "../utils/actsConstants"
 import { logError, logDebug } from "../utils/logger"
 
@@ -328,7 +328,7 @@ const ActDeclaration = ({ act, currentUser }) => {
                   />
                   <FormFeedback>{errors && errors.examinationDate}</FormFeedback>
                </Col>
-               <Col className="text-center mt-4 mt-md-0" sm="12" md="4">
+               <Col className="mt-4 text-center mt-md-0" sm="12" md="4">
                   <Label htmlFor="proofWithoutComplaint">Recueil de preuve sans plainte</Label>
                   <br />
                   <Input
@@ -369,7 +369,7 @@ const ActDeclaration = ({ act, currentUser }) => {
                </Col>
             </Row>
 
-            <Title2 className="mb-4 mt-5" ref={refPersonType}>
+            <Title2 className="mt-5 mb-4" ref={refPersonType}>
                Qui a été examiné?
             </Title2>
 
@@ -409,7 +409,7 @@ const ActDeclaration = ({ act, currentUser }) => {
                </Alert>
             )}
 
-            <div className="text-center mt-5">
+            <div className="mt-5 text-center">
                <ValidationButton color="primary" size="lg" className="center" onClick={validAndSubmitAct}>
                   {state.id ? "Modifier" : "Valider"}
                </ValidationButton>
