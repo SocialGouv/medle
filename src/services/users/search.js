@@ -31,7 +31,7 @@ export const search = async ({ fuzzy, requestedPage, currentUser }) => {
    const users = await knex("users")
       .leftJoin("hospitals", "users.hospital_id", "hospitals.id")
       .where(makeWhereClause({ scope, fuzzy }))
-      .orderBy("hospital_id", "last_name", "first_name")
+      .orderBy("users.created_at", "desc")
       .limit(LIMIT)
       .offset(offset)
       .select(
