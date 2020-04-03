@@ -20,22 +20,28 @@ export const transform = dbData => ({
 export const transformAll = list => list.map(memData => transform(memData))
 
 // from JS entity to DB entity
-export const untransform = memData => ({
-   id: memData.id,
-   first_name: memData.firstName,
-   last_name: memData.lastName,
-   password: memData.password,
-   email: memData.email,
-   role: memData.role,
-   scope: JSON.stringify(memData.scope), // Array needs to be explicitly stringified in PG
-   hospital_id: (memData.hospital && memData.hospital.id) || null,
-})
+export const untransform = memData => {
+   const res = {
+      first_name: memData.firstName,
+      last_name: memData.lastName,
+      password: memData.password || "defaultpassword",
+      email: memData.email,
+      role: memData.role,
+      scope: JSON.stringify(memData.scope), // Array needs to be explicitly stringified in PG
+      hospital_id: (memData.hospital && memData.hospital.id) || null,
+   }
+
+   // Pas d'id pour une création de user
+   if (memData.id) res.id = memData.id
+   return res
+}
 
 const schema = yup.object().shape({
    id: yup
       .number()
       .positive()
-      .integer(),
+      .integer()
+      .nullable(),
    firstName: yup.string(),
    lastName: yup.string(),
    email: yup.string().required(),

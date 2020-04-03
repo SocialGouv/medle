@@ -20,6 +20,7 @@ import {
 } from "reactstrap"
 import { useForm } from "react-hook-form"
 import AsyncSelect from "react-select/async"
+import Select from "react-select"
 
 import { API_URL, ADMIN_USERS_ENDPOINT, HOSPITALS_ENDPOINT } from "../../../config"
 import Layout from "../../../components/LayoutAdmin"
@@ -42,9 +43,22 @@ const fetchHospitals = async value => {
       logError(error)
    }
 }
-const fetchUpsert = async user => {
+const fetchUpdate = async user => {
    try {
-      const response = await fetch(`${API_URL}${ADMIN_USERS_ENDPOINT}${user.id ? `/${user.id}` : ""}`, {
+      const response = await fetch(`${API_URL}${ADMIN_USERS_ENDPOINT}/${user.id}`, {
+         method: METHOD_PUT,
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify(user),
+      })
+      return await handleAPIResponse(response)
+   } catch (error) {
+      logError(error)
+   }
+}
+// eslint-disable-next-line no-unused-vars
+const fetchCreate = async ({ id, ...user }) => {
+   try {
+      const response = await fetch(`${API_URL}${ADMIN_USERS_ENDPOINT}`, {
          method: user.id ? METHOD_PUT : METHOD_POST,
          headers: { "Content-Type": "application/json" },
          body: JSON.stringify(user),
@@ -77,6 +91,11 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
             ? { value: initialUser.hospital.id, label: initialUser.hospital.name }
             : { value: "", label: "" },
    })
+   const [role, setRole] = useState({
+      selectedOption: initialUser.role
+         ? { value: initialUser.role, label: ROLES_DESCRIPTION[initialUser.role] }
+         : { value: "", label: "" },
+   })
 
    const [error, setError] = useState("")
    const [success, setsuccess] = useState("")
@@ -103,16 +122,33 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
    }
 
    const onSubmit = async data => {
+      console.log("data", data)
       setError("")
 
       try {
          if (isEmpty(formErrors)) {
-            await fetchUpsert(data)
-            setsuccess(id ? "Utilisateur modifié." : "Utilisateur créé.")
+            if (data.id) {
+               await fetchUpdate(data)
+               setsuccess("Utilisateur modifié.")
+            } else {
+               const res = await fetchCreate(data)
+               setValue("id", (res && res.id) || "")
+               setsuccess("Utilisateur créé.")
+            }
          }
       } catch (error) {
          setError("Erreur serveur")
       }
+   }
+
+   const onRoleChange = selectedOption => {
+      selectedOption = selectedOption || { value: "", label: "" }
+
+      // Needs transformation between format of react-select to expected format for API call
+      setValue("role", selectedOption.value)
+
+      // Needs to sync specifically the value to the react-select as well
+      setRole(selectedOption)
    }
 
    const onHospitalChange = selectedOption => {
@@ -123,12 +159,13 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
          id: (selectedOption && selectedOption.value) || "",
          name: (selectedOption && selectedOption.label) || "",
       })
-      // Needs to sync specifically the value to the react-select as wells
+      // Needs to sync specifically the value to the react-select as well
       setHospital(selectedOption)
    }
 
    useEffect(() => {
-      // Extra field in form to store the value of the hospital select
+      // Extra field in form to store the value of the selects
+      register({ name: "role" })
       register({ name: "hospital" })
    }, [register])
 
@@ -194,13 +231,15 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                      <MandatorySign />
                   </Label>
                   <Col sm={9}>
-                     <Input type="select" name="role" id="role" innerRef={register}>
-                        {Object.keys(ROLES).map(key => (
-                           <option key={key} value={key}>
-                              {ROLES_DESCRIPTION[key]}
-                           </option>
-                        ))}
-                     </Input>
+                     <Select
+                        options={Object.keys(ROLES).map(role => ({ value: role, label: ROLES_DESCRIPTION[role] }))}
+                        value={role.selectedOption}
+                        onChange={onRoleChange}
+                        noOptionsMessage={() => "Aucun résultat"}
+                        placeholder="Choisissez un rôle"
+                        isClearable={true}
+                        isSearchable={true}
+                     />
                   </Col>
                </FormGroup>
                <FormGroup row>
@@ -210,13 +249,13 @@ const UserDetail = ({ initialUser = {}, currentUser }) => {
                   <Col sm={9}>
                      <AsyncSelect
                         loadOptions={fetchHospitals}
-                        isClearable={true}
-                        placeholder="Tapez le nom du demandeur"
-                        noOptionsMessage={() => "Aucun résultat"}
-                        loadingMessage={() => "Chargement..."}
-                        isDisabled={disabled}
                         value={hospital.selectedOption}
                         onChange={onHospitalChange}
+                        noOptionsMessage={() => "Aucun résultat"}
+                        loadingMessage={() => "Chargement..."}
+                        placeholder="Choisissez un établissement"
+                        isClearable={true}
+                        isDisabled={disabled}
                      />
                   </Col>
                </FormGroup>

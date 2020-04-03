@@ -4,17 +4,17 @@ import { SUPER_ADMIN } from "../../utils/roles"
 import { APIError } from "../../utils/errors"
 import { untransform, validate } from "../../models/users"
 
-export const create = async (data, currentUser) => {
-   await validate(data)
+export const create = async (user, currentUser) => {
+   await validate(user)
 
    if (currentUser.role !== SUPER_ADMIN) {
-      if (!data.hospital || !data.hospital.id || !currentUser.hospital || !currentUser.hospital.id)
+      if (!user.hospital || !user.hospital.id || !currentUser.hospital || !currentUser.hospital.id)
          throw new APIError({
             status: STATUS_401_UNAUTHORIZED,
             message: "Not authorized",
          })
 
-      if (data.hospital.id !== currentUser.hospital.id) {
+      if (user.hospital.id !== currentUser.hospital.id) {
          throw new APIError({
             status: STATUS_401_UNAUTHORIZED,
             message: "Not authorized",
@@ -22,7 +22,7 @@ export const create = async (data, currentUser) => {
       }
    }
 
-   const [id] = await knex("users").insert(untransform(data), "id")
+   const [newId] = await knex("users").insert(untransform(user), "id")
 
-   return id
+   return newId
 }
