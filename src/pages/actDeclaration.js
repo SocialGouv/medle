@@ -444,7 +444,7 @@ ActDeclaration.getInitialProps = async ctx => {
    const { query } = ctx
 
    try {
-      if (!query || !query.id) throw new Error("Pas d'identifiant fourni")
+      if (!query || !query.id) return { act: {} }
 
       const response = await fetch(API_URL + ACTS_ENDPOINT + "/" + query.id, { headers: authHeaders })
       const act = await handleAPIResponse(response)

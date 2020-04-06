@@ -11,6 +11,11 @@ export const timeout = {
 
 export const API_URL = publicRuntimeConfig ? publicRuntimeConfig.API_URL : "http://localhost:3000"
 
+export const isOpenFeature = feature => {
+   const flags = publicRuntimeConfig.FEATURE_FLAGS || {}
+   return !!flags[feature]
+}
+
 export const LOGIN_ENDPOINT = "/login"
 export const LOGOUT_ENDPOINT = "/logout"
 export const RESET_PWD_ENDPOINT = "/reset"
