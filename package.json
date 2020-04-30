@@ -39,7 +39,7 @@
     "moize": "^5.4.5",
     "moment": "^2.24.0",
     "next": "^9.3.2",
-    "next-connect": "^0.6.0",
+    "next-connect": "^0.6.5",
     "next-cookies": "^2.0.3",
     "pg": "^8.0.3",
     "react": "^16.13.0",
