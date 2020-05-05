@@ -8,6 +8,7 @@ COPY yarn.lock .
 RUN yarn install --frozen-lockfile
 
 COPY . .
+COPY .prettierrc.json ./
 
 # Build-time variables for the frontend
 ARG SENTRY_DSN
@@ -21,9 +22,6 @@ ENV MATOMO_URL=$MATOMO_URL
 
 ARG MATOMO_SITE_ID
 ENV MATOMO_SITE_ID=$MATOMO_SITE_ID
-
-ARG POSTGRES_HOST
-ENV POSTGRES_HOST=$POSTGRES_HOST
 
 ARG JWT_SECRET
 ENV JWT_SECRET=$JWT_SECRET
