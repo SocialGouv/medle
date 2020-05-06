@@ -26,11 +26,11 @@ Build:
   extends: .autodevops_build
   variables:
     # these variables are needed at build time because embedded in the front
+    API_URL: "/api"
     SENTRY_DSN: https://yyy@sentry.fabrique.social.gouv.fr/yyy
     SENTRY_TOKEN: token
     MATOMO_URL: https://matomo.io
     MATOMO_SITE_ID: 4242
-    API_URL: "/api"
 
 # e2e tests need a running API so we use the built image as a gitlab service
 Tests e2e:

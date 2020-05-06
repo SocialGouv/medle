@@ -9,6 +9,7 @@ RUN yarn --frozen-lockfile
 
 COPY .next/ /app/.next/
 COPY public/ /app/public/
+COPY next.config.js /app/
 
 USER node
 
