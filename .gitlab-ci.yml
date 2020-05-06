@@ -26,7 +26,7 @@ Build:
   extends: .autodevops_build
   variables:
     # these variables are needed at build time because embedded in the front
-    SENTRY_DSN: https://xxx@sentry.fabrique.social.gouv.fr/xxx
+    SENTRY_DSN: https://yyy@sentry.fabrique.social.gouv.fr/yyy
     SENTRY_TOKEN: token
     MATOMO_URL: https://matomo.io
     MATOMO_SITE_ID: 4242
