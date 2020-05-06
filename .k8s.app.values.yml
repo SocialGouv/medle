@@ -21,6 +21,8 @@ deployment:
       value: "/api"
     - name: POSTGRES_SSL
       value: "true"
+    - name: JWT_SECRET
+      value: "helloworld"
 
 ingress:
   enabled: true
