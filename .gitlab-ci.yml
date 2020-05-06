@@ -30,7 +30,7 @@ Build:
     SENTRY_TOKEN: token
     MATOMO_URL: https://matomo.io
     MATOMO_SITE_ID: 4242
-    API_URL: /api
+    API_URL: "/api"
 
 # e2e tests need a running API so we use the built image as a gitlab service
 Tests e2e:
