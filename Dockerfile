@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY package.json .
 COPY yarn.lock .
-COPY .prettierrc.json ./
 
 RUN yarn --frozen-lockfile
 
