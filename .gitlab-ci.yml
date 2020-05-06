@@ -22,17 +22,15 @@ stages:
   - Notify Finished Deployment
   - Clean Up
 
-# when registering the docker image, we add build-args
-Register image:
-  extends: .autodevops_register_image
+Build:
+  extends: .autodevops_build
   variables:
-    DOCKER_BUILD_ARGS: >-
-      --build-arg SENTRY_DSN=https://xxx@sentry.fabrique.social.gouv.fr/xxx
-      --build-arg SENTRY_TOKEN=token
-      --build-arg JWT_SECRET=helloworld
-      --build-arg MATOMO_URL=https://matomo.io
-      --build-arg MATOMO_SITE_ID=4242
-      --build-arg POSTGRES_SSL=true
+    SENTRY_DSN: https://xxx@sentry.fabrique.social.gouv.fr/xxx
+    SENTRY_TOKEN: token
+    JWT_SECRET: helloworld
+    MATOMO_URL: https://matomo.io
+    MATOMO_SITE_ID: 4242
+    POSTGRES_SSL: "true"
 
 # e2e tests need a running API so we use the built image as a gitlab service
 Tests e2e:
