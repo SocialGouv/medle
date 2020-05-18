@@ -55,8 +55,8 @@
     "yup": "^0.28.5"
   },
   "devDependencies": {
-    "@socialgouv/eslint-config-react": "^0.20.0",
-    "@socialgouv/eslint-config-recommended": "^0.20.0",
+    "@socialgouv/eslint-config-react": "^0.22.1",
+    "@socialgouv/eslint-config-recommended": "^0.22.1",
     "@testing-library/react": "^10.0.3",
     "babel-jest": "^25.5.1",
     "dotenv": "^8.2.0",
