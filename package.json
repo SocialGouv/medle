@@ -37,7 +37,7 @@
     "knex-upsert": "^0.0.4",
     "micro-cors": "^0.1.1",
     "moize": "^5.4.5",
-    "moment": "^2.24.0",
+    "moment": "^2.26.0",
     "next": "^9.3.6",
     "next-connect": "^0.6.5",
     "next-cookies": "^2.0.3",
