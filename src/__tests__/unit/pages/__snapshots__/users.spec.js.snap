@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders UserDetail unchanged 1`] = `
+exports[`should renders UserDetail unchanged 1`] = `
 <div
   className="jsx-1821637326 d-flex flex-column justifiy-content-between min-vh-100"
 >
