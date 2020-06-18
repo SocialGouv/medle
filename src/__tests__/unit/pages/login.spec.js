@@ -10,7 +10,7 @@ test("it should display alerts", async () => {
   expect(screen.getAllByRole("alert")).toMatchInlineSnapshot(`
     Array [
       <div
-        class="alert alert-success alert-dismissible w-100 mx-5 mt-3 mb-0 mb-md-5 py-3 overflow-auto false"
+        class="alert alert-warning alert-dismissible w-100 mx-5 mt-3 mb-0 mb-md-5 py-3 overflow-auto false"
         role="alert"
         style="max-height: 200px;"
       >

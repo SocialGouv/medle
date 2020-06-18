@@ -60,7 +60,7 @@ const LoginPage = ({ message, welcomeMessage }) => {
       >
         {welcomeMessage && (
           <div
-            className={`alert alert-success alert-dismissible w-100 mx-5 mt-3 mb-0 mb-md-5 py-3 overflow-auto ${
+            className={`alert alert-warning alert-dismissible w-100 mx-5 mt-3 mb-0 mb-md-5 py-3 overflow-auto ${
               dismiss && "d-none"
             }`}
             style={{ maxHeight: 200 }}
