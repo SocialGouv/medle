@@ -5,7 +5,7 @@ exports.seed = function (knex) {
         {
           start_date: "2020-06-16",
           content:
-            "(Environnement de recette) La saisie des ETP pour les IML est maintenant rétablie. Nous vous rappelons que la saisie des ETP (UMJ, IML) sur cet observatoire reste obligatoire du 1er janvier 2020 et jusqu'à la totale bascule de toutes les structures sur la plateforme MEDLE actuellement en déploiement.",
+            "(Environnement de développement) La saisie des ETP pour les IML est maintenant rétablie. Nous vous rappelons que la saisie des ETP (UMJ, IML) sur cet observatoire reste obligatoire du 1er janvier 2020 et jusqu'à la totale bascule de toutes les structures sur la plateforme MEDLE actuellement en déploiement.",
         },
       ])
     })
