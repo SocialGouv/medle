@@ -109,23 +109,24 @@ const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
                         Merci de confirmer votre choix.
                       </ModalBody>
                       <ModalFooter>
-                        <Button color="primary" onClick={toggle}>
+                        <Button color="primary" outline onClick={toggle}>
                           Annuler
                         </Button>
-                        <Button color="danger" outline onClick={onDeleteAct}>
+                        <Button color="danger" onClick={onDeleteAct}>
                           Supprimer
-                        </Button>{" "}
+                        </Button>
                       </ModalFooter>
                     </Modal>
                   </div>
                 </Col>
 
-                {currentUser.role !== SUPER_ADMIN && ( <Col>
-                  <Button block outline color="info" onClick={() => editAct(id)}>
-                    <EditOutlinedIcon width={24} />
-                    {" Modifier l'acte"}
-                  </Button>
-                </Col>
+                {currentUser.role !== SUPER_ADMIN && (
+                  <Col>
+                    <Button block outline color="info" onClick={() => editAct(id)}>
+                      <EditOutlinedIcon width={24} />
+                      {" Modifier l'acte"}
+                    </Button>
+                  </Col>
                 )}
               </Row>
             )}

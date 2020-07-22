@@ -4,6 +4,8 @@ import UserDetail from "../../../pages/administration/users/[id]"
 import { SUPER_ADMIN } from "../../../utils/roles"
 import * as nextRouter from "next/router"
 
+// API dependency for pages's getInitialProps
+
 it("should renders UserDetail unchanged", () => {
   nextRouter.useRouter = jest.fn()
   nextRouter.useRouter.mockImplementation(() => ({ query: { id: "3" } }))

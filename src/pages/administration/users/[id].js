@@ -448,11 +448,11 @@ const UserDetail = ({ initialUser = {}, currentUser, error: initialError }) => {
               Merci de confirmer votre choix.
             </ModalBody>
             <ModalFooter>
-              <Button color="primary" onClick={onDeleteUser}>
-                Supprimer
-              </Button>{" "}
-              <Button color="secondary" onClick={toggle}>
+              <Button color="primary" outline onClick={toggle}>
                 Annuler
+              </Button>
+              <Button color="danger" onClick={onDeleteUser}>
+                Supprimer
               </Button>
             </ModalFooter>
           </Modal>
