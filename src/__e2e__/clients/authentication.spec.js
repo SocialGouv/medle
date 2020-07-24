@@ -1,4 +1,4 @@
-import { authenticate } from "../../../clients/authentication"
+import { authenticate } from "../../clients/authentication"
 
 describe("", () => {
   it("should accept a good authentication", async () => {

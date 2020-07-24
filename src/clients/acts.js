@@ -14,7 +14,8 @@ export const searchActsByKey = async ({ key, value, headers }) => {
   const response = await fetch(`${API_URL}${ACTS_ENDPOINT}?${key}=${value}`, {
     headers: { ...headers, "Content-Type": "application/json" },
   })
-  const { elements } = await handleAPIResponse(response)
+
+  const { elements, toto } = await handleAPIResponse(response)
   return elements
 }
 
