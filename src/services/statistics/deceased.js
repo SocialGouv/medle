@@ -6,6 +6,18 @@ import { normalizeInputs, intervalDays } from "./common"
 import { buildScope } from "../scope"
 import { findList as findListHospitals } from "../hospitals"
 
+const makeWhereClause = ({ startDate, endDate, scopeFilter = [] }) => (builder) => {
+  builder
+    .whereNull("deleted_at")
+    .whereRaw(`examination_date >= TO_DATE(?, '${ISO_DATE}')`, startDate.format(ISO_DATE))
+    .whereRaw(`examination_date <= TO_DATE(?, '${ISO_DATE}')`, endDate.format(ISO_DATE))
+    .where("profile", "Personne décédée")
+
+  if (scopeFilter.length) {
+    builder.whereIn("hospital_id", scopeFilter)
+  }
+}
+
 /**
  * Request and format the deceased statistics.
  *
@@ -21,19 +33,62 @@ export const buildDeceasedStatistics = async (filters, currentUser) => {
 
   const fetchCountHospitals = knex("hospitals").whereNull("deleted_at").count()
 
-  const fetchGlobalCount = knex("acts")
-    .whereNull("deleted_at")
-    .where((builder) => {
-      if (scopeFilter.length) {
-        builder.whereIn("hospital_id", scopeFilter)
-      }
-    })
-    .whereRaw(`examination_date >= TO_DATE(?, '${ISO_DATE}')`, startDate.format(ISO_DATE))
-    .whereRaw(`examination_date <= TO_DATE(?, '${ISO_DATE}')`, endDate.format(ISO_DATE))
-    .where("profile", "Personne décédée")
-    .count()
+  const fetchGlobalCount = knex("acts").count().where(makeWhereClause({ startDate, endDate, scopeFilter }))
 
-  return await Promise.all([fetchCountHospitals, fetchGlobalCount]).then(([[countHospitals], [globalCount]]) => {
+  const fetchActsWithPv = knex("acts")
+    .select(
+      knex.raw(
+        `count(1) filter (where pv_number is not null and pv_number <> '')::integer as "Avec réquisition",` +
+          `count(1) filter (where asker_id is null)::integer as "Recueil de preuve sans plainte",` +
+          `count(1) filter (where pv_number is null or pv_number = '' )::integer as "Sans réquisition"`
+      )
+    )
+    .where(makeWhereClause({ startDate, endDate, scopeFilter }))
+
+  const fetchActTypes = knex("acts")
+    .select(
+      knex.raw(
+        `count(1) filter (where extra_data->'examinationTypes' @> '["Examen externe"]')::integer as "Examen externe",` +
+          `count(1) filter (where extra_data->'examinationTypes' @> '["Levée de corps"]')::integer as "Levée de corps",` +
+          `count(1) filter (where extra_data->'examinationTypes' @> '["Autopsie"]')::integer as "Autopsie",` +
+          `count(1) filter (where extra_data->'examinationTypes' @> '["Anthropologie"]')::integer as "Anthropologie",` +
+          `count(1) filter (where extra_data->'examinationTypes' @> '["Odontologie"]')::integer as "Odontologie"`
+      )
+    )
+    .where(makeWhereClause({ startDate, endDate, scopeFilter }))
+
+  const fetchExaminations = knex("acts")
+    .select(
+      knex.raw(
+        `count(1) filter (where extra_data->'examinations' @> '["Biologie"]')::integer as "Biologie",` +
+          `count(1) filter (where extra_data->'examinations' @> '["Imagerie"]')::integer as "Imagerie",` +
+          `count(1) filter (where extra_data->'examinations' @> '["Toxicologie"]')::integer as "Toxicologie",` +
+          `count(1) filter (where extra_data->'examinations' @> '["Anapath"]')::integer as "Anapath",` +
+          `count(1) filter (where extra_data->'examinations' @> '["Génétique"]')::integer as "Génétique",` +
+          `count(1) filter (where extra_data->'examinations' @> '["Autres"]')::integer as "Autres"`
+      )
+    )
+    .where(makeWhereClause({ startDate, endDate, scopeFilter }))
+
+  const fetchHours = knex("acts")
+    .whereNull("deleted_at")
+    .select(
+      knex.raw(
+        `count(1) filter (where extra_data->'periodOfDay' <@ '["Matin", "Après-midi", "Journée"]')::integer as "Journée",` +
+          `count(1) filter (where extra_data->>'periodOfDay' = 'Soirée')::integer as "Soirée",` +
+          `count(1) filter (where extra_data->>'periodOfDay' = 'Nuit profonde')::integer as "Nuit profonde"`
+      )
+    )
+    .where(makeWhereClause({ startDate, endDate, scopeFilter }))
+
+  return await Promise.all([
+    fetchCountHospitals,
+    fetchGlobalCount,
+    fetchActsWithPv,
+    fetchActTypes,
+    fetchHours,
+    fetchExaminations,
+  ]).then(([[countHospitals], [globalCount], [actsWithPv], [actTypes], [hours], [examinations]]) => {
     countHospitals = parseInt(countHospitals?.count, 10) || 0
     globalCount = parseInt(globalCount?.count, 10) || 0
 
@@ -49,6 +104,10 @@ export const buildDeceasedStatistics = async (filters, currentUser) => {
       globalCount,
       averageCount:
         periodInDays === 0 || scopeFilterLength === 0 ? 0 : (globalCount / periodInDays / scopeFilterLength).toFixed(2),
+      actsWithPv,
+      actTypes,
+      hours,
+      examinations,
     }
   })
 }

@@ -68,7 +68,7 @@ StatBlockNumbers.propTypes = {
   title: PropTypes.string,
   firstNumber: PropTypes.number,
   firstLabel: PropTypes.string,
-  secondNumber: PropTypes.string,
+  secondNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   secondLabel: PropTypes.string,
 }
 export const StatBlockPieChart = ({ data, hoverTitle, title }) => {
