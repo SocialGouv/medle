@@ -15,7 +15,7 @@ export const searchActsByKey = async ({ key, value, headers }) => {
     headers: { ...headers, "Content-Type": "application/json" },
   })
 
-  const { elements, toto } = await handleAPIResponse(response)
+  const { elements } = await handleAPIResponse(response)
   return elements
 }
 

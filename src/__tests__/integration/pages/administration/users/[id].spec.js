@@ -1,7 +1,7 @@
 import React from "react"
 import { rest } from "msw"
 import { setupServer } from "msw/node"
-import { act, render, screen, waitFor } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as nextRouter from "next/router"
 import faker from "faker"

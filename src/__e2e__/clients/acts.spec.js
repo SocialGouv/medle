@@ -1,5 +1,4 @@
 import { authenticate } from "../../clients/authentication"
-import { makeWhereClause } from "../../services/acts/search"
 import { searchActs } from "../../clients/acts"
 
 // const knexConfig = require("../knexfile")
