@@ -47,7 +47,7 @@ const UserDetail = ({ initialUser = {}, currentUser, error: initialError }) => {
       email: initialUser.email,
       role: initialUser.role,
       scope: initialUser.scope,
-      hospital: initialUser.hospital || currentUser.hospital, // use ADMIN_HOSPITAL's hospital for creation
+      hospital: initialUser.hospital || currentUser?.hospital, // use ADMIN_HOSPITAL's hospital for creation
     },
   })
 
@@ -67,7 +67,7 @@ const UserDetail = ({ initialUser = {}, currentUser, error: initialError }) => {
   )
 
   const currentUserHospitalSelect = mapForSelect(
-    currentUser.hospital,
+    currentUser?.hospital,
     (elt) => elt.id,
     (elt) => elt.name
   )
@@ -101,7 +101,7 @@ const UserDetail = ({ initialUser = {}, currentUser, error: initialError }) => {
   }))
 
   const customRulesAdminHospital =
-    currentUser.role === ADMIN_HOSPITAL
+    currentUser?.role === ADMIN_HOSPITAL
       ? {
           hospitalDisabled: true,
           hospitalValue: mapForSelect(
@@ -114,7 +114,7 @@ const UserDetail = ({ initialUser = {}, currentUser, error: initialError }) => {
         }
       : {}
 
-  const customRuleOwnRecord = currentUser.id === initialUser.id ? { roleDisabled: true } : {}
+  const customRuleOwnRecord = currentUser?.id === initialUser.id ? { roleDisabled: true } : {}
 
   const rules = { ...rulesOfRoles(role?.value), ...customRulesAdminHospital, ...customRuleOwnRecord }
 

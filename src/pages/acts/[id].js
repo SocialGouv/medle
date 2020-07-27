@@ -94,7 +94,7 @@ const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
             </div>
             <br />
 
-            {isAllowed(currentUser.role, ACT_MANAGEMENT) && (
+            {isAllowed(currentUser?.role, ACT_MANAGEMENT) && (
               <Row>
                 <Col>
                   <Button block outline color="danger" onClick={toggle}>
@@ -120,7 +120,7 @@ const ActDetail = ({ initialAct: act, id, error, currentUser }) => {
                   </div>
                 </Col>
 
-                {currentUser.role !== SUPER_ADMIN && (
+                {currentUser?.role !== SUPER_ADMIN && (
                   <Col>
                     <Button block outline color="info" onClick={() => editAct(id)}>
                       <EditOutlinedIcon width={24} />

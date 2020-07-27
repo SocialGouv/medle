@@ -4,6 +4,13 @@ import { APIError } from "../../utils/errors"
 import { ADMIN_HOSPITAL } from "../../utils/roles"
 
 const makeWhereClause = (currentUser) => (builder) => {
+  if (!currentUser) {
+    throw new APIError({
+      status: STATUS_401_UNAUTHORIZED,
+      message: "Not authorized",
+    })
+  }
+
   // ADMIN_HOSPITAL can only delete user of his own hospital
   if (currentUser.role === ADMIN_HOSPITAL) {
     builder.where("hospital_id", currentUser.hospitalId)

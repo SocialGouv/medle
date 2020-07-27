@@ -7,11 +7,11 @@ import * as nextRouter from "next/router"
 import faker from "faker"
 
 import UserDetail from "../../../../../pages/administration/users/[id]"
-import { API_URL, ADMIN_USERS_ENDPOINT } from "../../../../../config"
+import { API_URL, USERS_ENDPOINT } from "../../../../../config"
 
 describe("tests administration user", () => {
   const server = setupServer(
-    rest.get(`${API_URL}${ADMIN_USERS_ENDPOINT}/42}`, (req, res, ctx) => {
+    rest.get(`${API_URL}${USERS_ENDPOINT}/42}`, (req, res, ctx) => {
       const { userId } = req.params
       console.log("azeaze")
       return res(ctx.json({ data: "toto", userId }))

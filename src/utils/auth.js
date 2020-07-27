@@ -4,7 +4,7 @@ import * as jwt from "jsonwebtoken"
 import moment from "moment"
 
 import { API_URL, LOGOUT_ENDPOINT, timeout } from "../config"
-import { isAllowed, startPageForRole } from "./roles"
+import { SUPER_ADMIN, isAllowed, startPageForRole } from "./roles"
 import { fetchReferenceData, clearReferenceData } from "./init"
 import { logDebug, logError } from "./logger"
 import { STATUS_401_UNAUTHORIZED, STATUS_403_FORBIDDEN } from "./http"
@@ -100,6 +100,7 @@ export const isomorphicRedirect = (ctx, url) => {
 }
 
 const sessionTooOld = (currentUser) => {
+  if (!currentUser) return true
   return currentUser.authentifiedAt && moment(currentUser.authentifiedAt).add(timeout.session) < moment()
 }
 
@@ -115,11 +116,13 @@ export const withAuthentication = (WrappedComponent, requiredPrivilege, { redire
       if (!currentUser || sessionTooOld(currentUser)) {
         logError("Pas de currentUser trouvé en cookie ou en SessionStorage. Redirection sur index")
         isomorphicRedirect(ctx, "/index?sessionTimeout=1")
+        return
       }
 
       if (requiredPrivilege && !isAllowed(currentUser.role, requiredPrivilege)) {
         logError("Rôle incorrect. Redirection sur page permissionError")
         isomorphicRedirect(ctx, "/permissionError")
+        return
       }
     }
 
@@ -134,6 +137,15 @@ export const withAuthentication = (WrappedComponent, requiredPrivilege, { redire
 export const redirectIfUnauthorized = (error, ctx) => {
   if (error && error.status === 401) {
     isomorphicRedirect(ctx, "/index?sessionTimeout=1")
+  }
+}
+
+export const checkIsSuperAdmin = (currentUser) => {
+  if (currentUser?.role !== SUPER_ADMIN) {
+    throw new APIError({
+      message: `Not allowed role (${currentUser.email ? currentUser.email : "unknown user"})`,
+      status: STATUS_403_FORBIDDEN,
+    })
   }
 }
 
