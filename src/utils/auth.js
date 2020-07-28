@@ -116,13 +116,13 @@ export const withAuthentication = (WrappedComponent, requiredPrivilege, { redire
       if (!currentUser || sessionTooOld(currentUser)) {
         logError("Pas de currentUser trouvé en cookie ou en SessionStorage. Redirection sur index")
         isomorphicRedirect(ctx, "/index?sessionTimeout=1")
-        return
+        return {}
       }
 
       if (requiredPrivilege && !isAllowed(currentUser.role, requiredPrivilege)) {
         logError("Rôle incorrect. Redirection sur page permissionError")
         isomorphicRedirect(ctx, "/permissionError")
-        return
+        return {}
       }
     }
 
