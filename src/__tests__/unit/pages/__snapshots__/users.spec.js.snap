@@ -244,7 +244,7 @@ exports[`should renders UserDetail unchanged 1`] = `
           <br
             className="jsx-1576199254"
           />
-          Emplois
+          ETP
         </a>
         <a
           className="jsx-1576199254 list-group-item list-group-item-action unselected"

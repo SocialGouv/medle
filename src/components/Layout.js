@@ -310,7 +310,7 @@ const SidebarAdmin = ({ page, currentUser }) => {
               }
             >
               <BusinessCenterIcon width={30} /> <br />
-              {"Emplois"}
+              {"ETP"}
             </a>
           </Link>
         )}
