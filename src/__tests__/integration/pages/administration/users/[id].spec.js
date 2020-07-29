@@ -13,7 +13,6 @@ describe("tests administration user", () => {
   const server = setupServer(
     rest.get(`${API_URL}${USERS_ENDPOINT}/42}`, (req, res, ctx) => {
       const { userId } = req.params
-      console.log("azeaze")
       return res(ctx.json({ data: "toto", userId }))
     })
   )

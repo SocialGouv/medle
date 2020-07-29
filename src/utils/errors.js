@@ -34,9 +34,12 @@ export class ValidationError extends MedleError {
 
 export const handleAPIResponse = async (response) => {
   if (!response.ok) {
-    const error = new APIError(await response.json())
+    const json = await response.json()
+
+    const error = new APIError(json)
     logError(error)
     redirectIfUnauthorized(error)
+    return
   }
   return response.json()
 }
