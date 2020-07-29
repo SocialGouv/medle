@@ -26,7 +26,7 @@
     "@sentry/integrations": "^5.15.5",
     "@sentry/node": "^5.15.5",
     "@socialgouv/bootstrap.core": "^0.2.1",
-    "@socialgouv/jours-feries": "^1.1.0",
+    "@socialgouv/jours-feries": "^2.0.0",
     "bcryptjs": "^2.4.3",
     "exceljs": "^3.9.0",
     "file-saver": "^2.0.2",
@@ -55,8 +55,8 @@
     "yup": "^0.28.5"
   },
   "devDependencies": {
-    "@socialgouv/eslint-config-react": "^0.20.0",
-    "@socialgouv/eslint-config-recommended": "^0.20.0",
+    "@socialgouv/eslint-config-react": "^1.18.0",
+    "@socialgouv/eslint-config-recommended": "^1.18.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.0.4",
     "babel-jest": "^25.5.1",
