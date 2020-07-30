@@ -22,8 +22,6 @@ import { mapArrayForSelect } from "../../utils/select"
 import { getReferenceData } from "../../utils/init"
 import { livingProfiles } from "../../utils/actsConstants"
 
-const objToArray = (obj) => (!obj ? [] : Object.keys(obj).map((curr) => ({ name: curr, value: obj[curr] || 0 })))
-
 const supervisorRoles = [PUBLIC_SUPERVISOR, REGIONAL_SUPERVISOR, SUPER_ADMIN]
 
 const defaultProfile = { value: "", label: "Tous les profils" }
@@ -262,10 +260,8 @@ const StatisticsPage = ({ statistics: _statistics, currentUser }) => {
             />
 
             <StatBlockPieChart
-              data={objToArray({
-                Vivants: statistics?.profilesDistribution?.Vivants || 0,
-                Thanato: statistics?.profilesDistribution?.["Personne décédée"] || 0,
-              })}
+              data={statistics?.profilesDistribution}
+              labels={["Vivants", "Personne décédée"]}
               hoverTitle="Hors assises et reconstitutions"
               title="Répartition Vivant/Thanato"
             />
@@ -300,14 +296,14 @@ const StatisticsPage = ({ statistics: _statistics, currentUser }) => {
               secondNumber={statistics?.averageCount}
               secondLabel={`Acte${pluralize(statistics?.averageCount)} par jour par ETS en moyenne.`}
             />
-            <StatBlockPieChart data={objToArray(statistics?.actsWithPv)} title="Numéro de réquisitions" />
-            <StatBlockPieChart data={objToArray(statistics?.actTypes)} title="Types d'actes" />
+            <StatBlockPieChart data={statistics?.actsWithPv} title="Numéro de réquisitions" />
+            <StatBlockPieChart data={statistics?.actTypes} title="Types d'actes" />
             <StatBlockPieChart
-              data={objToArray(statistics?.hours)}
+              data={statistics?.hours}
               title="Horaires"
               hoverTitle="Journée (8h30-18h30) / Soirée (18h30-00h) / Nuit profonde (00h-8h30)"
             />
-            <StatBlockPieChart data={objToArray(statistics?.examinations)} title="Examens complémentaires" />
+            <StatBlockPieChart data={statistics?.examinations} title="Examens complémentaires" />
           </div>
         )}
         {type === "Thanato" && (
@@ -319,14 +315,14 @@ const StatisticsPage = ({ statistics: _statistics, currentUser }) => {
               secondNumber={statistics?.averageCount}
               secondLabel={`Acte${pluralize(statistics?.averageCount)} par jour par ETS en moyenne.`}
             />
-            <StatBlockPieChart data={objToArray(statistics?.actsWithPv)} title="Numéro de réquisitions" />
-            <StatBlockPieChart data={objToArray(statistics?.actTypes)} title="Types d'actes" />
+            <StatBlockPieChart data={statistics?.actsWithPv} title="Numéro de réquisitions" />
+            <StatBlockPieChart data={statistics?.actTypes} title="Types d'actes" />
             <StatBlockPieChart
-              data={objToArray(statistics?.hours)}
+              data={statistics?.hours}
               title="Horaires"
               hoverTitle="Journée (8h30-18h30) / Soirée (18h30-00h) / Nuit profonde (00h-8h30)"
             />
-            <StatBlockPieChart data={objToArray(statistics?.examinations)} title="Examens complémentaires" />
+            <StatBlockPieChart data={statistics?.examinations} title="Examens complémentaires" />
           </div>
         )}
         {isOpenFeature("export") && (
