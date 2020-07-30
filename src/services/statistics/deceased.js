@@ -115,10 +115,15 @@ export const buildDeceasedStatistics = async (filters, currentUser) => {
 export const exportDeceasedStatistics = async ({ startDate, endDate, scopeFilter }, currentUser) => {
   scopeFilter = scopeFilter && JSON.parse(scopeFilter)
 
-  const { inputs, globalCount, averageCount } = await buildDeceasedStatistics(
-    { startDate, endDate, scopeFilter },
-    currentUser
-  )
+  const {
+    inputs,
+    globalCount,
+    averageCount,
+    actsWithPv,
+    actTypes,
+    hours,
+    examinations,
+  } = await buildDeceasedStatistics({ startDate, endDate, scopeFilter }, currentUser)
 
   const hospitals = await findListHospitals(scopeFilter)
 
@@ -136,6 +141,34 @@ export const exportDeceasedStatistics = async ({ startDate, endDate, scopeFilter
 
   actsWorksheet.addRow({ name: "Nb actes au total", value: globalCount })
   actsWorksheet.addRow({ name: "Nb actes par jour en moyenne", value: averageCount })
+
+  actsWorksheet.addRow({})
+  actsWorksheet.addRow({ name: "Nb actes avec n° de réquisition", value: actsWithPv?.["Avec réquisition"] })
+  actsWorksheet.addRow({ name: "Nb actes sans n° de réquisition", value: actsWithPv?.["Sans réquisition"] })
+  actsWorksheet.addRow({
+    name: "Nb actes avec recueil de preuves sans plainte",
+    value: actsWithPv?.["Recueil de preuve sans plainte"],
+  })
+
+  actsWorksheet.addRow({})
+  actsWorksheet.addRow({ name: "Nb actes avec examen externe", value: actTypes?.["Examen externe"] })
+  actsWorksheet.addRow({ name: "Nb actes avec levée de corps", value: actTypes?.["Levée de corps"] })
+  actsWorksheet.addRow({ name: "Nb actes avec autopsie", value: actTypes?.["Autopsie"] })
+  actsWorksheet.addRow({ name: "Nb actes avec anthropologie", value: actTypes?.["Anthropologie"] })
+  actsWorksheet.addRow({ name: "Nb actes avec odontologie", value: actTypes?.["Odontologie"] })
+
+  actsWorksheet.addRow({})
+  actsWorksheet.addRow({ name: "Nb actes en journées", value: hours?.["Journée"] })
+  actsWorksheet.addRow({ name: "Nb actes en soirée", value: hours?.["Soirée"] })
+  actsWorksheet.addRow({ name: "Nb actes en nuit profonde", value: hours?.["Nuit profonde"] })
+
+  actsWorksheet.addRow({})
+  actsWorksheet.addRow({ name: "Nb actes mentionnant biologie", value: examinations?.["Biologie"] })
+  actsWorksheet.addRow({ name: "Nb actes mentionnant imagerie", value: examinations?.["Imagerie"] })
+  actsWorksheet.addRow({ name: "Nb actes mentionnant toxicologie", value: examinations?.["Toxicologie"] })
+  actsWorksheet.addRow({ name: "Nb actes mentionnant anapath", value: examinations?.["Anapath"] })
+  actsWorksheet.addRow({ name: "Nb actes mentionnant génétique", value: examinations?.["Génétique"] })
+  actsWorksheet.addRow({ name: "Nb actes mentionnant autres", value: examinations?.["Autres"] })
 
   const inputsWorksheet = workbook.addWorksheet("Paramètres de l'export")
   inputsWorksheet.columns = [

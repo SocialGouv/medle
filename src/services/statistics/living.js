@@ -165,6 +165,7 @@ export const exportLivingStatistics = async ({ startDate, endDate, scopeFilter, 
   actsWorksheet.addRow({})
   actsWorksheet.addRow({ name: "Nb actes avec examen somatique", value: actTypes?.["Somatique"] })
   actsWorksheet.addRow({ name: "Nb actes avec examen psychiatrique", value: actTypes?.["Psychiatrique"] })
+
   actsWorksheet.addRow({})
   actsWorksheet.addRow({ name: "Nb actes en journées", value: hours?.["Journée"] })
   actsWorksheet.addRow({ name: "Nb actes en soirée", value: hours?.["Soirée"] })
