@@ -28,7 +28,7 @@ export const logout = async () => {
 
   clearReferenceData()
 
-  await Router.push("/index")
+  await Router.push("/")
 }
 
 export const registerAndRedirectUser = (user) => {
@@ -115,7 +115,7 @@ export const withAuthentication = (WrappedComponent, requiredPrivilege, { redire
     if (redirect) {
       if (!currentUser || sessionTooOld(currentUser)) {
         logError("Pas de currentUser trouvé en cookie ou en SessionStorage. Redirection sur index")
-        isomorphicRedirect(ctx, "/index?sessionTimeout=1")
+        isomorphicRedirect(ctx, "/?sessionTimeout=1")
         return {}
       }
 
@@ -136,7 +136,7 @@ export const withAuthentication = (WrappedComponent, requiredPrivilege, { redire
 
 export const redirectIfUnauthorized = (error, ctx) => {
   if (error && error.status === 401) {
-    isomorphicRedirect(ctx, "/index?sessionTimeout=1")
+    isomorphicRedirect(ctx, "/?sessionTimeout=1")
   }
 }
 
