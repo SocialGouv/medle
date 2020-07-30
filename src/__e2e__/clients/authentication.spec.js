@@ -49,10 +49,6 @@ describe("check authentication API", () => {
   })
 
   it("should not accept not correct email/password", async () => {
-    redirectIfUnauthorized.mockImplementation(() => {})
-
-    logError.mockImplementation(() => {})
-
     const headersActUserTours = () => authenticate("acte@tours.fr", "test2")
 
     await expect(headersActUserTours).rejects.toMatchInlineSnapshot(`[Error: Authentication failed]`)
