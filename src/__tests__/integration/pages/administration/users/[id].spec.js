@@ -19,6 +19,7 @@ describe("tests administration user", () => {
 
   beforeAll(() => {
     server.listen()
+    /* eslint-disable no-import-assign*/
     nextRouter.useRouter = jest.fn()
     nextRouter.useRouter.mockImplementation(() => ({ query: { id: faker.random.number() } }))
   })

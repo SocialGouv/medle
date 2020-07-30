@@ -8,6 +8,7 @@ import { SUPER_ADMIN } from "../../../utils/roles"
 // API dependency for pages's getInitialProps
 
 it("should renders UserDetail unchanged", () => {
+  /* eslint-disable  no-import-assign */
   nextRouter.useRouter = jest.fn()
   nextRouter.useRouter.mockImplementation(() => ({ query: { id: "3" } }))
 
