@@ -48,7 +48,7 @@ const StatisticsPage = ({ statistics: _statistics, currentUser }) => {
   useEffect(() => {
     logDebug("Update UI after state changes")
     const syncUI = async () => {
-      const profile = ["Global", "Thanato"].includes(type) ? "" : selectedProfile.value
+      const profile = ["Global", "Thanato"].includes(type) ? "" : selectedProfile?.value
 
       const statistics = await memoizedFetchStatistics({
         type,
@@ -246,7 +246,7 @@ const StatisticsPage = ({ statistics: _statistics, currentUser }) => {
             value={selectedProfile}
             onChange={onProfileChange}
             noOptionsMessage={() => "Aucun résultat"}
-            isClearable={true}
+            isClearable={false}
             isSearchable={true}
             styles={customStylesProfiles}
           />
