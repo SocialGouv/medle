@@ -63,7 +63,7 @@
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "file-loader": "^6.0.0",
-    "jest-cli": "^25.5.4",
+    "jest-cli": "^26.2.2",
     "msw": "^0.16.2",
     "next-compose-plugins": "^2.2.0",
     "next-transpile-modules": "^3.3.0",
