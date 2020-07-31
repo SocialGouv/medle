@@ -2,7 +2,7 @@ import Excel from "exceljs"
 
 import knex from "../../knex/knex"
 import { ISO_DATE, now } from "../../utils/date"
-import { normalizeInputs, intervalDays } from "./common"
+import { addCellTitle, normalizeInputs, intervalDays } from "./common"
 import { buildScope } from "../../services/scope"
 import { findList as findListHospitals } from "../hospitals"
 
@@ -125,22 +125,28 @@ export const exportGlobalStatistics = async ({ startDate, endDate, scopeFilter }
 
   actsWorksheet.columns = [
     { header: "Statistique", key: "name", width: 40 },
-    { header: "Valeur", key: "value", width: 20 },
+    { header: "Valeur", key: "value", width: 10 },
   ]
+
+  actsWorksheet.getColumn("B").alignment = { horizontal: "right" }
+
+  addCellTitle(actsWorksheet, "Actes réalisés")
 
   actsWorksheet.addRow({ name: "Nb actes au total", value: globalCount })
   actsWorksheet.addRow({ name: "Nb actes par jour en moyenne", value: averageCount })
   actsWorksheet.addRow({ name: "Nb actes portant le même n° de réquisition", value: actsWithSamePV })
   actsWorksheet.addRow({ name: "Moyenne des actes portant le même n° de réquisition", value: averageWithSamePV })
 
-  actsWorksheet.addRow({})
+  addCellTitle(actsWorksheet, "Répartition Vivant/Thanato")
   actsWorksheet.addRow({ name: "Nb actes vivants", value: profilesDistribution?.["Vivants"] })
   actsWorksheet.addRow({ name: "Nb actes personnes décédées", value: profilesDistribution?.["Personne décédée"] })
-  actsWorksheet.addRow({ name: "Nb actes assises", value: profilesDistribution?.["Autre activité/Assises"] })
+
+  addCellTitle(actsWorksheet, "Actes hors examens")
   actsWorksheet.addRow({
     name: "Nb actes reconstitutions",
     value: profilesDistribution?.["Autre activité/Reconstitution"],
   })
+  actsWorksheet.addRow({ name: "Nb actes assises", value: profilesDistribution?.["Autre activité/Assises"] })
 
   const inputsWorksheet = workbook.addWorksheet("Paramètres de l'export")
   inputsWorksheet.columns = [

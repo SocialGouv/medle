@@ -2,7 +2,7 @@ import Excel from "exceljs"
 
 import knex from "../../knex/knex"
 import { ISO_DATE, now } from "../../utils/date"
-import { normalizeInputs, intervalDays } from "./common"
+import { addCellTitle, normalizeInputs, intervalDays } from "./common"
 import { buildScope } from "../scope"
 import { findList as findListHospitals } from "../hospitals"
 
@@ -136,13 +136,19 @@ export const exportDeceasedStatistics = async ({ startDate, endDate, scopeFilter
 
   actsWorksheet.columns = [
     { header: "Statistique", key: "name", width: 40 },
-    { header: "Valeur", key: "value", width: 20 },
+    { header: "Valeur", key: "value", width: 10 },
   ]
 
-  actsWorksheet.addRow({ name: "Nb actes au total", value: globalCount })
-  actsWorksheet.addRow({ name: "Nb actes par jour en moyenne", value: averageCount })
+  actsWorksheet.getColumn("B").alignment = { horizontal: "right" }
 
-  actsWorksheet.addRow({})
+  addCellTitle(actsWorksheet, "Actes réalisés")
+
+  actsWorksheet.addRow({ name: "Nb actes au total", value: globalCount })
+  const avgRow = actsWorksheet.addRow({ name: "Nb actes par jour en moyenne", value: averageCount })
+  avgRow.getCell("value").alignment = { horizontal: "right" }
+
+  addCellTitle(actsWorksheet, "Numéro de réquisitions")
+
   actsWorksheet.addRow({ name: "Nb actes avec n° de réquisition", value: actsWithPv?.["Avec réquisition"] })
   actsWorksheet.addRow({ name: "Nb actes sans n° de réquisition", value: actsWithPv?.["Sans réquisition"] })
   actsWorksheet.addRow({
@@ -150,19 +156,20 @@ export const exportDeceasedStatistics = async ({ startDate, endDate, scopeFilter
     value: actsWithPv?.["Recueil de preuve sans plainte"],
   })
 
-  actsWorksheet.addRow({})
+  addCellTitle(actsWorksheet, "Types d'actes")
+
   actsWorksheet.addRow({ name: "Nb actes avec examen externe", value: actTypes?.["Examen externe"] })
   actsWorksheet.addRow({ name: "Nb actes avec levée de corps", value: actTypes?.["Levée de corps"] })
   actsWorksheet.addRow({ name: "Nb actes avec autopsie", value: actTypes?.["Autopsie"] })
   actsWorksheet.addRow({ name: "Nb actes avec anthropologie", value: actTypes?.["Anthropologie"] })
   actsWorksheet.addRow({ name: "Nb actes avec odontologie", value: actTypes?.["Odontologie"] })
 
-  actsWorksheet.addRow({})
+  addCellTitle(actsWorksheet, "Horaires")
   actsWorksheet.addRow({ name: "Nb actes en journées", value: hours?.["Journée"] })
   actsWorksheet.addRow({ name: "Nb actes en soirée", value: hours?.["Soirée"] })
   actsWorksheet.addRow({ name: "Nb actes en nuit profonde", value: hours?.["Nuit profonde"] })
 
-  actsWorksheet.addRow({})
+  addCellTitle(actsWorksheet, "Examens complémentaires")
   actsWorksheet.addRow({ name: "Nb actes mentionnant biologie", value: examinations?.["Biologie"] })
   actsWorksheet.addRow({ name: "Nb actes mentionnant imagerie", value: examinations?.["Imagerie"] })
   actsWorksheet.addRow({ name: "Nb actes mentionnant toxicologie", value: examinations?.["Toxicologie"] })
