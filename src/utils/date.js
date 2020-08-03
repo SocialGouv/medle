@@ -7,6 +7,7 @@ const { publicRuntimeConfig } = getConfig() || {}
 
 export const FORMAT_DATE = "DD/MM/YYYY"
 export const ISO_DATE = "YYYY-MM-DD"
+export const ISO_TIME = "YYYY-MM-DDTHH:mm:ssZ"
 
 const testCurrentDate = (publicRuntimeConfig && publicRuntimeConfig.TEST_CURRENT_DATE) || false
 
