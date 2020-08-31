@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import PropTypes from "prop-types"
+import * as yup from "yup"
+import { yupResolver } from "@hookform/resolvers"
 import {
   Button,
   Col,
@@ -21,7 +23,7 @@ import { useForm } from "react-hook-form"
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos"
 
 import Layout from "../../../components/Layout"
-import { Title1 } from "../../../components/StyledComponents"
+import { Title1, Title2 } from "../../../components/StyledComponents"
 import { isEmpty } from "../../../utils/misc"
 import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../../../utils/auth"
 import { ADMIN } from "../../../utils/roles"
@@ -29,6 +31,26 @@ import { logError, logDebug } from "../../../utils/logger"
 import { createHospital, deleteHospital, findHospital, updateHospital } from "../../../clients/hospitals"
 
 const MandatorySign = () => <span style={{ color: "red" }}>*</span>
+
+const schema = yup.object({
+  finesseNumber: yup.string(),
+  name: yup.string().required("Le nom est obligatoire."),
+  addr1: yup.string(),
+  addr2: yup.string(),
+  town: yup.string().required("La ville est obligatoire."),
+  depCode: yup
+    .string()
+    .required("Le département est obligatoire.")
+    .matches(/^2A|2B|[0-9]{2,3}$/i, "Le département a un format incorrect."),
+  postalCode: yup.string().matches(/^[0-9]{5}$/i, "Le code postal a un format incorrect."),
+  doctors: yup.number().typeError("Le nombre d'ETP est incorrect."),
+  secretaries: yup.number().typeError("Le nombre d'ETP est incorrect."),
+  nursings: yup.number().typeError("Le nombre d'ETP est incorrect."),
+  executives: yup.number().typeError("Le nombre d'ETP est incorrect."),
+  ides: yup.number().typeError("Le nombre d'ETP est incorrect."),
+  auditoriumAgents: yup.number().typeError("Le nombre d'ETP est incorrect."),
+  others: yup.number().typeError("Le nombre d'ETP est incorrect."),
+})
 
 // TODO : vérifier que seul le super admin puisse accéder à cette page
 const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => {
@@ -38,6 +60,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
     defaultValues: {
       ...hospital,
     },
+    resolver: yupResolver(schema),
   })
 
   // General error (alert)
@@ -47,6 +70,10 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
   const [modal, setModal] = useState(false)
 
   const toggle = () => setModal(!modal)
+
+  React.useEffect(() => {
+    if (formErrors) setsuccess("")
+  }, [formErrors, setsuccess])
 
   const onDeleteHospital = () => {
     toggle()
@@ -143,14 +170,8 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
               <MandatorySign />
             </Label>
             <Col sm={9}>
-              <Input
-                type="text"
-                name="name"
-                id="name"
-                invalid={!!formErrors.name}
-                innerRef={register({ required: true })}
-              />
-              <FormFeedback>{formErrors.name && "Le nom est obligatoire."}</FormFeedback>
+              <Input type="text" name="name" id="name" invalid={!!formErrors.name} innerRef={register} />
+              <FormFeedback>{formErrors.name?.message}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
@@ -175,14 +196,8 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
               <MandatorySign />
             </Label>
             <Col sm={9}>
-              <Input
-                type="text"
-                name="town"
-                id="town"
-                invalid={!!formErrors.town}
-                innerRef={register({ required: true })}
-              />
-              <FormFeedback>{formErrors.town && "La ville est obligatoire."}</FormFeedback>
+              <Input type="text" name="town" id="town" invalid={!!formErrors.town} innerRef={register} />
+              <FormFeedback>{formErrors.town?.message}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
@@ -195,15 +210,11 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                 type="text"
                 name="depCode"
                 id="depCode"
-                innerRef={register({
-                  required: true,
-                  pattern: {
-                    value: /^[0-9]{2,3}$/i,
-                  },
-                })}
+                innerRef={register}
                 invalid={!!formErrors.depCode}
+                placeholder="Ex: 44 ou 971"
               />
-              <FormFeedback>{formErrors.depCode && "Le département a un format incorrect."}</FormFeedback>
+              <FormFeedback>{formErrors.depCode?.message}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
@@ -215,16 +226,150 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                 type="text"
                 name="postalCode"
                 id="postalCode"
-                innerRef={register({
-                  pattern: {
-                    value: /^[0-9]{5}$/i,
-                  },
-                })}
+                innerRef={register}
                 invalid={!!formErrors.postalCode}
+                placeholder="Ex: 94300"
               />
-              <FormFeedback>{formErrors.postalCode && "Le code postal a un format incorrect."}</FormFeedback>
+              <FormFeedback>{formErrors.postalCode?.message}</FormFeedback>
             </Col>
           </FormGroup>
+          <Title2 className="mt-4 mb-3">Paramètres ETP</Title2>
+          <div className="mb-3">
+            <i>Veuillez renseigner les ETP de référence pour cet établissement.</i>{" "}
+          </div>
+          <FormGroup row>
+            <Label for="doctors" sm={3}>
+              Médecins&nbsp;
+            </Label>
+            <Col sm={9}>
+              <Input
+                type="number"
+                autocomplete="off"
+                name="doctors"
+                id="doctors"
+                innerRef={register}
+                invalid={!!formErrors.doctors}
+                min={0}
+                defaultValue={0}
+              />
+
+              <FormFeedback>{formErrors.doctors?.message}</FormFeedback>
+            </Col>
+          </FormGroup>
+          <FormGroup row>
+            <Label for="secretaries" sm={3}>
+              Secrétaires&nbsp;
+            </Label>
+            <Col sm={9}>
+              <Input
+                type="number"
+                autocomplete="off"
+                name="secretaries"
+                id="secretaries"
+                innerRef={register}
+                invalid={!!formErrors.secretaries}
+                min={0}
+                defaultValue={0}
+              />
+              <FormFeedback>{formErrors.secretaries?.message}</FormFeedback>
+            </Col>
+          </FormGroup>
+          <FormGroup row>
+            <Label for="nursings" sm={3}>
+              Aide soignant.e&nbsp;
+            </Label>
+            <Col sm={9}>
+              <Input
+                type="number"
+                autocomplete="off"
+                name="nursings"
+                id="nursings"
+                innerRef={register}
+                invalid={!!formErrors.nursings}
+                min={0}
+                defaultValue={0}
+              />
+              <FormFeedback>{formErrors.nursings?.message}</FormFeedback>
+            </Col>
+          </FormGroup>
+          <FormGroup row>
+            <Label for="executives" sm={3}>
+              Cadre de santé&nbsp;
+            </Label>
+            <Col sm={9}>
+              <Input
+                type="number"
+                autocomplete="off"
+                name="executives"
+                id="executives"
+                innerRef={register}
+                invalid={!!formErrors.executives}
+                min={0}
+                defaultValue={0}
+              />
+              <FormFeedback>{formErrors.executives?.message}</FormFeedback>
+            </Col>
+          </FormGroup>
+          <FormGroup row>
+            <Label for="ides" sm={3}>
+              IDE&nbsp;
+            </Label>
+            <Col sm={9}>
+              <Input
+                type="number"
+                autocomplete="off"
+                name="ides"
+                id="ides"
+                innerRef={register}
+                invalid={!!formErrors.ides}
+                min={0}
+                defaultValue={0}
+              />
+              <FormFeedback>{formErrors.ides?.message}</FormFeedback>
+            </Col>
+          </FormGroup>
+          <FormGroup row>
+            <Label for="auditoriumAgents" sm={3}>
+              {"Agent d'amphithéâtre"}&nbsp;
+            </Label>
+            <Col sm={9}>
+              <Input
+                type="number"
+                autocomplete="off"
+                name="auditoriumAgents"
+                id="auditoriumAgents"
+                innerRef={register({
+                  pattern: {
+                    value: /^[0-9]{2}$/i,
+                  },
+                })}
+                invalid={!!formErrors.auditoriumAgents}
+                min={0}
+                defaultValue={0}
+              />
+              <FormFeedback>{formErrors.auditoriumAgents?.message}</FormFeedback>
+            </Col>
+          </FormGroup>
+          <FormGroup row>
+            <Label for="others" sm={3}>
+              Autres&nbsp;
+            </Label>
+            <Col sm={9}>
+              <Input
+                type="number"
+                autocomplete="off"
+                name="others"
+                id="others"
+                innerRef={register}
+                invalid={!!formErrors.others}
+                min={0}
+                defaultValue={0}
+              />
+              <FormFeedback>{formErrors.others?.message}</FormFeedback>
+            </Col>
+          </FormGroup>
+
+          <Title2 className="mt-4 mb-3">Paramètres actes</Title2>
           <FormGroup row>
             <Label for="canDoPostMortem" sm={3}>
               Autopsies autorisées&nbsp;?&nbsp;
