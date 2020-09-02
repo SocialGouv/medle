@@ -43,13 +43,15 @@ const schema = yup.object({
     .required("Le département est obligatoire.")
     .matches(/^2A|2B|[0-9]{2,3}$/i, "Le département a un format incorrect."),
   postalCode: yup.string().matches(/^[0-9]{5}$/i, "Le code postal a un format incorrect."),
-  doctors: yup.number().typeError("Le nombre d'ETP est incorrect."),
-  secretaries: yup.number().typeError("Le nombre d'ETP est incorrect."),
-  nursings: yup.number().typeError("Le nombre d'ETP est incorrect."),
-  executives: yup.number().typeError("Le nombre d'ETP est incorrect."),
-  ides: yup.number().typeError("Le nombre d'ETP est incorrect."),
-  auditoriumAgents: yup.number().typeError("Le nombre d'ETP est incorrect."),
-  others: yup.number().typeError("Le nombre d'ETP est incorrect."),
+  etp: yup.object({
+    doctors: yup.number().typeError("Le nombre d'ETP est incorrect."),
+    secretaries: yup.number().typeError("Le nombre d'ETP est incorrect."),
+    nursings: yup.number().typeError("Le nombre d'ETP est incorrect."),
+    executives: yup.number().typeError("Le nombre d'ETP est incorrect."),
+    ides: yup.number().typeError("Le nombre d'ETP est incorrect."),
+    auditoriumAgents: yup.number().typeError("Le nombre d'ETP est incorrect."),
+    others: yup.number().typeError("Le nombre d'ETP est incorrect."),
+  }),
 })
 
 // TODO : vérifier que seul le super admin puisse accéder à cette page
@@ -238,134 +240,130 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
             <i>Veuillez renseigner les ETP de référence pour cet établissement.</i>{" "}
           </div>
           <FormGroup row>
-            <Label for="doctors" sm={3}>
+            <Label for="etp.doctors" sm={3}>
               Médecins&nbsp;
             </Label>
             <Col sm={9}>
               <Input
                 type="number"
-                autocomplete="off"
-                name="doctors"
-                id="doctors"
+                autoComplete="off"
+                name="etp.doctors"
+                id="etp.doctors"
                 innerRef={register}
-                invalid={!!formErrors.doctors}
+                invalid={!!formErrors.etp?.doctors}
                 min={0}
                 defaultValue={0}
               />
 
-              <FormFeedback>{formErrors.doctors?.message}</FormFeedback>
+              <FormFeedback>{formErrors.etp?.doctors?.message}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
-            <Label for="secretaries" sm={3}>
+            <Label for="etp.secretaries" sm={3}>
               Secrétaires&nbsp;
             </Label>
             <Col sm={9}>
               <Input
                 type="number"
-                autocomplete="off"
-                name="secretaries"
-                id="secretaries"
+                autoComplete="off"
+                name="etp.secretaries"
+                id="etp.secretaries"
                 innerRef={register}
-                invalid={!!formErrors.secretaries}
+                invalid={!!formErrors.etp?.secretaries}
                 min={0}
                 defaultValue={0}
               />
-              <FormFeedback>{formErrors.secretaries?.message}</FormFeedback>
+              <FormFeedback>{formErrors.etp?.secretaries?.message}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
-            <Label for="nursings" sm={3}>
+            <Label for="etp.nursings" sm={3}>
               Aide soignant.e&nbsp;
             </Label>
             <Col sm={9}>
               <Input
                 type="number"
-                autocomplete="off"
-                name="nursings"
-                id="nursings"
+                autoComplete="off"
+                name="etp.nursings"
+                id="etp.nursings"
                 innerRef={register}
-                invalid={!!formErrors.nursings}
+                invalid={!!formErrors.etp?.nursings}
                 min={0}
                 defaultValue={0}
               />
-              <FormFeedback>{formErrors.nursings?.message}</FormFeedback>
+              <FormFeedback>{formErrors.etp?.nursings?.message}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
-            <Label for="executives" sm={3}>
+            <Label for="etp.executives" sm={3}>
               Cadre de santé&nbsp;
             </Label>
             <Col sm={9}>
               <Input
                 type="number"
-                autocomplete="off"
-                name="executives"
-                id="executives"
+                autoComplete="off"
+                name="etp.executives"
+                id="etp.executives"
                 innerRef={register}
-                invalid={!!formErrors.executives}
+                invalid={!!formErrors.etp?.executives}
                 min={0}
                 defaultValue={0}
               />
-              <FormFeedback>{formErrors.executives?.message}</FormFeedback>
+              <FormFeedback>{formErrors.etp?.executives?.message}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
-            <Label for="ides" sm={3}>
+            <Label for="etp.ides" sm={3}>
               IDE&nbsp;
             </Label>
             <Col sm={9}>
               <Input
                 type="number"
-                autocomplete="off"
-                name="ides"
-                id="ides"
+                autoComplete="off"
+                name="etp.ides"
+                id="etp.ides"
                 innerRef={register}
-                invalid={!!formErrors.ides}
+                invalid={!!formErrors.etp?.ides}
                 min={0}
                 defaultValue={0}
               />
-              <FormFeedback>{formErrors.ides?.message}</FormFeedback>
+              <FormFeedback>{formErrors.etp?.ides?.message}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
-            <Label for="auditoriumAgents" sm={3}>
+            <Label for="etp.auditoriumAgents" sm={3}>
               {"Agent d'amphithéâtre"}&nbsp;
             </Label>
             <Col sm={9}>
               <Input
                 type="number"
-                autocomplete="off"
-                name="auditoriumAgents"
-                id="auditoriumAgents"
-                innerRef={register({
-                  pattern: {
-                    value: /^[0-9]{2}$/i,
-                  },
-                })}
-                invalid={!!formErrors.auditoriumAgents}
+                autoComplete="off"
+                name="etp.auditoriumAgents"
+                id="etp.auditoriumAgents"
+                innerRef={register}
+                invalid={!!formErrors.etp?.auditoriumAgents}
                 min={0}
                 defaultValue={0}
               />
-              <FormFeedback>{formErrors.auditoriumAgents?.message}</FormFeedback>
+              <FormFeedback>{formErrors.etp?.auditoriumAgents?.message}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
-            <Label for="others" sm={3}>
+            <Label for="etp.others" sm={3}>
               Autres&nbsp;
             </Label>
             <Col sm={9}>
               <Input
                 type="number"
-                autocomplete="off"
-                name="others"
-                id="others"
+                autoComplete="off"
+                name="etp.others"
+                id="etp.others"
                 innerRef={register}
-                invalid={!!formErrors.others}
+                invalid={!!formErrors.etp?.others}
                 min={0}
                 defaultValue={0}
               />
-              <FormFeedback>{formErrors.others?.message}</FormFeedback>
+              <FormFeedback>{formErrors.etp?.others?.message}</FormFeedback>
             </Col>
           </FormGroup>
 
