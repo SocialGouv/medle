@@ -398,7 +398,7 @@ const Layout = ({ children, page, currentUser, admin = false }) => {
 }
 
 Layout.propTypes = {
-  children: PropTypes.array,
+  children: PropTypes.node,
   page: PropTypes.string,
   currentUser: PropTypes.object,
   admin: PropTypes.bool,

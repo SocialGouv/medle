@@ -127,11 +127,7 @@ describe("untransform tests", () => {
 
   test("untransform should return nothing if null is passed", () => {
     expect(untransform(null)).toMatchInlineSnapshot(`null`)
-    expect(untransform({})).toMatchInlineSnapshot(`
-      Object {
-        "extra_data": Object {},
-      }
-    `)
+    expect(untransform({})).toMatchInlineSnapshot(`Object {}`)
   })
 
   test("untransform", () => {
