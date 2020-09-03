@@ -8,7 +8,7 @@ const configValidate = {
   abortEarly: false,
 }
 
-export const validate = (schema) => async (model) => {
+const validate = (schema) => async (model) => {
   try {
     const value = await schema.validate(model, configValidate)
     return value
@@ -23,59 +23,62 @@ export const validate = (schema) => async (model) => {
 }
 
 // TODO supprimer si pas utilisé ?
-export const cast = (schema) => async (model) => await schema.cast(model)
+const cast = (schema) => async (model) => await schema.cast(model)
 
-// Transform a Knex model into JS model
-export const transform = (JStoDBKeys) => (modelDB) => {
+// Transform a DB model into JS model
+const transform = (JStoDBKeys) => (modelDB) => {
   if (!modelDB) return null
 
   const DBtoJSKeys = revertObject(JStoDBKeys)
 
   // add extra_data first so regular fields can't be overriden by bad luck
-  const res = { ...modelDB.extra_data }
+  const modelJS = { ...modelDB.extra_data }
 
   for (const [keyDB, value] of Object.entries(modelDB)) {
     if (keyDB !== "extra_data") {
       const key = DBtoJSKeys[keyDB]
-      res[key] = value
+      if (key) modelJS[key] = value
     }
   }
 
-  return res
+  return modelJS
 }
 
-export const transformAll = (transform) => (list) => list.map((model) => transform(model))
+const transformAll = (transform) => (list) => list.map((model) => transform(model))
 
-// Transform a JS model into Knex model
-export const untransform = (JStoDBKeys) => (modelJS) => {
+// Transform a JS model into DB model
+const untransform = (JStoDBKeys) => (modelJS) => {
   if (!modelJS) return null
 
-  const knexData = { extra_data: {} }
+  const extra_data = {}
+  const modelDB = {}
 
   for (const [key, value] of Object.entries(modelJS)) {
     const keyDB = JStoDBKeys[key]
 
     if (keyDB) {
-      knexData[keyDB] = value
+      modelDB[keyDB] = value
     } else {
-      knexData.extra_data[key] = value
+      extra_data[key] = value
     }
   }
 
-  // Pas d'id pour une création de user
-  if (!modelJS.id) delete knexData.id
+  if (Object.keys(extra_data).length) modelDB.extra_data = extra_data
 
-  return knexData
+  // Pas d'id pour une création de user
+  if (!modelJS.id) delete modelDB.id
+
+  return modelDB
 }
 
 export const build = ({ JStoDBKeys, schema }) => {
   const innerTransform = transform(JStoDBKeys)
 
   return {
-    // Transform a Knex model into JS model
+    // Transform a DB model into JS model
     transform: innerTransform,
     transformAll: transformAll(innerTransform),
-    // Transform a JS model into Knex model
+    // Transform a JS model into DB model
     untransform: untransform(JStoDBKeys),
     validate: validate(schema),
     cast: cast(schema),
