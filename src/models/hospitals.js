@@ -6,7 +6,6 @@ const JStoDBKeys = {
   id: "id",
   finesseNumber: "finesse_number",
   name: "name",
-  category: "category",
   addr1: "addr1",
   addr2: "addr2",
   town: "town",
