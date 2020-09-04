@@ -253,6 +253,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                 invalid={!!formErrors.etp?.doctors}
                 min={0}
                 defaultValue={0}
+                step="0.05"
               />
 
               <FormFeedback>{formErrors.etp?.doctors?.message}</FormFeedback>
@@ -272,6 +273,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                 invalid={!!formErrors.etp?.secretaries}
                 min={0}
                 defaultValue={0}
+                step="0.05"
               />
               <FormFeedback>{formErrors.etp?.secretaries?.message}</FormFeedback>
             </Col>
@@ -290,6 +292,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                 invalid={!!formErrors.etp?.nursings}
                 min={0}
                 defaultValue={0}
+                step="0.05"
               />
               <FormFeedback>{formErrors.etp?.nursings?.message}</FormFeedback>
             </Col>
@@ -308,6 +311,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                 invalid={!!formErrors.etp?.executives}
                 min={0}
                 defaultValue={0}
+                step="0.05"
               />
               <FormFeedback>{formErrors.etp?.executives?.message}</FormFeedback>
             </Col>
@@ -326,6 +330,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                 invalid={!!formErrors.etp?.ides}
                 min={0}
                 defaultValue={0}
+                step="0.05"
               />
               <FormFeedback>{formErrors.etp?.ides?.message}</FormFeedback>
             </Col>
@@ -344,6 +349,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                 invalid={!!formErrors.etp?.auditoriumAgents}
                 min={0}
                 defaultValue={0}
+                step="0.05"
               />
               <FormFeedback>{formErrors.etp?.auditoriumAgents?.message}</FormFeedback>
             </Col>
@@ -362,6 +368,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                 invalid={!!formErrors.etp?.others}
                 min={0}
                 defaultValue={0}
+                step="0.05"
               />
               <FormFeedback>{formErrors.etp?.others?.message}</FormFeedback>
             </Col>
