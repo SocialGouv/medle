@@ -196,7 +196,7 @@ const AccordionEmploymentsMonth = ({ monthName, month, year, hospitalId, readOnl
               <FormFeedback>{errors && errors.idesNumber}</FormFeedback>
             </Col>
             <Col className="mr-3">
-              <Label htmlFor="auditoriumAgents">{"Agent d'amphithéâtre"}</Label>
+              <Label htmlFor="auditoriumAgents">{"Agent d'amphi."}</Label>
               <Input
                 name="auditoriumAgents"
                 invalid={errors && !!errors.auditoriumAgents}
