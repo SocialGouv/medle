@@ -63,9 +63,9 @@ export const ROLES_DESCRIPTION = {
   OPERATOR_ACT: "Gestionnaire d'actes", // no scope, 1 hospital_id
   OPERATOR_EMPLOYMENT: "Gestionnaire d'ETP", // no scope, 1 hospital_id
   OPERATOR_GENERIC: "Gestionnaire d'actes et d'ETP", // no scope, 1 hospital_id
-  GUEST_HOSPITAL: "Invité", // no scope, 1 hospital_id
-  PUBLIC_SUPERVISOR: "Ministère", // no scope, no hospital_id
-  REGIONAL_SUPERVISOR: "Superviseur de plusieurs UMJ ou IML", // n hospitals in scope, no hospital_id
+  GUEST_HOSPITAL: "Invité (ex: inspections générales, cour des comptes..)", // no scope, 1 hospital_id
+  PUBLIC_SUPERVISOR: "Ministères", // no scope, no hospital_id
+  REGIONAL_SUPERVISOR: "ARS / TGI / CA", // n hospitals in scope, no hospital_id
   SUPER_ADMIN: "Administrateur de Medlé", // no scope, no hospital_id
 }
 
