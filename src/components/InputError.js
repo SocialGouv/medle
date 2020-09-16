@@ -1,14 +1,13 @@
 import React from "react"
 import PropTypes from "prop-types"
+import ErrorOutlineOutlinedIcon from "@material-ui/icons/ErrorOutlineOutlined"
 
 export const InputError = ({ children }) => {
   return (
-    <span role="alert" className="text-red-500">
-      <span role="img" aria-label="Warning">
-        ⚠️
-      </span>{" "}
-      {children}
-    </span>
+    <>
+      {children}&nbsp;
+      <ErrorOutlineOutlinedIcon fontSize="small" />
+    </>
   )
 }
 
