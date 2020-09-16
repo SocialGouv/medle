@@ -72,8 +72,14 @@ const hasErrors = (state) => {
     if (!date.isValid()) {
       errors = { ...errors, examinationDate: "Format incorrect" }
     } else {
+      const previousYear = now().year() - 1
+      const limitInPast = moment(`${previousYear}-01-01`)
+
       if (date > now()) {
         errors = { ...errors, examinationDate: "La date doit être passée" }
+      }
+      if (date < limitInPast) {
+        errors = { ...errors, examinationDate: `La date est trop ancienne` }
       }
     }
   }
