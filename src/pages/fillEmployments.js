@@ -119,6 +119,9 @@ const FillEmploymentsPage = ({
               <Label htmlFor="doctors">Médecin</Label>
               <Input
                 name="doctors"
+                type="number"
+                min={0}
+                step="0.05"
                 invalid={errors && !!errors.doctors}
                 placeholder="ex: 2,1"
                 value={(dataMonth && dataMonth["doctors"]) || ""}
@@ -131,6 +134,9 @@ const FillEmploymentsPage = ({
               <Label htmlFor="secretaries">Secrétaire</Label>
               <Input
                 name="secretaries"
+                type="number"
+                min={0}
+                step="0.05"
                 invalid={errors && !!errors.secretaries}
                 placeholder="ex: 2,1"
                 value={(dataMonth && dataMonth["secretaries"]) || ""}
@@ -143,6 +149,9 @@ const FillEmploymentsPage = ({
               <Label htmlFor="nursings">Aide soignant.e</Label>
               <Input
                 name="nursings"
+                type="number"
+                min={0}
+                step="0.05"
                 invalid={errors && !!errors.nursings}
                 placeholder="ex: 2,1"
                 value={(dataMonth && dataMonth["nursings"]) || ""}
@@ -156,6 +165,9 @@ const FillEmploymentsPage = ({
               <Label htmlFor="executives">Cadre de santé</Label>
               <Input
                 name="executives"
+                type="number"
+                min={0}
+                step="0.05"
                 invalid={errors && !!errors.executives}
                 placeholder="ex: 2,1"
                 value={(dataMonth && dataMonth["executives"]) || ""}
@@ -170,6 +182,9 @@ const FillEmploymentsPage = ({
               <Label htmlFor="ides">IDE</Label>
               <Input
                 name="ides"
+                type="number"
+                min={0}
+                step="0.05"
                 invalid={errors && !!errors.ides}
                 placeholder="ex: 2,1"
                 value={(dataMonth && dataMonth["ides"]) || ""}
@@ -182,6 +197,9 @@ const FillEmploymentsPage = ({
               <Label htmlFor="auditoriumAgents">{"Agent d'amphithéâtre"}</Label>
               <Input
                 name="auditoriumAgents"
+                type="number"
+                min={0}
+                step="0.05"
                 invalid={errors && !!errors.auditoriumAgents}
                 placeholder="ex: 2,1"
                 value={(dataMonth && dataMonth["auditoriumAgents"]) || ""}
@@ -194,6 +212,9 @@ const FillEmploymentsPage = ({
               <Label htmlFor="others">Autres</Label>
               <Input
                 name="others"
+                type="number"
+                min={0}
+                step="0.05"
                 invalid={errors && !!errors.others}
                 placeholder="ex: 2,1"
                 value={(dataMonth && dataMonth["others"]) || ""}
