@@ -34,7 +34,7 @@ const NAME_MONTHS = {
   "12": "décembre",
 }
 
-const makeLabel = (number) => `${number} ETP prévu${pluralize(number)}`
+const makeLabel = (number) => (number ? `${number} ETP prévu${pluralize(number)}` : null)
 
 const FillEmploymentsPage = ({
   etpBase,
