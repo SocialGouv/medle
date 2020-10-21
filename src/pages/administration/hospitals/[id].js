@@ -149,6 +149,14 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
           </Alert>
         )}
 
+        <div className="text-right my-4">
+          <Link href={`/administration/hospitals/${id}/employments`}>
+            <Button outline color="primary">
+              <a>Gérer les ETP</a>
+            </Button>
+          </Link>
+        </div>
+
         <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <FormGroup row>
             <Label for="id" sm={3}>
@@ -235,144 +243,6 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
               <FormFeedback>{formErrors.postalCode?.message}</FormFeedback>
             </Col>
           </FormGroup>
-          <Title2 className="mt-4 mb-3">Paramètres ETP</Title2>
-          <div className="mb-3">
-            <i>Veuillez renseigner les ETP de référence pour cet établissement.</i>{" "}
-          </div>
-          <FormGroup row>
-            <Label for="etp.doctors" sm={3}>
-              Médecins&nbsp;
-            </Label>
-            <Col sm={9}>
-              <Input
-                type="number"
-                autoComplete="off"
-                name="etp.doctors"
-                id="etp.doctors"
-                innerRef={register}
-                invalid={!!formErrors.etp?.doctors}
-                min={0}
-                defaultValue={0}
-                step="0.05"
-              />
-
-              <FormFeedback>{formErrors.etp?.doctors?.message}</FormFeedback>
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label for="etp.secretaries" sm={3}>
-              Secrétaires&nbsp;
-            </Label>
-            <Col sm={9}>
-              <Input
-                type="number"
-                autoComplete="off"
-                name="etp.secretaries"
-                id="etp.secretaries"
-                innerRef={register}
-                invalid={!!formErrors.etp?.secretaries}
-                min={0}
-                defaultValue={0}
-                step="0.05"
-              />
-              <FormFeedback>{formErrors.etp?.secretaries?.message}</FormFeedback>
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label for="etp.nursings" sm={3}>
-              Aide soignant.e&nbsp;
-            </Label>
-            <Col sm={9}>
-              <Input
-                type="number"
-                autoComplete="off"
-                name="etp.nursings"
-                id="etp.nursings"
-                innerRef={register}
-                invalid={!!formErrors.etp?.nursings}
-                min={0}
-                defaultValue={0}
-                step="0.05"
-              />
-              <FormFeedback>{formErrors.etp?.nursings?.message}</FormFeedback>
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label for="etp.executives" sm={3}>
-              Cadre de santé&nbsp;
-            </Label>
-            <Col sm={9}>
-              <Input
-                type="number"
-                autoComplete="off"
-                name="etp.executives"
-                id="etp.executives"
-                innerRef={register}
-                invalid={!!formErrors.etp?.executives}
-                min={0}
-                defaultValue={0}
-                step="0.05"
-              />
-              <FormFeedback>{formErrors.etp?.executives?.message}</FormFeedback>
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label for="etp.ides" sm={3}>
-              IDE&nbsp;
-            </Label>
-            <Col sm={9}>
-              <Input
-                type="number"
-                autoComplete="off"
-                name="etp.ides"
-                id="etp.ides"
-                innerRef={register}
-                invalid={!!formErrors.etp?.ides}
-                min={0}
-                defaultValue={0}
-                step="0.05"
-              />
-              <FormFeedback>{formErrors.etp?.ides?.message}</FormFeedback>
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label for="etp.auditoriumAgents" sm={3}>
-              {"Agent d'amphithéâtre"}&nbsp;
-            </Label>
-            <Col sm={9}>
-              <Input
-                type="number"
-                autoComplete="off"
-                name="etp.auditoriumAgents"
-                id="etp.auditoriumAgents"
-                innerRef={register}
-                invalid={!!formErrors.etp?.auditoriumAgents}
-                min={0}
-                defaultValue={0}
-                step="0.05"
-              />
-              <FormFeedback>{formErrors.etp?.auditoriumAgents?.message}</FormFeedback>
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label for="etp.others" sm={3}>
-              Autres&nbsp;
-            </Label>
-            <Col sm={9}>
-              <Input
-                type="number"
-                autoComplete="off"
-                name="etp.others"
-                id="etp.others"
-                innerRef={register}
-                invalid={!!formErrors.etp?.others}
-                min={0}
-                defaultValue={0}
-                step="0.05"
-              />
-              <FormFeedback>{formErrors.etp?.others?.message}</FormFeedback>
-            </Col>
-          </FormGroup>
 
           <Title2 className="mt-4 mb-3">Paramètres actes</Title2>
           <FormGroup row>
@@ -438,13 +308,17 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
 
 HospitalDetail.getInitialProps = async (ctx) => {
   const headers = buildAuthHeaders(ctx)
+  console.log("HospitalDetail.getInitialProps -> headers", headers)
 
   const { id } = ctx.query
+  console.log("HospitalDetail.getInitialProps -> id", id)
 
   if (!id || isNaN(id)) return { hospital: {}, key: Number(new Date()) }
 
   try {
     const hospital = await findHospital({ id, headers })
+    console.log("if -> hospital", hospital)
+
     return { hospital }
   } catch (error) {
     logError(error)
