@@ -57,7 +57,8 @@ const schema = yup.object({
 // TODO : vérifier que seul le super admin puisse accéder à cette page
 const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => {
   const router = useRouter()
-  const { id } = router.query
+  const { id } = hospital
+
   const { handleSubmit, register, errors: formErrors, setValue } = useForm({
     defaultValues: {
       ...hospital,
@@ -117,7 +118,10 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
 
   return (
     <Layout page="hospitals" currentUser={currentUser} admin={true}>
-      <Container style={{ maxWidth: 720 }} className="mt-5 mb-4">
+      <Container
+        style={{ maxWidth: 980, minWidth: 740 }}
+        className="mt-5 mb-5 d-flex justify-content-between align-items-baseline"
+      >
         <div className="d-flex justify-content-between">
           <Link href="/administration/hospitals">
             <a>
@@ -125,10 +129,17 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
               Retour
             </a>
           </Link>
-          <Title1>{"Hôpital"}</Title1>
-          <span>&nbsp;</span>
         </div>
+        <Title1>Hôpital {hospital?.name}</Title1>
 
+        <Link href="/administration/hospitals/[hid]/employments" as={`/administration/hospitals/${id}/employments`}>
+          <Button outline color="primary">
+            <a>Gérer les ETP</a>
+          </Button>
+        </Link>
+      </Container>
+
+      <Container style={{ maxWidth: 980, minWidth: 740 }}>
         {error && <Alert color="danger mt-4">{error}</Alert>}
 
         {success && (
@@ -140,7 +151,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
                   <a>Retour à la liste</a>
                 </Button>
               </Link>
-              <Link href="/administration/hospitals/[id]" as={`/administration/hospitals/new`}>
+              <Link href="/administration/hospitals/[hid]/new" as={`/administration/hospitals/${id}/new`}>
                 <Button outline color="success">
                   <a>Ajouter</a>
                 </Button>
@@ -148,14 +159,6 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
             </div>
           </Alert>
         )}
-
-        <div className="text-right my-4">
-          <Link href={`/administration/hospitals/${id}/employments`}>
-            <Button outline color="primary">
-              <a>Gérer les ETP</a>
-            </Button>
-          </Link>
-        </div>
 
         <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <FormGroup row>
@@ -308,16 +311,13 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
 
 HospitalDetail.getInitialProps = async (ctx) => {
   const headers = buildAuthHeaders(ctx)
-  console.log("HospitalDetail.getInitialProps -> headers", headers)
 
-  const { id } = ctx.query
-  console.log("HospitalDetail.getInitialProps -> id", id)
+  const { hid } = ctx.query
 
-  if (!id || isNaN(id)) return { hospital: {}, key: Number(new Date()) }
+  if (!hid || isNaN(hid)) return { hospital: {}, key: Number(new Date()) }
 
   try {
-    const hospital = await findHospital({ id, headers })
-    console.log("if -> hospital", hospital)
+    const hospital = await findHospital({ id: hid, headers })
 
     return { hospital }
   } catch (error) {

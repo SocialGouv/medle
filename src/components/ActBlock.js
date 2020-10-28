@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
 import { ButtonDropdown, Col, DropdownItem, DropdownMenu, Row } from "reactstrap"
-import ErrorOutlineOutlinedIcon from "@material-ui/icons/ErrorOutlineOutlined"
 
 import { Button, DropdownToggle, Title2 } from "./StyledComponents"
 import { InputError } from "./InputError"

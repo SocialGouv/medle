@@ -44,6 +44,22 @@ export const handleAPIResponse = async (response) => {
   return response.json()
 }
 
+// TODO : faire une migration progressive sur cette méthode et la renommer à la fin
+export const handleAPIResponse2 = async (response) => {
+  if (!response.ok) {
+    const json = await response.json()
+
+    const { name, message } = json
+
+    const error = new Error(name)
+    error.detail = message
+    logError(error)
+    redirectIfUnauthorized(error)
+    throw error
+  }
+  return response.json()
+}
+
 export const stringifyError = (error) => {
   // eslint-disable-next-line no-unused-vars
   const [stack, ...keys] = Object.getOwnPropertyNames(error)
