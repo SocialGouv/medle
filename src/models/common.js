@@ -65,21 +65,25 @@ const untransform = (JStoDBKeys) => (modelJS) => {
 
   if (Object.keys(extra_data).length) modelDB.extra_data = extra_data
 
-  // Pas d'id pour une création de user
+  // Pas d'id pour une création
   if (!modelJS.id) delete modelDB.id
 
   return modelDB
 }
 
+const untransformAll = (untransform) => (list) => list.map((model) => untransform(model))
+
 export const build = ({ JStoDBKeys, schema }) => {
   const innerTransform = transform(JStoDBKeys)
+  const innerUntransform = untransform(JStoDBKeys)
 
   return {
     // Transform a DB model into JS model
     transform: innerTransform,
     transformAll: transformAll(innerTransform),
     // Transform a JS model into DB model
-    untransform: untransform(JStoDBKeys),
+    untransform: innerUntransform,
+    untransformAll: untransformAll(innerUntransform),
     validate: validate(schema),
     cast: cast(schema),
   }
