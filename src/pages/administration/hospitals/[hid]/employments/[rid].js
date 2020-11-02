@@ -40,12 +40,18 @@ import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "..
 
 const genericError = (
   <div>
-    Oups, il y a des erreurs. <span aria-hidden="true">😕</span>
+    Oups, il y a des erreurs.{" "}
+    <span role="img" aria-hidden="true">
+      😕
+    </span>
   </div>
 )
 const alreadyPresentError = (
   <div>
-    Il existe déjà des ETP de référence pour ce mois. <span aria-hidden="true">😬</span>
+    Il existe déjà des ETP de référence pour ce mois.{" "}
+    <span role="img" aria-hidden="true">
+      😬
+    </span>
   </div>
 )
 

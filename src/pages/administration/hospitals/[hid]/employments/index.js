@@ -58,13 +58,20 @@ const EmploymentsPage = ({ currentUser, references }) => {
       <Container style={{ maxWidth: 980, minWidth: 740 }}>
         <Title2>Historique des ETP de référence</Title2>
 
+        {!references?.length && (
+          <div className="text-center mt-5">
+            <span>
+              <i>Aucun ETP de référence inscrit pour cet établissement.</i>
+            </span>
+          </div>
+        )}
+
         {!error && !!references?.length && (
           <>
             <Table responsive className="table-hover">
               <thead>
                 <tr className="table-light">
-                  <th>Année</th>
-                  <th>Mois</th>
+                  <th>Mois de début</th>
                   <th></th>
                 </tr>
               </thead>
@@ -77,10 +84,7 @@ const EmploymentsPage = ({ currentUser, references }) => {
                   >
                     <tr>
                       <td>
-                        <b>{`${reference.year}`}</b>
-                      </td>
-                      <td>
-                        <b>{`${months[parseInt(reference.month)]}`}</b>
+                        <b>{`${months[parseInt(reference.month)]}`}</b> <b>{`${reference.year}`}</b>
                       </td>
                       <td>
                         <Link
