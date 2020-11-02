@@ -132,11 +132,15 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
         </div>
         <Title1>Hôpital {hospital?.name}</Title1>
 
-        <Link href="/administration/hospitals/[hid]/employments" as={`/administration/hospitals/${id}/employments`}>
-          <Button outline color="primary">
-            <a>Gérer les ETP</a>
-          </Button>
-        </Link>
+        {id ? (
+          <Link href="/administration/hospitals/[hid]/employments" as={`/administration/hospitals/${id}/employments`}>
+            <Button outline color="primary">
+              <a>Gérer les ETP</a>
+            </Button>
+          </Link>
+        ) : (
+          <span></span>
+        )}
       </Container>
 
       <Container style={{ maxWidth: 980, minWidth: 740 }}>
