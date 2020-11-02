@@ -49,10 +49,10 @@ export const handleAPIResponse2 = async (response) => {
   if (!response.ok) {
     const json = await response.json()
 
-    const { name, message } = json
+    const { message, detail } = json
 
-    const error = new Error(name)
-    error.detail = message
+    const error = new Error(message)
+    error.detail = detail
     logError(error)
     redirectIfUnauthorized(error)
     throw error

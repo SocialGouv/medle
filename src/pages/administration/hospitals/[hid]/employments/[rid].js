@@ -6,11 +6,30 @@ import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos"
 
 import { useRouter } from "next/router"
 
-import { Button, Col, Alert, Container, Form, FormFeedback, FormGroup, Input, Label } from "reactstrap"
+import {
+  Button,
+  Col,
+  Alert,
+  Container,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+} from "reactstrap"
 
 import Layout from "../../../../../components/Layout"
-import MonthPicker from "../../../../../components/MonthPicker"
-import { createReferences, findReference, updateReferences } from "../../../../../clients/employments-references"
+import MonthPicker, { months } from "../../../../../components/MonthPicker"
+import {
+  createReferences,
+  deleteReference,
+  findReference,
+  updateReferences,
+} from "../../../../../clients/employments-references"
 import { Title1, Title2 } from "../../../../../components/StyledComponents"
 import { now } from "../../../../../utils/date"
 import { logDebug, logError } from "../../../../../utils/logger"
@@ -19,18 +38,29 @@ import { ADMIN } from "../../../../../utils/roles"
 import { isEmpty } from "../../../../../utils/misc"
 import { buildAuthHeaders, redirectIfUnauthorized, withAuthentication } from "../../../../../utils/auth"
 
+const genericError = (
+  <div>
+    Oups, il y a des erreurs. <span aria-hidden="true">😕</span>
+  </div>
+)
+const alreadyPresentError = (
+  <div>
+    Il existe déjà des ETP de référence pour ce mois. <span aria-hidden="true">😬</span>
+  </div>
+)
+
 const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
   const router = useRouter()
   const { hid } = router.query
 
-  const [hospital] = getReferenceData("hospitals").filter((hospital) => hospital.id === parseInt(hid))
+  const [hospital] = getReferenceData("hospitals").filter((hospital) => hospital.id === Number(hid))
 
   const dateNow = now()
   const year = dateNow.year()
   const month = dateNow.month()
 
   let defaultValues = {
-    startMonth: data ? { year: data.year, month: parseInt(data.month, 10) } : { year, month },
+    startMonth: data ? { year: data.year, month: Number(data.month) } : { year, month },
   }
 
   if (data?.reference) {
@@ -43,6 +73,27 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
 
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+
+  const [modal, setModal] = useState(false)
+
+  const toggle = () => setModal(!modal)
+
+  const p = () => {
+    toggle()
+
+    const del = async () => {
+      try {
+        const { deleted } = await deleteReference({ hospitalId: hid, referencesId: data?.id })
+        logDebug(`Nb deleted rows: ${deleted}`)
+
+        router.push("/administration/hospitals/[hid]/employments", `/administration/hospitals/${hid}/employments`)
+      } catch (error) {
+        setError(genericError)
+      }
+    }
+
+    del()
+  }
 
   const onSubmit = async (formData) => {
     setSuccess("")
@@ -71,8 +122,9 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
         }
       }
     } catch (error) {
-      console.error(error)
-      setError(error.detail || "Erreur serveur.")
+      logError(error)
+      if (error.message.match(/Il existe déjà des ETP de référence/)) setError(alreadyPresentError)
+      else setError(genericError)
     }
   }
 
@@ -281,7 +333,35 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
               {!data?.id ? "Ajouter" : "Modifier"}
             </Button>
           </div>
+          {!isEmpty(data?.id) && (
+            <div style={{ border: "1px solid tomato" }} className="px-4 py-3 mt-5 rounded">
+              <Title1 className="mb-4">Zone dangereuse</Title1>
+              <div className="d-flex justify-content-between align-items-center">
+                Je souhaite supprimer cet enregistrement
+                <Button className="" color="danger" outline onClick={toggle}>
+                  Supprimer
+                </Button>
+              </div>
+            </div>
+          )}
         </Form>
+        <div>
+          <Modal isOpen={modal} toggle={toggle}>
+            <ModalHeader toggle={toggle}>
+              Voulez-vous supprimer les ETP de références pour le mois de {months[Number(data?.month)]}?
+            </ModalHeader>
+            <ModalBody>Cette action est irréversible.</ModalBody>
+
+            <ModalFooter>
+              <Button color="primary" outline onClick={toggle}>
+                Annuler
+              </Button>
+              <Button color="danger" onClick={p}>
+                Supprimer
+              </Button>
+            </ModalFooter>
+          </Modal>
+        </div>
       </Container>
     </Layout>
   )

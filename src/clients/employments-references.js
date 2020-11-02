@@ -1,5 +1,5 @@
 import fetch from "isomorphic-unfetch"
-import { METHOD_POST, METHOD_PUT } from "../utils/http"
+import { METHOD_DELETE, METHOD_POST, METHOD_PUT } from "../utils/http"
 
 import { API_URL, HOSPITALS_ENDPOINT } from "../config"
 import { handleAPIResponse, handleAPIResponse2 } from "../utils/errors"
@@ -34,6 +34,14 @@ export const findReferences = async ({ hospitalId, headers }) => {
 
 export const findReference = async ({ hospitalId, referencesId, headers }) => {
   const response = await fetch(`${API_URL}${HOSPITALS_ENDPOINT}/${hospitalId}/employments-references/${referencesId}`, {
+    headers,
+  })
+  return handleAPIResponse(response)
+}
+
+export const deleteReference = async ({ hospitalId, referencesId, headers }) => {
+  const response = await fetch(`${API_URL}${HOSPITALS_ENDPOINT}/${hospitalId}/employments-references/${referencesId}`, {
+    method: METHOD_DELETE,
     headers,
   })
   return handleAPIResponse(response)
