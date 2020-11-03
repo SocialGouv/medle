@@ -65,7 +65,7 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
 
   const dateNow = now()
   const year = dateNow.year()
-  const month = dateNow.month()
+  const month = String(dateNow.month() + 1)
 
   let defaultValues = {
     startMonth: data ? { year: data.year, month: data.month } : { year, month },
