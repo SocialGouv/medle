@@ -13,8 +13,7 @@ export const searchByMonth = async ({ hid }, { year, month }) => {
   const [reference] = await knex("employments_references")
     .whereNull("deleted_at")
     .where("hospital_id", hid)
-    .where("year", year)
-    .whereRaw("month::int >= ?", month)
+    .whereRaw("year || month  <= ?", new String(year) + month)
     .orderBy([
       { column: "year", order: "desc" },
       { column: "month", order: "desc" },

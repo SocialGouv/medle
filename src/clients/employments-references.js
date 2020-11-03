@@ -40,7 +40,7 @@ export const findReference = async ({ hospitalId, referencesId, headers }) => {
 }
 
 export const searchReferenceForMonth = async ({ hospitalId, year, month, headers }) => {
-  const query = `?type=searchByMonth&year=${year}&month=${month}`
+  const query = `?type=searchByMonth&year`
   const response = await fetch(`${API_URL}${HOSPITALS_ENDPOINT}/${hospitalId}/employments-references/${query}`, {
     headers: { ...headers, "Content-Type": "application/json" },
     method: METHOD_POST,
