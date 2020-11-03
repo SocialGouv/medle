@@ -11,7 +11,7 @@ const Badge = ({ value }) =>
   )
 
 Badge.propTypes = {
-  value: PropTypes.number,
+  value: PropTypes.string,
 }
 
 export default Badge

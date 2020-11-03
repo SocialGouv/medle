@@ -15,24 +15,9 @@ import { findEmployment, updateEmployment } from "../clients/employments"
 import { searchReferenceForMonth } from "../clients/employments-references"
 import { Title1, Title2, Label, ValidationButton } from "../components/StyledComponents"
 import { isEmpty, pluralize } from "../utils/misc"
-import { now } from "../utils/date"
+import { now, NAME_MONTHS } from "../utils/date"
 import { logError } from "../utils/logger"
 import { STATUS_400_BAD_REQUEST, STATUS_401_UNAUTHORIZED, STATUS_403_FORBIDDEN } from "../utils/http"
-
-const NAME_MONTHS = {
-  "01": "janvier",
-  "02": "février",
-  "03": "mars",
-  "04": "avril",
-  "05": "mai",
-  "06": "juin",
-  "07": "juillet",
-  "08": "août",
-  "09": "septembre",
-  "10": "octobre",
-  "11": "novembre",
-  "12": "décembre",
-}
 
 const makeLabel = (number) => (number ? `${number} ETP prévu${pluralize(number)}` : null)
 
@@ -343,7 +328,7 @@ FillEmploymentsPage.getInitialProps = async (ctx) => {
 }
 
 FillEmploymentsPage.propTypes = {
-  etpBase: PropTypes.array,
+  etpBase: PropTypes.object,
   year: PropTypes.string.isRequired,
   allMonths: PropTypes.array.isRequired,
   currentMonth: PropTypes.string.isRequired,

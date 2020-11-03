@@ -1,35 +1,24 @@
 import React from "react"
 import PropTypes from "prop-types"
 
-export const months = [
-  "janvier",
-  "février",
-  "mars",
-  "avril",
-  "mai",
-  "juin",
-  "juillet",
-  "août",
-  "septembre",
-  "octobre",
-  "novembre",
-  "décembre",
-]
+import { NAME_MONTHS } from "../utils/date"
+
+const formatMonth = (monthNumber) => monthNumber.toString().padStart(2, "0")
 
 const MonthPicker = ({ value, onChange }) => {
   const { year, month } = value
 
   const add = () => {
     onChange({
-      year: value.month === months.length - 1 ? value.year + 1 : value.year,
-      month: (value.month + 1) % 12,
+      year: value.month === "12" ? value.year + 1 : value.year,
+      month: formatMonth((Number(value.month) % 12) + 1),
     })
   }
 
   const substract = () => {
     onChange({
-      year: value.month === 0 ? value.year - 1 : value.year,
-      month: value.month > 0 ? value.month - 1 : 11,
+      year: value.month === "01" ? value.year - 1 : value.year,
+      month: value.month === "01" ? "12" : formatMonth(Number(value.month) - 1),
     })
   }
 
@@ -61,7 +50,7 @@ const MonthPicker = ({ value, onChange }) => {
         ></path>
       </svg>
       <span className="d-inline-block text-center" style={{ width: 120 }}>
-        {months[month]} {year}
+        {NAME_MONTHS[month]} {year}
       </span>
 
       <svg
@@ -86,7 +75,10 @@ const MonthPicker = ({ value, onChange }) => {
 }
 
 MonthPicker.propTypes = {
-  value: PropTypes.object,
+  value: PropTypes.shape({
+    year: PropTypes.number.isRequired,
+    month: PropTypes.string.isRequired,
+  }),
   onChange: PropTypes.func,
 }
 

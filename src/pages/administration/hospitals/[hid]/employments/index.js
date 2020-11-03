@@ -14,7 +14,7 @@ import { getReferenceData } from "../../../../../utils/init"
 
 import { SearchButton } from "../../../../../components/form/SearchButton"
 import { Title1, Title2 } from "../../../../../components/StyledComponents"
-import { months } from "../../../../../components/MonthPicker"
+import { NAME_MONTHS } from "../../../../../utils/date"
 import Layout from "../../../../../components/Layout"
 
 import { ADMIN } from "../../../../../utils/roles"
@@ -25,7 +25,7 @@ const EmploymentsPage = ({ currentUser, references }) => {
 
   const { hid } = router.query
 
-  const [hospital] = getReferenceData("hospitals").filter((hospital) => hospital.id === parseInt(hid))
+  const [hospital] = getReferenceData("hospitals").filter((hospital) => hospital.id === Number(hid))
 
   return (
     <Layout page="hospitals" currentUser={currentUser} admin={true}>
@@ -84,7 +84,7 @@ const EmploymentsPage = ({ currentUser, references }) => {
                   >
                     <tr>
                       <td>
-                        <b>{`${months[parseInt(reference.month)]}`}</b> <b>{`${reference.year}`}</b>
+                        <b>{`${NAME_MONTHS[reference.month]}`}</b> <b>{`${reference.year}`}</b>
                       </td>
                       <td>
                         <Link

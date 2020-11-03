@@ -23,7 +23,9 @@ import {
 } from "reactstrap"
 
 import Layout from "../../../../../components/Layout"
-import MonthPicker, { months } from "../../../../../components/MonthPicker"
+import MonthPicker from "../../../../../components/MonthPicker"
+import { NAME_MONTHS, now } from "../../../../../utils/date"
+
 import {
   createReferences,
   deleteReference,
@@ -31,7 +33,7 @@ import {
   updateReferences,
 } from "../../../../../clients/employments-references"
 import { Title1, Title2 } from "../../../../../components/StyledComponents"
-import { now } from "../../../../../utils/date"
+
 import { logDebug, logError } from "../../../../../utils/logger"
 import { getReferenceData } from "../../../../../utils/init"
 import { ADMIN } from "../../../../../utils/roles"
@@ -66,7 +68,7 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
   const month = dateNow.month()
 
   let defaultValues = {
-    startMonth: data ? { year: data.year, month: Number(data.month) } : { year, month },
+    startMonth: data ? { year: data.year, month: data.month } : { year, month },
   }
 
   if (data?.reference) {
@@ -354,7 +356,7 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
         <div>
           <Modal isOpen={modal} toggle={toggle}>
             <ModalHeader toggle={toggle}>
-              Voulez-vous supprimer les ETP de références pour le mois de {months[Number(data?.month)]}?
+              Voulez-vous supprimer les ETP de références pour le mois de {NAME_MONTHS[data?.month]}?
             </ModalHeader>
             <ModalBody>Cette action est irréversible.</ModalBody>
 
