@@ -1,23 +1,25 @@
 import knex from "../../knex/knex"
 import { APIError } from "../../utils/errors"
 import { STATUS_400_BAD_REQUEST } from "../../utils/http"
-import { transformAll } from "../../models/employments-references"
+import { transform } from "../../models/employments-references"
 
-export const findAll = async ({ hid }) => {
-  if (!hid)
+export const searchByMonth = async ({ hid }, { year, month }) => {
+  if (!hid || !year || isNaN(year) || !month || isNaN(month))
     throw new APIError({
       status: STATUS_400_BAD_REQUEST,
       message: "Bad request",
     })
 
-  const results = await knex("employments_references")
+  const [reference] = await knex("employments_references")
     .whereNull("deleted_at")
     .where("hospital_id", hid)
+    .where("year", year)
+    .whereRaw("month::int >= ?", month)
     .orderBy([
       { column: "year", order: "desc" },
       { column: "month", order: "desc" },
     ])
     .select("id", "year", "month", "hospital_id", "reference")
 
-  return results ? transformAll(results) : []
+  return reference ? transform(reference) : []
 }

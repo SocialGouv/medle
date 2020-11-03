@@ -8,11 +8,11 @@ import { withAuthentication, getCurrentUser, buildAuthHeaders, redirectIfUnautho
 import { isAllowed, EMPLOYMENT_CONSULTATION, EMPLOYMENT_MANAGEMENT } from "../utils/roles"
 import Badge from "../components/Badge"
 import Layout from "../components/Layout"
-import AccordionEmploymentsMonth, {
-  hasErrors,
-  fetchDataMonth,
-  updateDataMonth,
-} from "../components/AccordionEmploymentsMonth"
+import AccordionEmploymentsMonth, { hasErrors } from "../components/AccordionEmploymentsMonth"
+
+import { findEmployment, updateEmployment } from "../clients/employments"
+
+import { searchReferenceForMonth } from "../clients/employments-references"
 import { Title1, Title2, Label, ValidationButton } from "../components/StyledComponents"
 import { isEmpty, pluralize } from "../utils/misc"
 import { now } from "../utils/date"
@@ -72,7 +72,7 @@ const FillEmploymentsPage = ({
     }
 
     try {
-      await updateDataMonth({ hospitalId: hospital.id, year, month: monthNumber, dataMonth })
+      await updateEmployment({ hospitalId: hospital.id, year, month: monthNumber, dataMonth })
 
       setSuccess("Vos informations ont bien été enregistrées.")
     } catch (error) {
@@ -287,7 +287,7 @@ FillEmploymentsPage.getInitialProps = async (ctx) => {
   const { currentYear, currentMonth, allMonths } = buildDates()
 
   try {
-    const authHeaders = buildAuthHeaders(ctx)
+    const headers = buildAuthHeaders(ctx)
 
     const { hospital } = getCurrentUser(ctx)
 
@@ -295,15 +295,22 @@ FillEmploymentsPage.getInitialProps = async (ctx) => {
       throw new Error("Vous n'avez pas d'établissement de santé à gérer.")
     }
 
-    const json = await fetchDataMonth({
+    const json = await findEmployment({
       hospitalId: hospital.id,
       year: currentYear,
       month: currentMonth,
-      authHeaders,
+      headers,
+    })
+
+    const etpReference = await searchReferenceForMonth({
+      hospitalId: hospital.id,
+      year: currentYear,
+      month: currentMonth,
+      headers,
     })
 
     return {
-      etpBase: hospital?.etp,
+      etpBase: etpReference.reference,
       currentMonth,
       currentMonthName: NAME_MONTHS[currentMonth] + " " + currentYear,
       dataMonth: json,

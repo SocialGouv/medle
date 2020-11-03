@@ -39,6 +39,16 @@ export const findReference = async ({ hospitalId, referencesId, headers }) => {
   return handleAPIResponse(response)
 }
 
+export const searchReferenceForMonth = async ({ hospitalId, year, month, headers }) => {
+  const query = `?type=searchByMonth&year=${year}&month=${month}`
+  const response = await fetch(`${API_URL}${HOSPITALS_ENDPOINT}/${hospitalId}/employments-references/${query}`, {
+    headers: { ...headers, "Content-Type": "application/json" },
+    method: METHOD_POST,
+    body: JSON.stringify({ year, month }),
+  })
+  return handleAPIResponse2(response)
+}
+
 export const deleteReference = async ({ hospitalId, referencesId, headers }) => {
   const response = await fetch(`${API_URL}${HOSPITALS_ENDPOINT}/${hospitalId}/employments-references/${referencesId}`, {
     method: METHOD_DELETE,
