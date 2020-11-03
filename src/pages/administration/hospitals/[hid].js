@@ -135,7 +135,7 @@ const HospitalDetail = ({ hospital = {}, currentUser, error: initialError }) => 
         {id ? (
           <Link href="/administration/hospitals/[hid]/employments" as={`/administration/hospitals/${id}/employments`}>
             <Button outline color="primary">
-              <a>Gérer les ETP</a>
+              <a>Gérer les ETP de référence</a>
             </Button>
           </Link>
         ) : (
