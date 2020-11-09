@@ -26,7 +26,7 @@
     "@sentry/integrations": "^5.27.2",
     "@sentry/node": "^5.27.2",
     "@mdx-js/loader": "^1.6.19",
-    "@next/mdx": "^9.5.5",
+    "@next/mdx": "^10.0.0",
     "@socialgouv/bootstrap.core": "^0.2.1",
     "@socialgouv/jours-feries": "^2.0.0",
     "bcryptjs": "^2.4.3",
