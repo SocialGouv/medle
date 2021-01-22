@@ -1,0 +1,259 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`kosko generate --dev 1`] = `
+"---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    field.cattle.io/creatorId: gitlab
+    field.cattle.io/projectId: c-f8qps:p-46tj7
+    git/branch: beta-db-12
+    git/remote: >-
+      https://gitlab-ci-token:[MASKED]@gitlab.factory.social.gouv.fr/SocialGouv/medle.git
+    app.gitlab.com/app: socialgouv-medle
+    app.gitlab.com/env: beta-db-12-dev2
+    app.gitlab.com/env.name: beta-db-12-dev2
+  labels:
+    azure-pg-admin-user: medle
+    application: xyz42-medle
+    owner: medle
+    team: medle
+    cert: wildcard
+  name: medle-85-beta-db-12-dev2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.gitlab.com/app: socialgouv-medle
+    app.gitlab.com/env: beta-db-12-dev2
+    app.gitlab.com/env.name: beta-db-12-dev2
+  labels:
+    app: app
+    application: xyz42-medle
+    owner: medle
+    team: medle
+    cert: wildcard
+  name: app
+  namespace: medle-85-beta-db-12-dev2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      annotations:
+        app.gitlab.com/app: socialgouv-medle
+        app.gitlab.com/env: beta-db-12-dev2
+        app.gitlab.com/env.name: beta-db-12-dev2
+      labels:
+        app: app
+        application: xyz42-medle
+        owner: medle
+        team: medle
+        cert: wildcard
+    spec:
+      containers:
+        - image: registry.gitlab.factory.social.gouv.fr/socialgouv/medle/app:yz42
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 5
+          name: app
+          ports:
+            - containerPort: 3000
+              name: http
+          readinessProbe:
+            failureThreshold: 15
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          startupProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+          envFrom:
+            - configMapRef:
+                name: app-configmap
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+  annotations:
+    app.gitlab.com/app: socialgouv-medle
+    app.gitlab.com/env: beta-db-12-dev2
+    app.gitlab.com/env.name: beta-db-12-dev2
+  labels:
+    application: xyz42-medle
+    owner: medle
+    team: medle
+    cert: wildcard
+  namespace: medle-85-beta-db-12-dev2
+data:
+  NODE_ENV: production
+  PORT: '3000'
+  API_URL: /api
+  POSTGRES_SSL: 'true'
+  JWT_SECRET: helloworld
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: app
+    application: xyz42-medle
+    owner: medle
+    team: medle
+    cert: wildcard
+  name: app
+  annotations:
+    app.gitlab.com/app: socialgouv-medle
+    app.gitlab.com/env: beta-db-12-dev2
+    app.gitlab.com/env.name: beta-db-12-dev2
+  namespace: medle-85-beta-db-12-dev2
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+  selector:
+    app: app
+  type: ClusterIP
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    app.gitlab.com/app: socialgouv-medle
+    app.gitlab.com/env: beta-db-12-dev2
+    app.gitlab.com/env.name: beta-db-12-dev2
+  labels:
+    app: app
+    application: xyz42-medle
+    owner: medle
+    team: medle
+    cert: wildcard
+  name: app
+  namespace: medle-85-beta-db-12-dev2
+spec:
+  rules:
+    - host: xyz42-medle.dev2.fabrique.social.gouv.fr
+      http:
+        paths:
+          - backend:
+              serviceName: app
+              servicePort: 80
+            path: /
+  tls:
+    - hosts:
+        - xyz42-medle.dev2.fabrique.social.gouv.fr
+      secretName: wildcard-crt
+---
+apiVersion: batch/v1
+kind: Job
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+        - command:
+            - create-db-user
+          env:
+            - name: NEW_DB_NAME
+              value: autodevops_c58c0974
+            - name: NEW_USER
+              value: user_c58c0974
+            - name: NEW_PASSWORD
+              value: password_c58c0974
+            - name: NEW_DB_EXTENSIONS
+              value: hstore pgcrypto citext uuid-ossp
+          envFrom:
+            - secretRef:
+                name: azure-pg-admin-user
+          image: >-
+            registry.gitlab.factory.social.gouv.fr/socialgouv/docker/azure-db:2.6.1
+          imagePullPolicy: IfNotPresent
+          name: create-db-user
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+      restartPolicy: Never
+    metadata:
+      annotations:
+        app.gitlab.com/app: socialgouv-medle
+        app.gitlab.com/env: beta-db-12-dev2
+        app.gitlab.com/env.name: beta-db-12-dev2
+      labels:
+        application: xyz42-medle
+        owner: medle
+        team: medle
+        cert: wildcard
+  ttlSecondsAfterFinished: 86400
+metadata:
+  annotations:
+    app.gitlab.com/app: socialgouv-medle
+    app.gitlab.com/env: beta-db-12-dev2
+    app.gitlab.com/env.name: beta-db-12-dev2
+  labels:
+    application: xyz42-medle
+    owner: medle
+    team: medle
+    cert: wildcard
+  name: create-db-job-c58c0974
+  namespace: medle-85-beta-db-12-dev2
+---
+apiVersion: v1
+kind: Secret
+stringData:
+  DATABASE_URL: >-
+    postgresql://user_c58c0974%40medledevserver.postgres.database.azure.com:password_c58c0974@medledevserver.postgres.database.azure.com/autodevops_c58c0974?sslmode=require
+  DB_URI: >-
+    postgresql://user_c58c0974%40medledevserver.postgres.database.azure.com:password_c58c0974@medledevserver.postgres.database.azure.com/autodevops_c58c0974?sslmode=require
+  HASURA_GRAPHQL_DATABASE_URL: >-
+    postgresql://user_c58c0974%40medledevserver.postgres.database.azure.com:password_c58c0974@medledevserver.postgres.database.azure.com/autodevops_c58c0974?sslmode=require
+  PGDATABASE: autodevops_c58c0974
+  PGHOST: medledevserver.postgres.database.azure.com
+  PGPASSWORD: password_c58c0974
+  PGRST_DB_URI: >-
+    postgresql://user_c58c0974%40medledevserver.postgres.database.azure.com:password_c58c0974@medledevserver.postgres.database.azure.com/autodevops_c58c0974?sslmode=require
+  PGSSLMODE: require
+  PGUSER: user_c58c0974@medledevserver.postgres.database.azure.com
+metadata:
+  annotations:
+    app.gitlab.com/app: socialgouv-medle
+    app.gitlab.com/env: beta-db-12-dev2
+    app.gitlab.com/env.name: beta-db-12-dev2
+  labels:
+    application: xyz42-medle
+    owner: medle
+    team: medle
+    cert: wildcard
+  name: azure-pg-user-c58c0974
+  namespace: medle-85-beta-db-12-dev2
+"
+`;

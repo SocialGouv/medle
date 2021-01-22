@@ -1,11 +1,11 @@
 include:
   - project: SocialGouv/gitlab-ci-yml
     file: /autodevops.yml
-    ref: v17.3.0
+    ref: v20.4.0
 
 variables:
   AUTO_DEVOPS_RELEASE_AUTO: "🔖"
-  AUTO_DEVOPS_PRODUCTION_AUTO: "🚀"
+  #AUTO_DEVOPS_PRODUCTION_AUTO: "🚀"
   NOTIFY_DISABLED: 1
 
 stages:
