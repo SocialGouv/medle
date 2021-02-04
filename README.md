@@ -225,3 +225,4 @@ INSERT INTO askers (name, type) VALUES ('CRS autoroutière', 'primary');
 ```
 
 test 1
+test 2
