@@ -72,7 +72,7 @@ export const ROLES_DESCRIPTION = {
 const START_PAGES = {
   ADMIN_HOSPITAL: "/acts",
   OPERATOR_ACT: "/acts",
-  OPERATOR_EMPLOYMENT: "/fillEmployments",
+  OPERATOR_EMPLOYMENT: "/employments",
 }
 
 export const startPageForRole = (role) => START_PAGES[role] || "/statistics"
