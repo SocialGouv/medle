@@ -121,7 +121,7 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
           <Badge value={makeLabel(reference?.executives)} />
         </Col>
       </Row>
-      <Row className="mt-4">
+      <Row className="my-4">
         <Col className="mr-3">
           <Label htmlFor="ides">IDE</Label>
           <Input

@@ -1,6 +1,6 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
-import React, { useState } from "react"
+import React from "react"
 import { Alert, Container } from "reactstrap"
 import Select from "react-select"
 
@@ -10,7 +10,6 @@ import { Title1, Title2 } from "../components/StyledComponents"
 import { getCurrentUser, redirectIfUnauthorized, withAuthentication } from "../utils/auth"
 import { NAME_MONTHS, now } from "../utils/date"
 import { logError } from "../utils/logger"
-import { isEmpty } from "../utils/misc"
 import { EMPLOYMENT_CONSULTATION } from "../utils/roles"
 
 function composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, currentUser }) {
@@ -63,10 +62,7 @@ const EmploymentsPage = ({ currentUser }) => {
 
   React.useEffect(() => {
     setEmploymentDataMonths(composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, currentUser }))
-  }, [selectedYear])
-
-  const [errors, setErrors] = useState()
-  const [success, setSuccess] = useState("")
+  }, [currentYear, currentMonth, selectedYear, currentUser])
 
   const { hospital } = currentUser
 
@@ -98,9 +94,9 @@ const EmploymentsPage = ({ currentUser }) => {
 
   return (
     <Layout page="employments" currentUser={currentUser}>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Title1 className="mt-5 mb-5 mr-5">{"Déclaration du personnel"}</Title1>
-        <div style={{ flexGrow: 1, maxWidth: 100 }}>
+      <div className="d-flex flex-column flex-md-row justify-content-center align-items-center">
+        <Title1 className="mt-5 mb-2 mb-md-5 mr-5">{"Déclaration du personnel"}</Title1>
+        <div className="flex-grow-1 mb-3 mb-md-0" style={{ maxWidth: 100 }}>
           <Select options={yearsOptions} defaultValue={yearsOptions[0]} onChange={handleYearChange} />
         </div>
       </div>
@@ -118,8 +114,6 @@ const EmploymentsPage = ({ currentUser }) => {
             .
           </small>
         </p>
-        {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
-        {success && <Alert color="primary">{success}</Alert>}
 
         {employmentDataMonths}
       </Container>
