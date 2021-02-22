@@ -1,11 +1,12 @@
-import React from "react"
-import { render, screen } from "@testing-library/react"
 import "@testing-library/jest-dom/extend-expect"
+
+import { render, screen } from "@testing-library/react"
+import React from "react"
 
 import LoginPage from "../../../pages/index"
 
 test("it should display alerts", async () => {
-  render(<LoginPage message="Session terminée" welcomeMessage="Les ETP sont à remplir avant le mois de mars." />)
+  render(<LoginPage message="Session terminée" welcomeMessages={["Les ETP sont à remplir avant le mois de mars."]} />)
 
   expect(screen.getAllByRole("alert")).toMatchInlineSnapshot(`
     Array [
