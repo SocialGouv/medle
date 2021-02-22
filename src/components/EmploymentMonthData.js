@@ -5,16 +5,14 @@ import PropTypes from "prop-types"
 import React, { useEffect, useState } from "react"
 import { Alert, Button, Col, FormFeedback, Input, Row } from "reactstrap"
 
-import { ValidationButton, AnchorButton, Label } from "../components/StyledComponents"
-import { NAME_MONTHS } from "../utils/date"
-
 import { findEmployment, updateEmployment } from "../clients/employments"
 import { searchReferenceForMonth } from "../clients/employments-references"
-import Badge from "./Badge"
-
+import { AnchorButton, Label, ValidationButton } from "../components/StyledComponents"
+import { NAME_MONTHS } from "../utils/date"
 import { logError } from "../utils/logger"
 import { isEmpty, pluralize } from "../utils/misc"
 import { EMPLOYMENT_MANAGEMENT, isAllowed } from "../utils/roles"
+import Badge from "./Badge"
 
 const makeLabel = (number) => (number ? `${number} ETP prévu${pluralize(number)}` : null)
 
@@ -195,9 +193,21 @@ const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, cu
   const [dataMonth, setDataMonth] = useState({})
   const [reference, setReference] = useState({})
 
+  const [success, setSuccess] = useState("")
+
   const { hospital } = currentUser
 
   const monthName = NAME_MONTHS[month] + " " + year
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setSuccess("")
+    }, 2000)
+
+    return () => {
+      clearInterval(timeoutId)
+    }
+  }, [success, setSuccess])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -239,6 +249,8 @@ const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, cu
     }
     try {
       await updateEmployment({ hospitalId: hospital.id, year, month, dataMonth })
+      setSuccess("Vos informations ont bien été enregistrées.")
+
       toggleReadOnly()
     } catch (error) {
       logError(error)
@@ -246,10 +258,14 @@ const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, cu
     }
   }
 
-  // affichage spécial pour le mois courant
+  // Specific display for current month.
   if (isCurrentMonth)
     return (
       <>
+        {success && <Alert color="primary">{success}</Alert>}
+
+        {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
+
         <FormEmployment errors={errors} dataMonth={dataMonth} handleChange={handleChange} reference={reference} />
         {isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) && (
           <div className="my-5 text-center">
@@ -279,6 +295,8 @@ const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, cu
                 <AnchorButton onClick={handleUpdate}>Enregistrer</AnchorButton>
               )}
           </div>
+
+          {success && <Alert color="primary">{success}</Alert>}
 
           {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
 

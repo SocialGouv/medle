@@ -1,8 +1,8 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 import React from "react"
-import { Alert, Container } from "reactstrap"
 import Select from "react-select"
+import { Alert, Container } from "reactstrap"
 
 import EmploymentMonthData from "../components/EmploymentMonthData"
 import Layout from "../components/Layout"
