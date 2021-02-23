@@ -4,7 +4,7 @@ import React from "react"
 import Select from "react-select"
 import { Alert, Container } from "reactstrap"
 
-import EmploymentMonthData from "../components/EmploymentMonthData"
+import { CurrentMonthEmployments, PassedMonthEmployments } from "../components/EmploymentMonthData"
 import Layout from "../components/Layout"
 import { Title1, Title2 } from "../components/StyledComponents"
 import { getCurrentUser, redirectIfUnauthorized, withAuthentication } from "../utils/auth"
@@ -15,20 +15,19 @@ import { EMPLOYMENT_CONSULTATION } from "../utils/roles"
 function composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, currentUser }) {
   if (currentYear === selectedYear) {
     return [
-      <EmploymentMonthData
+      <CurrentMonthEmployments
         key={currentMonth}
         month={currentMonth}
         year={selectedYear}
         currentUser={currentUser}
         readOnly={false}
-        isCurrentMonth={true}
       />,
       Array(Number(currentMonth - 1))
         .fill(0)
         .map((_, index) => String(index + 1).padStart(2, "0"))
         .reverse()
         .map((month) => (
-          <EmploymentMonthData
+          <PassedMonthEmployments
             key={month}
             month={month}
             year={selectedYear}
@@ -44,7 +43,7 @@ function composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, c
     .map((_, index) => String(index + 1).padStart(2, "0"))
     .reverse()
     .map((month) => (
-      <EmploymentMonthData key={month} month={month} year={selectedYear} currentUser={currentUser} readOnly={true} />
+      <PassedMonthEmployments key={month} month={month} year={selectedYear} currentUser={currentUser} readOnly={true} />
     ))
 }
 

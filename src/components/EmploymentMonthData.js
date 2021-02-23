@@ -3,7 +3,7 @@ import EditOutlinedIcon from "@material-ui/icons/Edit"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import PropTypes from "prop-types"
 import React, { useEffect, useState } from "react"
-import { Alert, Button, Col, Form, FormFeedback, Input, Row } from "reactstrap"
+import { Alert, Button, Col, Form, Input, Row } from "reactstrap"
 
 import { findEmployment, updateEmployment } from "../clients/employments"
 import { searchReferenceForMonth } from "../clients/employments-references"
@@ -44,7 +44,7 @@ export const hasErrors = (dataMonth) => {
   return errors
 }
 
-const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly = false }) => {
+const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }) => {
   return (
     <>
       <Row>
@@ -55,14 +55,12 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
             type="number"
             min={0}
             step="0.05"
-            invalid={!!errors?.doctors}
             placeholder="ex: 2,1"
             value={dataMonth?.["doctors"] || ""}
             onChange={handleChange}
             disabled={readOnly}
             autoComplete="off"
           />
-          <FormFeedback>{errors?.doctors}</FormFeedback>
 
           <Badge value={makeLabel(reference?.doctors)} />
         </Col>
@@ -73,14 +71,12 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
             type="number"
             min={0}
             step="0.05"
-            invalid={!!errors?.secretaries}
             placeholder="ex: 2,1"
             value={dataMonth?.["secretaries"] || ""}
             onChange={handleChange}
             disabled={readOnly}
             autoComplete="off"
           />
-          <FormFeedback>{errors?.secretaries}</FormFeedback>
           <Badge value={makeLabel(reference?.secretaries)} />
         </Col>
         <Col className="mr-3">
@@ -90,7 +86,6 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
             type="number"
             min={0}
             step="0.05"
-            invalid={!!errors?.nursings}
             placeholder="ex: 2,1"
             value={dataMonth?.["nursings"] || ""}
             onChange={handleChange}
@@ -98,7 +93,6 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
             autoComplete="off"
           />
 
-          <FormFeedback>{errors?.nursings}</FormFeedback>
           <Badge value={makeLabel(reference?.nursings)} />
         </Col>
         <Col className="mr-3">
@@ -108,14 +102,12 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
             type="number"
             min={0}
             step="0.05"
-            invalid={!!errors?.executives}
             placeholder="ex: 2,1"
             value={dataMonth?.["executives"] || ""}
             onChange={handleChange}
             disabled={readOnly}
             autoComplete="off"
           />
-          <FormFeedback>{errors?.executives}</FormFeedback>
           <Badge value={makeLabel(reference?.executives)} />
         </Col>
       </Row>
@@ -127,14 +119,12 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
             type="number"
             min={0}
             step="0.05"
-            invalid={!!errors?.ides}
             placeholder="ex: 2,1"
             value={dataMonth?.["ides"] || ""}
             onChange={handleChange}
             disabled={readOnly}
             autoComplete="off"
           />
-          <FormFeedback>{errors?.ides}</FormFeedback>
           <Badge value={makeLabel(reference?.ides)} />
         </Col>
         <Col className="mr-3">
@@ -144,14 +134,12 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
             type="number"
             min={0}
             step="0.05"
-            invalid={!!errors?.auditoriumAgents}
             placeholder="ex: 2,1"
             value={dataMonth?.["auditoriumAgents"] || ""}
             onChange={handleChange}
             disabled={readOnly}
             autoComplete="off"
           />
-          <FormFeedback>{errors?.auditoriumAgents}</FormFeedback>
           <Badge value={makeLabel(reference?.auditoriumAgents)} />
         </Col>
         <Col className="mr-3">
@@ -161,14 +149,12 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
             type="number"
             min={0}
             step="0.05"
-            invalid={!!errors?.others}
             placeholder="ex: 2,1"
             value={dataMonth?.["others"] || ""}
             onChange={handleChange}
             disabled={readOnly}
             autoComplete="off"
           />
-          <FormFeedback>{errors?.others}</FormFeedback>
           <Badge value={makeLabel(reference?.others)} />
         </Col>
         <Col className="mr-3" />
@@ -178,7 +164,6 @@ const FormEmployment = ({ errors, dataMonth, handleChange, reference, readOnly =
 }
 
 FormEmployment.propTypes = {
-  errors: PropTypes.object,
   dataMonth: PropTypes.object,
   reference: PropTypes.object,
   handleChange: PropTypes.func,
@@ -187,15 +172,31 @@ FormEmployment.propTypes = {
 
 const composeMonthName = (month, year) => NAME_MONTHS[month] + " " + year
 
-const CurrentMonthEmployments = () => {
-  const { currentUser, success, errors, handleSubmit, handleChange, dataMonth, reference } = useEmploymentContext()
+const Messages = ({ success, errors }) => (
+  <>
+    {success && <Alert color="primary">{success}</Alert>}
+
+    {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
+  </>
+)
+
+Messages.propTypes = {
+  success: PropTypes.string,
+  errors: PropTypes.object,
+}
+
+export const CurrentMonthEmployments = ({ month, year, currentUser }) => {
+  const { success, errors, handleChange, handleSubmit, dataMonth, reference } = useEmployments({
+    month,
+    year,
+    currentUser,
+  })
 
   return (
     <Form onSubmit={handleSubmit}>
-      {success && <Alert color="primary">{success}</Alert>}
+      <Messages success={success} errors={errors} />
 
-      {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
-      <FormEmployment errors={errors} dataMonth={dataMonth} handleChange={handleChange} reference={reference} />
+      <FormEmployment dataMonth={dataMonth} handleChange={handleChange} reference={reference} />
 
       {isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) && (
         <div className="my-5 text-center">
@@ -208,19 +209,12 @@ const CurrentMonthEmployments = () => {
   )
 }
 
-const PassedMonthEmployments = () => {
-  const {
+export const PassedMonthEmployments = ({ month, year, currentUser, readOnly = true }) => {
+  const { success, errors, handleChange, handleSubmit, dataMonth, reference } = useEmployments({
     month,
     year,
-    readOnly,
     currentUser,
-    success,
-    errors,
-    handleSubmit,
-    handleChange,
-    dataMonth,
-    reference,
-  } = useEmploymentContext()
+  })
 
   const [open, setOpen] = useState(false)
   const [readOnlyState, setReadOnlyState] = useState(readOnly)
@@ -254,12 +248,9 @@ const PassedMonthEmployments = () => {
               )}
           </div>
 
-          {success && <Alert color="primary">{success}</Alert>}
-
-          {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
+          <Messages success={success} errors={errors} />
 
           <FormEmployment
-            errors={errors}
             dataMonth={dataMonth}
             handleChange={handleChange}
             reference={reference}
@@ -271,17 +262,18 @@ const PassedMonthEmployments = () => {
   )
 }
 
-function useEmploymentContext() {
-  const context = React.useContext(EmploymentMonthDataContext)
-  if (!context) throw new Error("useEmploymentContext must be used in <EmploymentMonthDataContext>")
-
-  return context
+CurrentMonthEmployments.propTypes = {
+  month: PropTypes.string.isRequired,
+  year: PropTypes.number.isRequired,
+  currentUser: PropTypes.object,
 }
+
+PassedMonthEmployments.propTypes = { ...CurrentMonthEmployments.propTypes, readOnly: PropTypes.bool }
 
 const EmploymentMonthDataContext = React.createContext()
 EmploymentMonthDataContext.displayName = "EmploymentMonthDataContext"
 
-const EmploymentMonthData = ({ isCurrentMonth, month, year, currentUser }) => {
+function useEmployments({ month, year, currentUser }) {
   const [errors, setErrors] = useState()
   const [success, setSuccess] = useState("")
 
@@ -347,25 +339,5 @@ const EmploymentMonthData = ({ isCurrentMonth, month, year, currentUser }) => {
     }
   }
 
-  return (
-    <EmploymentMonthDataContext.Provider
-      value={{ month, year, currentUser, success, errors, handleSubmit, handleChange, dataMonth, reference }}
-    >
-      {isCurrentMonth ? <CurrentMonthEmployments /> : <PassedMonthEmployments />}
-    </EmploymentMonthDataContext.Provider>
-  )
+  return { success, errors, handleChange, handleSubmit, dataMonth, reference }
 }
-
-EmploymentMonthData.propTypes = {
-  isCurrentMonth: PropTypes.bool,
-  month: PropTypes.string.isRequired,
-  year: PropTypes.number.isRequired,
-  readOnly: PropTypes.bool.isRequired,
-  currentUser: PropTypes.object,
-}
-
-EmploymentMonthData.defaultProps = {
-  readOnly: true,
-}
-
-export default EmploymentMonthData
