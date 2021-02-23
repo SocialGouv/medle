@@ -8,6 +8,7 @@ import { Alert, Button, Col, Form, Input, Row } from "reactstrap"
 import { findEmployment, updateEmployment } from "../clients/employments"
 import { searchReferenceForMonth } from "../clients/employments-references"
 import { AnchorButton, Label, ValidationButton } from "../components/StyledComponents"
+import { useUser } from "../hooks/useUser"
 import { NAME_MONTHS } from "../utils/date"
 import { logError } from "../utils/logger"
 import { isEmpty, pluralize } from "../utils/misc"
@@ -15,34 +16,6 @@ import { EMPLOYMENT_MANAGEMENT, isAllowed } from "../utils/roles"
 import Badge from "./Badge"
 
 const makeLabel = (number) => (number ? `${number} ETP prévu${pluralize(number)}` : null)
-
-export const hasErrors = (dataMonth) => {
-  const errors = {}
-
-  if (dataMonth.doctors && isNaN(dataMonth.doctors)) {
-    errors.doctors = "Nombre requis"
-  }
-  if (dataMonth.secretaries && isNaN(dataMonth.secretaries)) {
-    errors.secretaries = "Nombre requis"
-  }
-  if (dataMonth.nursings && isNaN(dataMonth.nursings)) {
-    errors.nursings = "Nombre requis"
-  }
-  if (dataMonth.executives && isNaN(dataMonth.executives)) {
-    errors.executives = "Nombre requis"
-  }
-  if (dataMonth.ides && isNaN(dataMonth.ides)) {
-    errors.ides = "Nombre requis"
-  }
-  if (dataMonth.auditoriumAgents && isNaN(dataMonth.auditoriumAgents)) {
-    errors.auditoriumAgents = "Nombre requis"
-  }
-  if (dataMonth.others && isNaN(dataMonth.others)) {
-    errors.others = "Nombre requis"
-  }
-
-  return errors
-}
 
 const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }) => {
   return (
@@ -185,20 +158,27 @@ Messages.propTypes = {
   errors: PropTypes.object,
 }
 
-export const CurrentMonthEmployments = ({ month, year, currentUser }) => {
+// TODO: ajouter la vérification que la saisie n'est pas définitive (!isFinal, ...)
+const isAllowedToWrite = ({ user, hospitalId }) =>
+  isAllowed(user?.role, EMPLOYMENT_MANAGEMENT) && user?.hospital?.id === hospitalId
+
+export const CurrentMonthEmployments = ({ month, year, hospitalId }) => {
+  const currentUser = useUser()
   const { success, errors, handleChange, handleSubmit, dataMonth, reference } = useEmployments({
     month,
     year,
-    currentUser,
+    hospitalId,
   })
+
+  const isWritable = isAllowedToWrite({ user: currentUser, hospitalId })
 
   return (
     <Form onSubmit={handleSubmit}>
       <Messages success={success} errors={errors} />
 
-      <FormEmployment dataMonth={dataMonth} handleChange={handleChange} reference={reference} />
+      <FormEmployment dataMonth={dataMonth} handleChange={handleChange} reference={reference} readOnly={!isWritable} />
 
-      {isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) && (
+      {isWritable && (
         <div className="my-5 text-center">
           <ValidationButton color="primary" size="lg" className="center">
             Valider
@@ -209,15 +189,19 @@ export const CurrentMonthEmployments = ({ month, year, currentUser }) => {
   )
 }
 
-export const PassedMonthEmployments = ({ month, year, currentUser, readOnly = true }) => {
+export const PassedMonthEmployments = ({ month, year, hospitalId, readOnly = false }) => {
+  const currentUser = useUser()
+
   const { success, errors, handleChange, handleSubmit, dataMonth, reference } = useEmployments({
     month,
     year,
-    currentUser,
+    hospitalId,
   })
 
   const [open, setOpen] = useState(false)
-  const [readOnlyState, setReadOnlyState] = useState(readOnly)
+  const isWritable = isAllowedToWrite({ user: currentUser, hospitalId })
+
+  const [readOnlyState, setReadOnlyState] = useState(isWritable && readOnly)
 
   const toggleReadOnly = () => setReadOnlyState((state) => !state)
 
@@ -239,7 +223,7 @@ export const PassedMonthEmployments = ({ month, year, currentUser, readOnly = tr
       {open && (
         <div className="px-2">
           <div className="py-2 pr-2 text-right">
-            {!isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) ? null : readOnlyState ? (
+            {!isWritable ? null : readOnlyState ? (
               <Button outline onClick={toggleReadOnly} className="border-0">
                 Modifier <EditOutlinedIcon width={24} />
               </Button>
@@ -265,7 +249,7 @@ export const PassedMonthEmployments = ({ month, year, currentUser, readOnly = tr
 CurrentMonthEmployments.propTypes = {
   month: PropTypes.string.isRequired,
   year: PropTypes.number.isRequired,
-  currentUser: PropTypes.object,
+  hospitalId: PropTypes.number.isRequired,
 }
 
 PassedMonthEmployments.propTypes = { ...CurrentMonthEmployments.propTypes, readOnly: PropTypes.bool }
@@ -273,14 +257,12 @@ PassedMonthEmployments.propTypes = { ...CurrentMonthEmployments.propTypes, readO
 const EmploymentMonthDataContext = React.createContext()
 EmploymentMonthDataContext.displayName = "EmploymentMonthDataContext"
 
-function useEmployments({ month, year, currentUser }) {
+function useEmployments({ month, year, hospitalId }) {
   const [errors, setErrors] = useState()
   const [success, setSuccess] = useState("")
 
   const [dataMonth, setDataMonth] = useState({})
   const [reference, setReference] = useState({})
-
-  const { hospital } = currentUser
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -295,10 +277,10 @@ function useEmployments({ month, year, currentUser }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const json = await findEmployment({ hospitalId: hospital.id, year, month })
+        const json = await findEmployment({ hospitalId, year, month })
 
         const etpReference = await searchReferenceForMonth({
-          hospitalId: hospital.id,
+          hospitalId,
           year,
           month,
         })
@@ -312,7 +294,7 @@ function useEmployments({ month, year, currentUser }) {
     }
 
     fetchData()
-  }, [hospital.id, month, year])
+  }, [hospitalId, month, year])
 
   const handleChange = (event) => {
     event.preventDefault()
@@ -324,14 +306,9 @@ function useEmployments({ month, year, currentUser }) {
     event.preventDefault()
 
     setErrors({})
-    const errors = hasErrors(dataMonth)
 
-    if (!isEmpty(errors)) {
-      setErrors({ ...errors, general: "Erreur de saisie" })
-      return
-    }
     try {
-      await updateEmployment({ hospitalId: hospital.id, year, month, dataMonth })
+      await updateEmployment({ hospitalId, year, month, dataMonth })
       setSuccess("Vos informations ont bien été enregistrées.")
     } catch (error) {
       logError(error)

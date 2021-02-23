@@ -7,33 +7,22 @@ import { Alert, Container } from "reactstrap"
 import { CurrentMonthEmployments, PassedMonthEmployments } from "../components/EmploymentMonthData"
 import Layout from "../components/Layout"
 import { Title1, Title2 } from "../components/StyledComponents"
+import { UserContext } from "../hooks/useUser"
 import { getCurrentUser, redirectIfUnauthorized, withAuthentication } from "../utils/auth"
 import { NAME_MONTHS, now } from "../utils/date"
 import { logError } from "../utils/logger"
 import { EMPLOYMENT_CONSULTATION } from "../utils/roles"
 
-function composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, currentUser }) {
+function composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, hospitalId }) {
   if (currentYear === selectedYear) {
     return [
-      <CurrentMonthEmployments
-        key={currentMonth}
-        month={currentMonth}
-        year={selectedYear}
-        currentUser={currentUser}
-        readOnly={false}
-      />,
+      <CurrentMonthEmployments key={currentMonth} month={currentMonth} year={selectedYear} hospitalId={hospitalId} />,
       Array(Number(currentMonth - 1))
         .fill(0)
         .map((_, index) => String(index + 1).padStart(2, "0"))
         .reverse()
         .map((month) => (
-          <PassedMonthEmployments
-            key={month}
-            month={month}
-            year={selectedYear}
-            currentUser={currentUser}
-            readOnly={true}
-          />
+          <PassedMonthEmployments key={month} month={month} year={selectedYear} hospitalId={hospitalId} />
         )),
     ]
   }
@@ -42,9 +31,7 @@ function composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, c
     .fill(0)
     .map((_, index) => String(index + 1).padStart(2, "0"))
     .reverse()
-    .map((month) => (
-      <PassedMonthEmployments key={month} month={month} year={selectedYear} currentUser={currentUser} readOnly={true} />
-    ))
+    .map((month) => <PassedMonthEmployments key={month} month={month} year={selectedYear} hospitalId={hospitalId} />)
 }
 
 const EmploymentsPage = ({ currentUser }) => {
@@ -52,18 +39,18 @@ const EmploymentsPage = ({ currentUser }) => {
   const currentMonth = moment.format("MM")
   const currentYear = Number(moment.format("YYYY"))
 
+  const { hospital } = currentUser
+  const { id: hospitalId } = hospital
+
   const [selectedYear, setSelectedYear] = React.useState(currentYear)
-  const [employmentDataMonths, setEmploymentDataMonths] = React.useState(
-    composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, currentUser })
-  )
+
+  const [employmentDataMonths, setEmploymentDataMonths] = React.useState()
 
   const title = selectedYear === currentYear ? NAME_MONTHS[currentMonth] + " " + selectedYear : `Année ${selectedYear}`
 
   React.useEffect(() => {
-    setEmploymentDataMonths(composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, currentUser }))
-  }, [currentYear, currentMonth, selectedYear, currentUser])
-
-  const { hospital } = currentUser
+    setEmploymentDataMonths(composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, hospitalId }))
+  }, [currentYear, currentMonth, selectedYear, hospitalId])
 
   const START_YEAR_MEDLE = 2020
 
@@ -73,7 +60,11 @@ const EmploymentsPage = ({ currentUser }) => {
     .reverse()
     .map((current) => ({ label: current, value: current }))
 
-  if (!hospital?.id)
+  function handleYearChange(option) {
+    setSelectedYear(option.value)
+  }
+
+  if (!hospitalId)
     return (
       <Layout page="employments" currentUser={currentUser}>
         <Title1 className="mt-5 mb-5">{"Déclaration du personnel"}</Title1>
@@ -86,10 +77,6 @@ const EmploymentsPage = ({ currentUser }) => {
         </Container>
       </Layout>
     )
-
-  function handleYearChange(option) {
-    setSelectedYear(option.value)
-  }
 
   return (
     <Layout page="employments" currentUser={currentUser}>
@@ -114,21 +101,15 @@ const EmploymentsPage = ({ currentUser }) => {
           </small>
         </p>
 
-        {employmentDataMonths}
+        <UserContext.Provider value={currentUser}>{employmentDataMonths}</UserContext.Provider>
       </Container>
     </Layout>
   )
 }
 
-EmploymentsPage.getInitialProps = async (ctx) => {
+EmploymentsPage.getServerSideProps = async (ctx) => {
   try {
     const currentUser = getCurrentUser(ctx)
-
-    const { hospital } = currentUser
-
-    if (!hospital || !hospital.id) {
-      throw new Error("Vous n'avez pas d'établissement de santé à gérer.")
-    }
 
     return {
       currentUser,
