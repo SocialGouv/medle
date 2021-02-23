@@ -185,19 +185,110 @@ FormEmployment.propTypes = {
   readOnly: PropTypes.bool,
 }
 
-const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, currentUser }) => {
+const composeMonthName = (month, year) => NAME_MONTHS[month] + " " + year
+
+const CurrentMonthEmployments = () => {
+  const { currentUser, success, errors, handleSubmit, handleChange, dataMonth, reference } = useEmploymentContext()
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      {success && <Alert color="primary">{success}</Alert>}
+
+      {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
+      <FormEmployment errors={errors} dataMonth={dataMonth} handleChange={handleChange} reference={reference} />
+
+      {isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) && (
+        <div className="my-5 text-center">
+          <ValidationButton color="primary" size="lg" className="center">
+            Valider
+          </ValidationButton>
+        </div>
+      )}
+    </Form>
+  )
+}
+
+const PassedMonthEmployments = () => {
+  const {
+    month,
+    year,
+    readOnly,
+    currentUser,
+    success,
+    errors,
+    handleSubmit,
+    handleChange,
+    dataMonth,
+    reference,
+  } = useEmploymentContext()
+
   const [open, setOpen] = useState(false)
   const [readOnlyState, setReadOnlyState] = useState(readOnly)
+
+  const toggleReadOnly = () => setReadOnlyState((state) => !state)
+
+  const monthName = composeMonthName(month, year)
+
+  return (
+    <Form
+      onSubmit={(event) => {
+        event.preventDefault()
+        handleSubmit(event)
+        toggleReadOnly()
+      }}
+    >
+      <Button outline color="secondary" block className="pt-2 pb-2 mb-2 pl-4 text-left" onClick={() => setOpen(!open)}>
+        {monthName}
+        {!open && <ArrowForwardIosIcon className="float-right" width={24} />}
+        {open && <ExpandMoreIcon className="float-right" width={24} />}
+      </Button>
+      {open && (
+        <div className="px-2">
+          <div className="py-2 pr-2 text-right">
+            {!isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) ? null : readOnlyState ? (
+              <Button outline onClick={toggleReadOnly} className="border-0">
+                Modifier <EditOutlinedIcon width={24} />
+              </Button>
+            ) : (
+                <AnchorButton>Enregistrer</AnchorButton>
+              )}
+          </div>
+
+          {success && <Alert color="primary">{success}</Alert>}
+
+          {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
+
+          <FormEmployment
+            errors={errors}
+            dataMonth={dataMonth}
+            handleChange={handleChange}
+            reference={reference}
+            readOnly={readOnlyState}
+          />
+        </div>
+      )}
+    </Form>
+  )
+}
+
+function useEmploymentContext() {
+  const context = React.useContext(EmploymentMonthDataContext)
+  if (!context) throw new Error("useEmploymentContext must be used in <EmploymentMonthDataContext>")
+
+  return context
+}
+
+const EmploymentMonthDataContext = React.createContext()
+EmploymentMonthDataContext.displayName = "EmploymentMonthDataContext"
+
+const EmploymentMonthData = ({ isCurrentMonth, month, year, currentUser }) => {
   const [errors, setErrors] = useState()
+  const [success, setSuccess] = useState("")
 
   const [dataMonth, setDataMonth] = useState({})
   const [reference, setReference] = useState({})
 
-  const [success, setSuccess] = useState("")
-
   const { hospital } = currentUser
-
-  const monthName = NAME_MONTHS[month] + " " + year
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -229,15 +320,13 @@ const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, cu
     }
 
     fetchData()
-  }, [hospital.id, month, open, year])
+  }, [hospital.id, month, year])
 
   const handleChange = (event) => {
     event.preventDefault()
 
     setDataMonth({ ...dataMonth, [event.target.name]: event.target.value })
   }
-
-  const toggleReadOnly = () => setReadOnlyState((state) => !state)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -252,8 +341,6 @@ const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, cu
     try {
       await updateEmployment({ hospitalId: hospital.id, year, month, dataMonth })
       setSuccess("Vos informations ont bien été enregistrées.")
-
-      toggleReadOnly()
     } catch (error) {
       logError(error)
       setErrors({ general: "Erreur lors de la mise à jour des ETP" })
@@ -261,65 +348,11 @@ const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, cu
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
-      {isCurrentMonth && (
-        <>
-          {success && <Alert color="primary">{success}</Alert>}
-
-          {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
-          <FormEmployment errors={errors} dataMonth={dataMonth} handleChange={handleChange} reference={reference} />
-
-          {isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) && (
-            <div className="my-5 text-center">
-              <ValidationButton color="primary" size="lg" className="center">
-                Valider
-              </ValidationButton>
-            </div>
-          )}
-        </>
-      )}
-
-      {!isCurrentMonth && (
-        <>
-          <Button
-            outline
-            color="secondary"
-            block
-            className="pt-2 pb-2 mb-2 pl-4 text-left"
-            onClick={() => setOpen(!open)}
-          >
-            {monthName}
-            {!open && <ArrowForwardIosIcon className="float-right" width={24} />}
-            {open && <ExpandMoreIcon className="float-right" width={24} />}
-          </Button>
-          {open && (
-            <div className="px-2">
-              <div className="py-2 pr-2 text-right">
-                {!isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) ? null : readOnlyState ? (
-                  <Button outline onClick={toggleReadOnly} className="border-0">
-                    Modifier <EditOutlinedIcon width={24} />
-                  </Button>
-                ) : (
-                    <AnchorButton>Enregistrer</AnchorButton>
-                  )}
-              </div>
-
-              {success && <Alert color="primary">{success}</Alert>}
-
-              {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
-
-              <FormEmployment
-                errors={errors}
-                dataMonth={dataMonth}
-                handleChange={handleChange}
-                reference={reference}
-                readOnly={readOnlyState}
-              />
-            </div>
-          )}
-        </>
-      )}
-    </Form>
+    <EmploymentMonthDataContext.Provider
+      value={{ month, year, currentUser, success, errors, handleSubmit, handleChange, dataMonth, reference }}
+    >
+      {isCurrentMonth ? <CurrentMonthEmployments /> : <PassedMonthEmployments />}
+    </EmploymentMonthDataContext.Provider>
   )
 }
 
