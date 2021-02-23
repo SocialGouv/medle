@@ -3,7 +3,7 @@ import EditOutlinedIcon from "@material-ui/icons/Edit"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import PropTypes from "prop-types"
 import React, { useEffect, useState } from "react"
-import { Alert, Button, Col, FormFeedback, Input, Row } from "reactstrap"
+import { Alert, Button, Col, Form, FormFeedback, Input, Row } from "reactstrap"
 
 import { findEmployment, updateEmployment } from "../clients/employments"
 import { searchReferenceForMonth } from "../clients/employments-references"
@@ -239,7 +239,9 @@ const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, cu
 
   const toggleReadOnly = () => setReadOnlyState((state) => !state)
 
-  const handleUpdate = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
     setErrors({})
     const errors = hasErrors(dataMonth)
 
@@ -258,58 +260,66 @@ const EmploymentMonthData = ({ isCurrentMonth = false, month, year, readOnly, cu
     }
   }
 
-  // Specific display for current month.
-  if (isCurrentMonth)
-    return (
-      <>
-        {success && <Alert color="primary">{success}</Alert>}
-
-        {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
-
-        <FormEmployment errors={errors} dataMonth={dataMonth} handleChange={handleChange} reference={reference} />
-        {isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) && (
-          <div className="my-5 text-center">
-            <ValidationButton color="primary" size="lg" className="center" onClick={handleUpdate}>
-              Valider
-            </ValidationButton>
-          </div>
-        )}
-      </>
-    )
-
   return (
-    <>
-      <Button outline color="secondary" block className="pt-2 pb-2 pl-4 text-left" onClick={() => setOpen(!open)}>
-        {monthName}
-        {!open && <ArrowForwardIosIcon className="float-right" width={24} />}
-        {open && <ExpandMoreIcon className="float-right" width={24} />}
-      </Button>
-      {open && (
-        <div className="px-2">
-          <div className="pt-3 pb-2 pr-2 text-right">
-            {!isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) ? null : readOnlyState ? (
-              <Button outline onClick={toggleReadOnly} className="border-0">
-                Modifier <EditOutlinedIcon width={24} />
-              </Button>
-            ) : (
-                <AnchorButton onClick={handleUpdate}>Enregistrer</AnchorButton>
-              )}
-          </div>
-
+    <Form onSubmit={handleSubmit}>
+      {isCurrentMonth && (
+        <>
           {success && <Alert color="primary">{success}</Alert>}
 
           {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
+          <FormEmployment errors={errors} dataMonth={dataMonth} handleChange={handleChange} reference={reference} />
 
-          <FormEmployment
-            errors={errors}
-            dataMonth={dataMonth}
-            handleChange={handleChange}
-            reference={reference}
-            readOnly={readOnlyState}
-          />
-        </div>
+          {isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) && (
+            <div className="my-5 text-center">
+              <ValidationButton color="primary" size="lg" className="center">
+                Valider
+              </ValidationButton>
+            </div>
+          )}
+        </>
       )}
-    </>
+
+      {!isCurrentMonth && (
+        <>
+          <Button
+            outline
+            color="secondary"
+            block
+            className="pt-2 pb-2 mb-2 pl-4 text-left"
+            onClick={() => setOpen(!open)}
+          >
+            {monthName}
+            {!open && <ArrowForwardIosIcon className="float-right" width={24} />}
+            {open && <ExpandMoreIcon className="float-right" width={24} />}
+          </Button>
+          {open && (
+            <div className="px-2">
+              <div className="py-2 pr-2 text-right">
+                {!isAllowed(currentUser?.role, EMPLOYMENT_MANAGEMENT) ? null : readOnlyState ? (
+                  <Button outline onClick={toggleReadOnly} className="border-0">
+                    Modifier <EditOutlinedIcon width={24} />
+                  </Button>
+                ) : (
+                    <AnchorButton>Enregistrer</AnchorButton>
+                  )}
+              </div>
+
+              {success && <Alert color="primary">{success}</Alert>}
+
+              {!isEmpty(errors) && <Alert color="danger">{errors.general || "Erreur serveur"}</Alert>}
+
+              <FormEmployment
+                errors={errors}
+                dataMonth={dataMonth}
+                handleChange={handleChange}
+                reference={reference}
+                readOnly={readOnlyState}
+              />
+            </div>
+          )}
+        </>
+      )}
+    </Form>
   )
 }
 
