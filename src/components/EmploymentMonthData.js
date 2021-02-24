@@ -201,7 +201,7 @@ export const PassedMonthEmployments = ({ month, year, hospitalId, readOnly = fal
   const [open, setOpen] = useState(false)
   const isWritable = isAllowedToWrite({ user: currentUser, hospitalId })
 
-  const [readOnlyState, setReadOnlyState] = useState(isWritable && readOnly)
+  const [readOnlyState, setReadOnlyState] = useState(!isWritable || readOnly)
 
   const toggleReadOnly = () => setReadOnlyState((state) => !state)
 
