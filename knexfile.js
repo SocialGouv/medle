@@ -4,7 +4,7 @@ if (process.env.POSTGRES_SSL && process.env.POSTGRES_SSL === "true") {
   const pg = require("pg")
   pg.defaults.ssl = true
 }
-
+console.log("--> !!! process.env.DATABASE_URL !!!", process.env.DATABASE_URL)
 const knexConfig = {
   development: {
     client: "pg",

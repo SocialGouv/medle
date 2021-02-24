@@ -22,7 +22,7 @@ const nextConfig = {
   },
   publicRuntimeConfig: {
     // Will be available on both server and client. Needs getInitialProps on page to be available
-    API_URL: process.env.API_URL,
+    API_URL: `${process.env.APP_BASE_URL}${process.env.API_URL}`,
     TEST_CURRENT_DATE: process.env.TEST_CURRENT_DATE,
     DEBUG_MODE: process.env.DEBUG_MODE,
     FEATURE_FLAGS: {
@@ -37,7 +37,7 @@ const nextConfig = {
     // Will only be available on the server side. Needs getInitialProps on page to be available
     JWT_SECRET: process.env.JWT_SECRET,
     POSTGRES_SSL: process.env.POSTGRES_SSL,
-    DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL: process.env.DB_URI || process.env.DATABASE_URL,
   },
   webpack: (config, { isServer, buildId, webpack }) => {
     //config.optimization.minimizer = []
