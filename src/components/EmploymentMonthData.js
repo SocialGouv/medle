@@ -254,9 +254,6 @@ CurrentMonthEmployments.propTypes = {
 
 PassedMonthEmployments.propTypes = { ...CurrentMonthEmployments.propTypes, readOnly: PropTypes.bool }
 
-const EmploymentMonthDataContext = React.createContext()
-EmploymentMonthDataContext.displayName = "EmploymentMonthDataContext"
-
 function useEmployments({ month, year, hospitalId }) {
   const [errors, setErrors] = useState()
   const [success, setSuccess] = useState("")
