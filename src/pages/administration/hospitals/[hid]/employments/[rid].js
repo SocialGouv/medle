@@ -71,9 +71,11 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
     defaultValues = { ...defaultValues, id: data?.id || null, reference: data.reference }
   }
 
-  const { control, handleSubmit, register, errors: formErrors, setValue } = useForm({
+  const { control, handleSubmit, register, errors: formErrors, setValue, watch } = useForm({
     defaultValues,
   })
+
+  const formId = watch("id")
 
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
@@ -82,7 +84,7 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
 
   const toggle = () => setModal(!modal)
 
-  const p = () => {
+  const handleDelete = () => {
     toggle()
 
     const del = async () => {
@@ -186,7 +188,7 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
               Id
             </Label>
             <Col sm={9}>
-              <Input type="text" name="id" id="id" disabled innerRef={register} />
+              <Input type="text" name="id" id="id" readOnly innerRef={register} />
             </Col>
           </FormGroup>
           <FormGroup row>
@@ -334,10 +336,10 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
               </Button>
             </Link>
             <Button className="px-4 mt-5 " color="primary">
-              {!data?.id ? "Ajouter" : "Modifier"}
+              {formId ? "Modifier" : "Ajouter"}
             </Button>
           </div>
-          {!isEmpty(data?.id) && (
+          {formId && (
             <div style={{ border: "1px solid tomato" }} className="px-4 py-3 mt-5 rounded">
               <Title1 className="mb-4">Zone dangereuse</Title1>
               <div className="d-flex justify-content-between align-items-center">
@@ -360,7 +362,7 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
               <Button color="primary" outline onClick={toggle}>
                 Annuler
               </Button>
-              <Button color="danger" onClick={p}>
+              <Button color="danger" onClick={handleDelete}>
                 Supprimer
               </Button>
             </ModalFooter>
