@@ -7,10 +7,8 @@ import { Alert, Container } from "reactstrap"
 import { CurrentMonthEmployments, PassedMonthEmployments } from "../components/EmploymentMonthData"
 import Layout from "../components/Layout"
 import { Title1, Title2 } from "../components/StyledComponents"
-import { UserContext } from "../hooks/useUser"
-import { getCurrentUser, redirectIfUnauthorized, withAuthentication } from "../utils/auth"
+import { withAuthentication } from "../utils/auth"
 import { NAME_MONTHS, now } from "../utils/date"
-import { logError } from "../utils/logger"
 import { EMPLOYMENT_CONSULTATION } from "../utils/roles"
 
 function composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, hospitalId }) {
@@ -101,24 +99,10 @@ const EmploymentsPage = ({ currentUser }) => {
           </small>
         </p>
 
-        <UserContext.Provider value={currentUser}>{employmentDataMonths}</UserContext.Provider>
+        {employmentDataMonths}
       </Container>
     </Layout>
   )
-}
-
-EmploymentsPage.getServerSideProps = async (ctx) => {
-  try {
-    const currentUser = getCurrentUser(ctx)
-
-    return {
-      currentUser,
-    }
-  } catch (error) {
-    logError(error)
-
-    redirectIfUnauthorized(error, ctx)
-  }
 }
 
 EmploymentsPage.propTypes = {
