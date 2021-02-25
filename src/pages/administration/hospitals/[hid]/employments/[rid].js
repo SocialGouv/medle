@@ -170,6 +170,11 @@ const EmploymentsReferencesDetailPage = ({ data, currentUser }) => {
                   <a>Retour à la liste</a>
                 </Button>
               </Link>
+              <Link href="/administration/hospitals/[hid]/employments/[rid]" as={`/administration/hospitals/${hid}/employments/new`}>
+                <Button outline color="success">
+                  <a>Ajouter</a>
+                </Button>
+              </Link>
             </div>
           </Alert>
         )}
@@ -383,7 +388,9 @@ EmploymentsReferencesDetailPage.getInitialProps = async (ctx) => {
 
   const { hid, rid } = ctx.query
 
-  if (rid === "new") return {}
+  // Initialise key prop with a fresh new value, to make possible to have a new blank page
+  // see https://kentcdodds.com/blog/understanding-reacts-key-prop
+  if (!rid || isNaN(rid)) return { key: Number(new Date()) }
 
   try {
     const data = await findReference({ hospitalId: hid, referencesId: rid, headers })
