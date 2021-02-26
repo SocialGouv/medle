@@ -45,4 +45,4 @@ Create seeds DB (dev):
     script:
         - yarn --frozen-lockfile
         - yarn migrate:latest
-        - yarn seed:run:dev
+        - yarn seed:run:staging
