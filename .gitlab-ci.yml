@@ -27,7 +27,7 @@ Create seeds DB (dev):
         name: ${CI_COMMIT_REF_NAME}-dev2
         url: https://${CI_ENVIRONMENT_SLUG}-${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
     image:
-        name: node:14
+        name: node:15
     only:
         refs:
             - branches
