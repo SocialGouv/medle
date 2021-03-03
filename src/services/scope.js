@@ -3,6 +3,7 @@
  * On the contrary, for regional user (REGIONAL_SUPERVISOR), it has only the scope field set with the list of all hostpitals he manages.
  * For the national user, he doesn't have neither the hostpitalId nor the scope set. It means then that he as access to everything.
  */
+// TODO: à mettre dans utils + rendre tous les établissements dans le scope si utilisateur public ou super admin
 export const buildScope = (currentUser = {}) => {
   const scope = currentUser?.scope || []
   const id = currentUser?.hospital?.id ? [currentUser.hospital.id] : []
