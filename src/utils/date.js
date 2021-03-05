@@ -43,10 +43,15 @@ export const frToIso = (date) => {
 export const isoToFr = (date) => {
   const parts = date.split("-")
 
-  if (parts.length !== 3) {
+  if (parts.length < 3) {
     logError("Problème de parsing de date")
     return date
   }
-  const [year, month, day] = parts
+
+  const dayParts = parts[2].split("T") // Handle time part if present.
+
+  const day = dayParts.length > 1 ? dayParts[0] : parts[2]
+
+  const [year, month] = parts
   return `${day}/${month}/${year}`
 }

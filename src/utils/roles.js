@@ -11,9 +11,13 @@ export const NO_PRIVILEGE_REQUIRED = "NO_PRIVILEGE_REQUIRED"
 export const ADMIN = "ADMIN"
 
 export const ADMIN_HOSPITAL = "ADMIN_HOSPITAL"
-export const SUPER_ADMIN = "SUPER_ADMIN"
+export const GUEST_HOSPITAL = "GUEST_HOSPITAL"
+export const OPERATOR_ACT = "OPERATOR_ACT"
+export const OPERATOR_EMPLOYMENT = "OPERATOR_EMPLOYMENT"
+export const OPERATOR_GENERIC = "OPERATOR_GENERIC"
 export const REGIONAL_SUPERVISOR = "REGIONAL_SUPERVISOR"
 export const PUBLIC_SUPERVISOR = "PUBLIC_SUPERVISOR"
+export const SUPER_ADMIN = "SUPER_ADMIN"
 
 export const PRIVILEGES = [
   HOSPITAL_DETAILS_MANAGEMENT,
@@ -161,8 +165,7 @@ export const rulesOfRoles = (role) => {
   }
 }
 
-export const isUserOfOnlyOneHospital = (user) =>
-  ["ADMIN_HOSPITAL", "OPERATOR_ACT", "OPERATOR_EMPLOYMENT", "OPERATOR_GENERIC", "GUEST_HOSPITAL"].includes(user?.role)
+export const canAccessAllHospitals = (user) => [SUPER_ADMIN, PUBLIC_SUPERVISOR].includes(user?.role)
 
 export const isAllowed = (role, privilege) =>
   privilege === NO_PRIVILEGE_REQUIRED || (ROLES[role] && ROLES[role].includes(privilege))

@@ -189,7 +189,7 @@ const Sidebar = ({ page, currentUser }) => {
             </a>
           </Link>
         )}
-        {isAllowed(currentUser.role, EMPLOYMENT_CONSULTATION) && currentUser.role !== SUPER_ADMIN && (
+        {isAllowed(currentUser.role, EMPLOYMENT_CONSULTATION) && (
           <Link href="/employments">
             <a
               className={
@@ -256,8 +256,8 @@ const Sidebar = ({ page, currentUser }) => {
 }
 
 Sidebar.propTypes = {
-  page: PropTypes.string,
   currentUser: PropTypes.object,
+  page: PropTypes.string,
 }
 
 const SidebarAdmin = ({ page, currentUser }) => {
@@ -346,8 +346,8 @@ const SidebarAdmin = ({ page, currentUser }) => {
 }
 
 SidebarAdmin.propTypes = {
-  page: PropTypes.string,
   currentUser: PropTypes.object,
+  page: PropTypes.string,
 }
 
 const Layout = ({ children, page, currentUser, admin = false }) => {
@@ -386,10 +386,10 @@ const Layout = ({ children, page, currentUser, admin = false }) => {
 }
 
 Layout.propTypes = {
-  children: PropTypes.node,
-  page: PropTypes.string,
-  currentUser: PropTypes.object,
   admin: PropTypes.bool,
+  children: PropTypes.node,
+  currentUser: PropTypes.object,
+  page: PropTypes.string,
 }
 
 export default Layout

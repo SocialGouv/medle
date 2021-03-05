@@ -3,19 +3,22 @@ import { useRouter } from "next/router"
 import PropTypes from "prop-types"
 import React from "react"
 import Select from "react-select"
-import { Alert, Container } from "reactstrap"
+import { Alert, Col, Container, Form, FormGroup, Input, Row, Table } from "reactstrap"
 
+import { findLastEdit } from "../../clients/employments"
 import { CurrentMonthEmployments, PassedMonthEmployments } from "../../components/EmploymentMonthData"
 import Layout from "../../components/Layout"
 import { Title1, Title2 } from "../../components/StyledComponents"
 import { START_YEAR_MEDLE } from "../../config"
+import { useDebounce } from "../../hooks/useDebounce"
 import { buildScope } from "../../services/scope"
 import { withAuthentication } from "../../utils/auth"
-import { NAME_MONTHS, now } from "../../utils/date"
+import { isoToFr, NAME_MONTHS, now } from "../../utils/date"
 import { getReferenceData } from "../../utils/init"
-import { EMPLOYMENT_CONSULTATION, isUserOfOnlyOneHospital } from "../../utils/roles"
+import { castArrayInMap } from "../../utils/object"
+import { canAccessAllHospitals, EMPLOYMENT_CONSULTATION } from "../../utils/roles"
 
-function composeEmploymentDataMonth({ currentYear, currentMonth, selectedYear, hospitalId }) {
+function buildEmploymentDataMonth({ currentYear, currentMonth, selectedYear, hospitalId }) {
   if (currentYear === selectedYear) {
     return [
       <CurrentMonthEmployments key={currentMonth} month={currentMonth} year={selectedYear} hospitalId={hospitalId} />,
@@ -47,8 +50,37 @@ function decomposeDate(date) {
   return { currentMonth, currentYear }
 }
 
-function composeTitle({ currentMonth, currentYear, selectedYear }) {
+function formatMonthYear({ month, year }) {
+  return NAME_MONTHS[month] + " " + year
+}
+
+function formatTitle({ currentMonth, currentYear, selectedYear }) {
   return selectedYear === currentYear ? NAME_MONTHS[currentMonth] + " " + selectedYear : `Année ${selectedYear}`
+}
+
+function describeRequest({ currentUser, selectedHospitalId }) {
+  const hasManyHospitals = buildScope(currentUser)?.length > 1 || canAccessAllHospitals(currentUser)
+
+  return hasManyHospitals
+    ? selectedHospitalId
+      ? "SUPERVISOR_HAS_SELECTED"
+      : "SUPERVISOR_HAS_NOT_SELECTED"
+    : selectedHospitalId
+      ? "OPERATOR_HAS_EXPLICITLY_SELECTED"
+      : "OPERATOR_HAS_IMPLICITLY_SELECTED"
+}
+
+function formatLastEdit({ edit, hospitalId }) {
+  return {
+    hospitalId,
+    lastAddedMonth: !edit.month
+      ? null
+      : formatMonthYear({
+        month: edit.month,
+        year: edit.year,
+      }),
+    lastUpdated: !edit.lastupdated ? null : isoToFr(edit.lastupdated),
+  }
 }
 
 export const EmploymentsPage = ({ currentUser }) => {
@@ -56,18 +88,138 @@ export const EmploymentsPage = ({ currentUser }) => {
   // the id hospital the user wants. The hid is an array for Next.js
   const { hid } = router.query
 
-  // TODO: gérer le cas 0, qui est considéré comme null et qui envoie sur la liste
-  const selectedHospitalId = Number(hid?.[0]) || currentUser?.hospital?.id
+  const selectedHospitalId = Number(hid?.[0])
 
-  if (selectedHospitalId) {
-    return <EmploymentsHospital currentUser={currentUser} hospitalId={selectedHospitalId} />
-  } else {
-    return <ListEmploymentsHospital currentUser={currentUser} hospitalId={selectedHospitalId} />
+  switch (describeRequest({ currentUser, selectedHospitalId })) {
+    case "SUPERVISOR_HAS_NOT_SELECTED":
+      return <ListEmploymentsHospital currentUser={currentUser} />
+    case "SUPERVISOR_HAS_SELECTED":
+      if (canAccessAllHospitals(currentUser) || buildScope(currentUser).includes(selectedHospitalId)) {
+        return <EmploymentsHospital currentUser={currentUser} hospitalId={selectedHospitalId} />
+      }
+      // TODO: gestion page d'erreur
+      return "Vous n'êtes pas autorisé à voir cet hôpital"
+    case "OPERATOR_HAS_IMPLICITLY_SELECTED":
+      return <EmploymentsHospital currentUser={currentUser} hospitalId={currentUser.hospital?.id} />
+    case "OPERATOR_HAS_EXPLICITLY_SELECTED":
+      if (selectedHospitalId !== currentUser.hospital?.id) {
+        return "Vous n'êtes pas autorisé à voir cet hôpital"
+      }
+      return <EmploymentsHospital currentUser={currentUser} hospitalId={selectedHospitalId} />
   }
 }
 
-const ListEmploymentsHospital = ({ currentUser, hospitalId }) => {
-  return "Liste (à implémenter)"
+const ListEmploymentsHospital = ({ currentUser }) => {
+  const [hospitals, setHospitals] = React.useState([])
+  const [search, setSearch] = React.useState("")
+  const [lastEdits, setLastEdits] = React.useState([])
+
+  useDebounce(handleSubmit, 500, [search])
+
+  // TODO: faire un hook pour récupérer n'importe où tous les hôpitaux d'un utilisateur
+  const filterHospitals = React.useCallback(
+    (search) => {
+      // Get the hospitals allowed by the user
+      const scopeUser = buildScope(currentUser)
+      const hospitals = canAccessAllHospitals(currentUser)
+        ? getReferenceData("hospitals")
+        : getReferenceData("hospitals").filter((hospital) => scopeUser.includes(hospital.id))
+
+      // Filter by search if any
+      return !search ? hospitals : hospitals.filter((hospital) => hospital?.name.match(new RegExp(search, "i")))
+    },
+    [currentUser],
+  )
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const allHospitalsOfUser = filterHospitals()
+      setHospitals(allHospitalsOfUser)
+
+      const promises = allHospitalsOfUser.map((hospital) => findLastEdit({ hospitalId: hospital?.id }))
+
+      Promise.all(promises)
+        .then((edits) => {
+          // Promises and allHospitalsOfUser are in the same order, so it's safe to get id from allHospitalsOfUser.
+          edits = edits.map((edit, index) => formatLastEdit({ edit, hospitalId: allHospitalsOfUser[index].id }))
+
+          return castArrayInMap({ array: edits, propAsKey: "hospitalId" })
+        })
+        .then((edits) => {
+          setLastEdits(edits)
+        })
+    }
+    fetchData()
+  }, [filterHospitals])
+
+  function handleSearchChange(event) {
+    setSearch(event.target.value)
+  }
+
+  function handleSubmit(event) {
+    event?.preventDefault()
+    setHospitals(filterHospitals(search))
+  }
+
+  function noUpToDate(hospital) {
+    return !lastEdits[hospital.id]?.lastAddedMonth || lastEdits[hospital.id]?.lastAddedMonth < now().year()
+  }
+
+  return (
+    <Layout page="emploments" currentUser={currentUser}>
+      <Title1 className="mt-5 mb-4">{"Tous les établissements"}</Title1>
+      <Container style={{ maxWidth: 980 }}>
+        <Form onSubmit={handleSubmit}>
+          <FormGroup inline className="mb-4 justify-content-center">
+            <Row>
+              <Col className="flex-grow-1">
+                <Input
+                  type="text"
+                  name="search"
+                  id="search"
+                  placeholder="Rechercher un établissement"
+                  autoComplete="off"
+                  value={search}
+                  onChange={handleSearchChange}
+                />
+              </Col>
+            </Row>
+          </FormGroup>
+        </Form>
+        <div className="my-4 d-flex justify-content-center">
+          <b>{hospitals?.length || 0}</b>&nbsp;résultat{hospitals?.length > 1 && "s"}
+        </div>
+        <Table responsive className="table-hover">
+          <thead>
+            <tr className="table-light">
+              <th>Établissement</th>
+              <th>Dernier mois ajouté</th>
+              <th>Ajouté le</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {hospitals.map((hospital) => (
+              <Link key={hospital.id} href="/employments/[[...hid]]" as={`/employments/${hospital?.id}`}>
+                <tr key={hospital.id}>
+                  <td title={noUpToDate(hospital) ? "Certains mois de l'année précédente manquent " : ""}>
+                    <span className={noUpToDate(hospital) ? "mark" : ""}>{hospital.name}</span>
+                  </td>
+                  <td>{lastEdits[hospital.id]?.lastAddedMonth}</td>
+                  <td>{lastEdits[hospital.id]?.lastUpdated}</td>
+                  <td>
+                    <Link href="/employments/[[...hid]]" as={`/employments/${hospital?.id}`}>
+                      <a className="text-decoration-none">Voir &gt;</a>
+                    </Link>
+                  </td>
+                </tr>
+              </Link>
+            ))}
+          </tbody>
+        </Table>
+      </Container>
+    </Layout>
+  )
 }
 
 const EmploymentsHospital = ({ currentUser, hospitalId }) => {
@@ -78,20 +230,15 @@ const EmploymentsHospital = ({ currentUser, hospitalId }) => {
 
   const [error, setError] = React.useState("")
 
-  const title = composeTitle({ currentMonth, currentYear, selectedYear })
+  const title = formatTitle({ currentMonth, currentYear, selectedYear })
 
   React.useEffect(() => {
     const scopeUser = buildScope(currentUser)
-    if (!scopeUser.length) {
-      // TODO : gérer les pages d'erreur en cas de non autorisation
-      return "Erreur de configuration de votre compte utilisateur. Vous n'avez accès à aucun hôpital. Contacter l'administrateur."
-    }
-    if (isUserOfOnlyOneHospital(currentUser) && currentUser.hospital?.id !== hospitalId) {
-      setError("Vous n'êtes pas autorisé à voir les ETP de cet établissement.")
-    } else if (!isUserOfOnlyOneHospital(currentUser) && !scopeUser.includes(hospitalId)) {
-      setError("Vous n'êtes pas autorisé à voir les ETP de cet établissement.")
+
+    if (canAccessAllHospitals(currentUser) || scopeUser.includes(hospitalId)) {
+      setEmploymentDataMonths(buildEmploymentDataMonth({ currentMonth, currentYear, hospitalId, selectedYear }))
     } else {
-      setEmploymentDataMonths(composeEmploymentDataMonth({ currentMonth, currentYear, hospitalId, selectedYear }))
+      setError("Vous n'êtes pas autorisé à voir les ETP de cet établissement.")
     }
   }, [currentUser, currentYear, currentMonth, selectedYear, hospitalId])
 
