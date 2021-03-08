@@ -209,7 +209,7 @@ const ListEmploymentsHospital = ({ currentUser }) => {
                   <td>{lastEdits[hospital.id]?.lastUpdated}</td>
                   <td>
                     <Link href="/employments/[[...hid]]" as={`/employments/${hospital?.id}`}>
-                      <a className="text-decoration-none">Voir &gt;</a>
+                      <a className="text-decoration-none">Voir&nbsp;&gt;</a>
                     </Link>
                   </td>
                 </tr>
