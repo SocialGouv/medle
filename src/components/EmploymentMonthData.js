@@ -10,7 +10,6 @@ import { searchReferenceForMonth } from "../clients/employments-references"
 import { AnchorButton, Label, ValidationButton } from "../components/StyledComponents"
 import { useUser } from "../hooks/useUser"
 import { NAME_MONTHS } from "../utils/date"
-import { logError } from "../utils/logger"
 import { isEmpty, pluralize } from "../utils/misc"
 import { EMPLOYMENT_MANAGEMENT, isAllowed } from "../utils/roles"
 import Badge from "./Badge"
@@ -145,9 +144,9 @@ const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }
 
 FormEmployment.propTypes = {
   dataMonth: PropTypes.object,
-  reference: PropTypes.object,
   handleChange: PropTypes.func,
   readOnly: PropTypes.bool,
+  reference: PropTypes.object,
 }
 
 const composeMonthName = (month, year) => NAME_MONTHS[month] + " " + year
@@ -161,8 +160,8 @@ const Messages = ({ success, errors }) => (
 )
 
 Messages.propTypes = {
-  success: PropTypes.string,
   errors: PropTypes.object,
+  success: PropTypes.string,
 }
 
 // TODO: ajouter la vérification que la saisie n'est pas définitive (!isFinal, ...)
@@ -172,12 +171,12 @@ const isAllowedToWrite = ({ user, hospitalId }) =>
 export const CurrentMonthEmployments = ({ month, year, hospitalId }) => {
   const currentUser = useUser()
   const { success, errors, handleChange, handleSubmit, dataMonth, reference } = useEmployments({
+    hospitalId,
     month,
     year,
-    hospitalId,
   })
 
-  const isWritable = isAllowedToWrite({ user: currentUser, hospitalId })
+  const isWritable = isAllowedToWrite({ hospitalId, user: currentUser })
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -200,13 +199,13 @@ export const PassedMonthEmployments = ({ month, year, hospitalId, readOnly = fal
   const currentUser = useUser()
 
   const { success, errors, handleChange, handleSubmit, dataMonth, reference } = useEmployments({
+    hospitalId,
     month,
     year,
-    hospitalId,
   })
 
   const [open, setOpen] = useState(false)
-  const isWritable = isAllowedToWrite({ user: currentUser, hospitalId })
+  const isWritable = isAllowedToWrite({ hospitalId, user: currentUser })
 
   const [readOnlyState, setReadOnlyState] = useState(!isWritable || readOnly)
 
@@ -235,8 +234,8 @@ export const PassedMonthEmployments = ({ month, year, hospitalId, readOnly = fal
                 Modifier <EditOutlinedIcon width={24} />
               </Button>
             ) : (
-                <AnchorButton>Enregistrer</AnchorButton>
-              )}
+              <AnchorButton>Enregistrer</AnchorButton>
+            )}
           </div>
 
           <Messages success={success} errors={errors} />
@@ -254,9 +253,9 @@ export const PassedMonthEmployments = ({ month, year, hospitalId, readOnly = fal
 }
 
 CurrentMonthEmployments.propTypes = {
+  hospitalId: PropTypes.number.isRequired,
   month: PropTypes.string.isRequired,
   year: PropTypes.number.isRequired,
-  hospitalId: PropTypes.number.isRequired,
 }
 
 PassedMonthEmployments.propTypes = { ...CurrentMonthEmployments.propTypes, readOnly: PropTypes.bool }
@@ -281,12 +280,12 @@ function useEmployments({ month, year, hospitalId }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const json = await findEmployment({ hospitalId, year, month })
+        const json = await findEmployment({ hospitalId, month, year })
 
         const etpReference = await searchReferenceForMonth({
           hospitalId,
-          year,
           month,
+          year,
         })
 
         setDataMonth(json)
@@ -311,12 +310,12 @@ function useEmployments({ month, year, hospitalId }) {
     setErrors({})
 
     try {
-      await updateEmployment({ hospitalId, year, month, dataMonth })
+      await updateEmployment({ dataMonth, hospitalId, month, year })
       setSuccess("Vos informations ont bien été enregistrées.")
     } catch (error) {
       setErrors({ general: "Erreur lors de la mise à jour des ETP" })
     }
   }
 
-  return { success, errors, handleChange, handleSubmit, dataMonth, reference }
+  return { dataMonth, errors, handleChange, handleSubmit, reference, success }
 }

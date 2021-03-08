@@ -7,29 +7,29 @@ import { METHOD_GET, METHOD_OPTIONS, STATUS_200_OK } from "../../../../../utils/
 import { EMPLOYMENT_CONSULTATION } from "../../../../../utils/roles"
 
 const handler = async (req, res) => {
-    res.setHeader("Content-Type", "application/json")
+  res.setHeader("Content-Type", "application/json")
 
-    try {
-        switch (req.method) {
-            case METHOD_GET: {
-                checkValidUserWithPrivilege(EMPLOYMENT_CONSULTATION, req, res)
+  try {
+    switch (req.method) {
+      case METHOD_GET: {
+        checkValidUserWithPrivilege(EMPLOYMENT_CONSULTATION, req, res)
 
-                const { hospitalId } = await req.query
-                const lastEdit = await findLastEdit(hospitalId)
+        const { hospitalId } = await req.query
+        const lastEdit = await findLastEdit(hospitalId)
 
-                return res.status(STATUS_200_OK).json(lastEdit)
-            }
+        return res.status(STATUS_200_OK).json(lastEdit)
+      }
 
-            default:
-                if (req.method !== METHOD_OPTIONS) return sendMethodNotAllowedError(res)
-        }
-    } catch (error) {
-        sendAPIError(error, res)
+      default:
+        if (req.method !== METHOD_OPTIONS) return sendMethodNotAllowedError(res)
     }
+  } catch (error) {
+    sendAPIError(error, res)
+  }
 }
 
 const cors = Cors({
-    allowMethods: [METHOD_GET, METHOD_OPTIONS],
+  allowMethods: [METHOD_GET, METHOD_OPTIONS],
 })
 
 export default cors(handler)

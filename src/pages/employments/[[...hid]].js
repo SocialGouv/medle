@@ -11,12 +11,12 @@ import Layout from "../../components/Layout"
 import { Title1, Title2 } from "../../components/StyledComponents"
 import { START_YEAR_MEDLE } from "../../config"
 import { useDebounce } from "../../hooks/useDebounce"
-import { buildScope } from "../../services/scope"
 import { withAuthentication } from "../../utils/auth"
 import { isoToFr, NAME_MONTHS, now } from "../../utils/date"
 import { getReferenceData } from "../../utils/init"
 import { castArrayInMap } from "../../utils/object"
 import { canAccessAllHospitals, EMPLOYMENT_CONSULTATION } from "../../utils/roles"
+import { buildScope, hospitalsOfUser } from "../../utils/scope"
 
 function buildEmploymentDataMonth({ currentYear, currentMonth, selectedYear, hospitalId }) {
   if (currentYear === selectedYear) {
@@ -80,6 +80,8 @@ function formatLastEdit({ edit, hospitalId }) {
           year: edit.year,
         }),
     lastUpdated: !edit.lastupdated ? null : isoToFr(edit.lastupdated),
+    month: edit.month,
+    year: edit.year,
   }
 }
 
@@ -116,15 +118,9 @@ const ListEmploymentsHospital = ({ currentUser }) => {
 
   useDebounce(handleSubmit, 500, [search])
 
-  // TODO: faire un hook pour récupérer n'importe où tous les hôpitaux d'un utilisateur
   const filterHospitals = React.useCallback(
     (search) => {
-      // Get the hospitals allowed by the user
-      const scopeUser = buildScope(currentUser)
-      const hospitals = canAccessAllHospitals(currentUser)
-        ? getReferenceData("hospitals")
-        : getReferenceData("hospitals").filter((hospital) => scopeUser.includes(hospital.id))
-
+      const hospitals = hospitalsOfUser(currentUser)
       // Filter by search if any
       return !search ? hospitals : hospitals.filter((hospital) => hospital?.name.match(new RegExp(search, "i")))
     },
@@ -138,16 +134,12 @@ const ListEmploymentsHospital = ({ currentUser }) => {
 
       const promises = allHospitalsOfUser.map((hospital) => findLastEdit({ hospitalId: hospital?.id }))
 
-      Promise.all(promises)
-        .then((edits) => {
-          // Promises and allHospitalsOfUser are in the same order, so it's safe to get id from allHospitalsOfUser.
-          edits = edits.map((edit, index) => formatLastEdit({ edit, hospitalId: allHospitalsOfUser[index].id }))
+      Promise.all(promises).then((edits) => {
+        // Promises and allHospitalsOfUser are in the same order, so it's safe to get id from allHospitalsOfUser.
+        edits = edits.map((edit, index) => formatLastEdit({ edit, hospitalId: allHospitalsOfUser[index].id }))
 
-          return castArrayInMap({ array: edits, propAsKey: "hospitalId" })
-        })
-        .then((edits) => {
-          setLastEdits(edits)
-        })
+        setLastEdits(castArrayInMap({ array: edits, propAsKey: "hospitalId" }))
+      })
     }
     fetchData()
   }, [filterHospitals])
@@ -161,8 +153,8 @@ const ListEmploymentsHospital = ({ currentUser }) => {
     setHospitals(filterHospitals(search))
   }
 
-  function noUpToDate(hospital) {
-    return !lastEdits[hospital.id]?.lastAddedMonth || lastEdits[hospital.id]?.lastAddedMonth < now().year()
+  function isUpToDate(hospital) {
+    return lastEdits[hospital.id]?.lastAddedMonth && lastEdits[hospital.id]?.year === now().year()
   }
 
   return (
@@ -202,8 +194,8 @@ const ListEmploymentsHospital = ({ currentUser }) => {
             {hospitals.map((hospital) => (
               <Link key={hospital.id} href="/employments/[[...hid]]" as={`/employments/${hospital?.id}`}>
                 <tr key={hospital.id}>
-                  <td title={noUpToDate(hospital) ? "Certains mois de l'année précédente manquent " : ""}>
-                    <span className={noUpToDate(hospital) ? "mark" : ""}>{hospital.name}</span>
+                  <td title={!isUpToDate(hospital) ? "Certains mois de l'année précédente sont manquants." : ""}>
+                    <span className={!isUpToDate(hospital) ? "mark" : ""}>{hospital.name}</span>
                   </td>
                   <td>{lastEdits[hospital.id]?.lastAddedMonth}</td>
                   <td>{lastEdits[hospital.id]?.lastUpdated}</td>
