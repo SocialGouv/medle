@@ -9,6 +9,7 @@ class MyDocument extends Document {
           <script src="/polyfill.js" />
           <script type="text/javascript" src="/tarteaucitron/tarteaucitron.js" />
           <script type="text/javascript" src="/tarteaucitron/initTarteaucitron.js" />
+          <title>Médlé</title>
         </Head>
         <body>
           <Main />

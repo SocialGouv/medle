@@ -66,8 +66,8 @@ function describeRequest({ currentUser, selectedHospitalId }) {
       ? "SUPERVISOR_HAS_SELECTED"
       : "SUPERVISOR_HAS_NOT_SELECTED"
     : selectedHospitalId
-      ? "OPERATOR_HAS_EXPLICITLY_SELECTED"
-      : "OPERATOR_HAS_IMPLICITLY_SELECTED"
+    ? "OPERATOR_HAS_EXPLICITLY_SELECTED"
+    : "OPERATOR_HAS_IMPLICITLY_SELECTED"
 }
 
 function formatLastEdit({ edit, hospitalId }) {
@@ -76,9 +76,9 @@ function formatLastEdit({ edit, hospitalId }) {
     lastAddedMonth: !edit.month
       ? null
       : formatMonthYear({
-        month: edit.month,
-        year: edit.year,
-      }),
+          month: edit.month,
+          year: edit.year,
+        }),
     lastUpdated: !edit.lastupdated ? null : isoToFr(edit.lastupdated),
   }
 }
@@ -261,7 +261,12 @@ const EmploymentsHospital = ({ currentUser, hospitalId }) => {
           Déclaration du personnel {hospital?.name && ` de ${hospital.name}`}{" "}
         </Title1>
         <div className="mb-3 flex-grow-1 mb-md-0" style={{ maxWidth: 100 }}>
-          <Select options={yearsOptions} defaultValue={yearsOptions[0]} onChange={handleYearChange} />
+          <Select
+            options={yearsOptions}
+            defaultValue={yearsOptions[0]}
+            onChange={handleYearChange}
+            aria-label="Changer l'année"
+          />
         </div>
       </div>
       <Container style={{ maxWidth: 720 }}>
@@ -270,23 +275,23 @@ const EmploymentsHospital = ({ currentUser, hospitalId }) => {
             {error}
           </Alert>
         ) : (
-            <>
-              <Title2 className="mb-4 text-capitalize">{title}</Title2>
-              <p className="mb-0 text-center font-italic">
-                {"Veuillez indiquer le nombre d'ETP pour les différents profils de votre UMJ/IML."}
-              </p>
-              <p className="mb-5 text-center">
-                <small>
-                  Attention, un ETP est un Equivalent Temps Plein et non un poste.{" "}
-                  <Link href={"/faq"}>
-                    <a>{"+ d'infos dans la FAQ"}</a>
-                  </Link>
+          <>
+            <Title2 className="mb-4 text-capitalize">{title}</Title2>
+            <p className="mb-0 text-center font-italic">
+              {"Veuillez indiquer le nombre d'ETP pour les différents profils de votre UMJ/IML."}
+            </p>
+            <p className="mb-5 text-center">
+              <small>
+                Attention, un ETP est un Equivalent Temps Plein et non un poste.{" "}
+                <Link href={"/faq"}>
+                  <a>{"+ d'infos dans la FAQ"}</a>
+                </Link>
                 .
               </small>
-              </p>
-              {employmentDataMonths}
-            </>
-          )}
+            </p>
+            {employmentDataMonths}
+          </>
+        )}
       </Container>
     </Layout>
   )
