@@ -1,3 +1,4 @@
+import ListAltIcon from "@material-ui/icons/ListAlt"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
@@ -5,8 +6,9 @@ import React from "react"
 import Select from "react-select"
 import { Alert, Col, Container, Form, FormGroup, Input, Row, Table } from "reactstrap"
 
-import { findLastEdit } from "../../clients/employments"
+import { exportEmployments, findLastEdit } from "../../clients/employments"
 import { CurrentMonthEmployments, PassedMonthEmployments } from "../../components/EmploymentMonthData"
+import { SearchButton } from "../../components/form/SearchButton"
 import Layout from "../../components/Layout"
 import { Title1, Title2 } from "../../components/StyledComponents"
 import { START_YEAR_MEDLE } from "../../config"
@@ -111,7 +113,18 @@ export const EmploymentsPage = ({ currentUser }) => {
   }
 }
 
+function computeYearsOptions(currentYear) {
+  return Array(currentYear - START_YEAR_MEDLE + 1)
+    .fill(0)
+    .map((_, index) => START_YEAR_MEDLE + index)
+    .reverse()
+    .map((current) => ({ label: current, value: current }))
+}
+
 const ListEmploymentsHospital = ({ currentUser }) => {
+  const { currentYear } = decomposeDate(now())
+  const [selectedYear, setSelectedYear] = React.useState(currentYear)
+
   const [hospitals, setHospitals] = React.useState([])
   const [search, setSearch] = React.useState("")
   const [lastEdits, setLastEdits] = React.useState([])
@@ -144,6 +157,8 @@ const ListEmploymentsHospital = ({ currentUser }) => {
     fetchData()
   }, [filterHospitals])
 
+  const yearsOptions = computeYearsOptions(currentYear)
+
   function handleSearchChange(event) {
     setSearch(event.target.value)
   }
@@ -151,6 +166,28 @@ const ListEmploymentsHospital = ({ currentUser }) => {
   function handleSubmit(event) {
     event?.preventDefault()
     setHospitals(filterHospitals(search))
+  }
+
+  function handleYearChange(option) {
+    setSelectedYear(option.value)
+  }
+
+  async function handleExport(event) {
+    event.preventDefault()
+    console.log("Export xls pour l'année", selectedYear)
+    console.log(
+      "Hôpitaux",
+      hospitals
+        .map((hospital) => hospital.id)
+        .sort((h1, h2) => Number(h1) > Number(h2))
+        .join(","),
+    )
+
+    try {
+      await exportEmployments({ hospitals: hospitals.map((hospital) => hospital.id), year: selectedYear })
+    } catch (error) {
+      console.error("Erreur trouvée", error)
+    }
   }
 
   function isUpToDate(hospital) {
@@ -209,6 +246,20 @@ const ListEmploymentsHospital = ({ currentUser }) => {
             ))}
           </tbody>
         </Table>
+        <div className="d-flex flex-column flex-md-row justify-content-center align-items-center">
+          <span className="mb-3 mb-md-0">{"Export des ETP de la sélection pour l'année"}</span>
+          <div className="mx-3 mb-3 mb-md-0" style={{ width: 100 }}>
+            <Select
+              options={yearsOptions}
+              defaultValue={yearsOptions[0]}
+              onChange={handleYearChange}
+              aria-label="Changer l'année"
+            />
+          </div>
+          <SearchButton className="btn-outline-primary" disabled={!hospitals?.length} onClick={handleExport}>
+            <ListAltIcon /> Exporter
+          </SearchButton>
+        </div>
       </Container>
     </Layout>
   )
@@ -234,11 +285,7 @@ const EmploymentsHospital = ({ currentUser, hospitalId }) => {
     }
   }, [currentUser, currentYear, currentMonth, selectedYear, hospitalId])
 
-  const yearsOptions = Array(currentYear - START_YEAR_MEDLE + 1)
-    .fill(0)
-    .map((_, index) => START_YEAR_MEDLE + index)
-    .reverse()
-    .map((current) => ({ label: current, value: current }))
+  const yearsOptions = computeYearsOptions(currentYear)
 
   function handleYearChange(option) {
     setSelectedYear(option.value)
@@ -249,10 +296,10 @@ const EmploymentsHospital = ({ currentUser, hospitalId }) => {
   return (
     <Layout page="employments" currentUser={currentUser}>
       <div className="d-flex flex-column flex-md-row justify-content-center align-items-center">
-        <Title1 className="mt-5 mb-2 mr-5 mb-md-5">
+        <Title1 className="mt-5 mr-5 mb-4 mb-md-5">
           Déclaration du personnel {hospital?.name && ` de ${hospital.name}`}{" "}
         </Title1>
-        <div className="mb-3 flex-grow-1 mb-md-0" style={{ maxWidth: 100 }}>
+        <div className="mb-3 mb-md-0" style={{ width: 100 }}>
           <Select
             options={yearsOptions}
             defaultValue={yearsOptions[0]}
