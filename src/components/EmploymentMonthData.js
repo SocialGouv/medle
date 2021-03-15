@@ -29,7 +29,7 @@ const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }
             type="number"
             min={0}
             step="0.05"
-            placeholder="ex: 2,1"
+            placeholder={!readOnly ? "ex: 2,1" : "non rempli"}
             value={dataMonth?.["doctors"] || ""}
             onChange={handleChange}
             disabled={readOnly}
@@ -46,7 +46,7 @@ const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }
             type="number"
             min={0}
             step="0.05"
-            placeholder="ex: 2,1"
+            placeholder={!readOnly ? "ex: 2,1" : "non rempli"}
             value={dataMonth?.["secretaries"] || ""}
             onChange={handleChange}
             disabled={readOnly}
@@ -62,7 +62,7 @@ const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }
             type="number"
             min={0}
             step="0.05"
-            placeholder="ex: 2,1"
+            placeholder={!readOnly ? "ex: 2,1" : "non rempli"}
             value={dataMonth?.["nursings"] || ""}
             onChange={handleChange}
             disabled={readOnly}
@@ -79,7 +79,7 @@ const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }
             type="number"
             min={0}
             step="0.05"
-            placeholder="ex: 2,1"
+            placeholder={!readOnly ? "ex: 2,1" : "non rempli"}
             value={dataMonth?.["executives"] || ""}
             onChange={handleChange}
             disabled={readOnly}
@@ -97,7 +97,7 @@ const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }
             type="number"
             min={0}
             step="0.05"
-            placeholder="ex: 2,1"
+            placeholder={!readOnly ? "ex: 2,1" : "non rempli"}
             value={dataMonth?.["ides"] || ""}
             onChange={handleChange}
             disabled={readOnly}
@@ -113,7 +113,7 @@ const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }
             type="number"
             min={0}
             step="0.05"
-            placeholder="ex: 2,1"
+            placeholder={!readOnly ? "ex: 2,1" : "non rempli"}
             value={dataMonth?.["auditoriumAgents"] || ""}
             onChange={handleChange}
             disabled={readOnly}
@@ -129,7 +129,7 @@ const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }
             type="number"
             min={0}
             step="0.05"
-            placeholder="ex: 2,1"
+            placeholder={!readOnly ? "ex: 2,1" : "non rempli"}
             value={dataMonth?.["others"] || ""}
             onChange={handleChange}
             disabled={readOnly}
@@ -139,6 +139,13 @@ const FormEmployment = ({ dataMonth, handleChange, reference, readOnly = false }
         </Col>
         <Col className="mr-3" />
       </Row>
+      <style jsx>{`
+        :global(input:disabled) {
+          border: 0;
+          background-color: white !important;
+          font-weight: 500;
+        }
+      `}</style>
     </>
   )
 }
