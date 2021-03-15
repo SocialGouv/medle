@@ -15,9 +15,9 @@ const handler = async (req, res) => {
         checkValidUserWithPrivilege(EMPLOYMENT_CONSULTATION, req, res)
 
         const { hospitalId } = await req.query
-        const lastEdit = await findLastEdit(hospitalId)
+        const data = await findLastEdit(hospitalId)
 
-        return res.status(STATUS_200_OK).json(lastEdit)
+        return res.status(STATUS_200_OK).json(data)
       }
 
       default:

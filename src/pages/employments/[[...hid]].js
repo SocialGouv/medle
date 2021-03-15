@@ -63,17 +63,21 @@ function describeRequest({ currentUser, selectedHospitalId }) {
 }
 
 function formatLastEdit({ edit, hospitalId }) {
+  const { lastEdit, nbMonthsPreviousYear, previousYear } = edit
+
   return {
     hospitalId,
-    lastAddedMonth: !edit.month
+    lastAddedMonth: !lastEdit?.month
       ? null
       : formatMonthYear({
-          month: edit.month,
-          year: edit.year,
+          month: lastEdit?.month,
+          year: lastEdit?.year,
         }),
-    lastUpdated: !edit.lastupdated ? null : isoToFr(edit.lastupdated),
-    month: edit.month,
-    year: edit.year,
+    lastUpdated: !lastEdit?.lastupdated ? null : isoToFr(lastEdit?.lastupdated),
+    month: lastEdit?.month,
+    nbMonthsPreviousYear,
+    previousYear,
+    year: lastEdit?.year,
   }
 }
 
@@ -140,12 +144,14 @@ const ListEmploymentsHospital = ({ currentUser }) => {
 
       const promises = allHospitalsOfUser.map((hospital) => findLastEdit({ hospitalId: hospital?.id }))
 
-      Promise.all(promises).then((edits) => {
-        // Promises and allHospitalsOfUser are in the same order, so it's safe to get id from allHospitalsOfUser.
-        edits = edits.map((edit, index) => formatLastEdit({ edit, hospitalId: allHospitalsOfUser[index].id }))
+      Promise.all(promises)
+        .then((edits) => {
+          // Promises and allHospitalsOfUser are in the same order, so it's safe to get id from allHospitalsOfUser.
+          edits = edits.map((edit, index) => formatLastEdit({ edit, hospitalId: allHospitalsOfUser[index].id }))
 
-        setLastEdits(castArrayInMap({ array: edits, propAsKey: "hospitalId" }))
-      })
+          setLastEdits(castArrayInMap({ array: edits, propAsKey: "hospitalId" }))
+        })
+        .catch((error) => console.error("Erreur lors de la récupération des last edits", error))
     }
     fetchData()
   }, [filterHospitals])
@@ -167,14 +173,6 @@ const ListEmploymentsHospital = ({ currentUser }) => {
 
   async function handleExport(event) {
     event.preventDefault()
-    console.log("Export xls pour l'année", selectedYear)
-    console.log(
-      "Hôpitaux",
-      hospitals
-        .map((hospital) => hospital.id)
-        .sort((h1, h2) => Number(h1) > Number(h2))
-        .join(","),
-    )
 
     try {
       await exportEmployments({ hospitals: hospitals.map((hospital) => hospital.id), year: selectedYear })
@@ -183,8 +181,17 @@ const ListEmploymentsHospital = ({ currentUser }) => {
     }
   }
 
-  function isUpToDate(hospital) {
-    return lastEdits[hospital.id]?.lastAddedMonth && lastEdits[hospital.id]?.year === now().year()
+  function getStatusHospital(hospital) {
+    return !lastEdits[hospital.id]
+      ? "UNKNOWN"
+      : lastEdits[hospital.id].nbMonthsPreviousYear === 12
+      ? "COMPLETED"
+      : "UNCOMPLETED"
+  }
+
+  function buildLabelMissingMonths(hospital) {
+    const nbMonths = lastEdits[hospital.id]?.nbMonthsPreviousYear
+    return `${nbMonths} / 12 mois`
   }
 
   return (
@@ -215,6 +222,7 @@ const ListEmploymentsHospital = ({ currentUser }) => {
           <thead>
             <tr className="table-light">
               <th>Établissement</th>
+              <th>Année {currentYear - 1}</th>
               <th>Dernier mois ajouté</th>
               <th>Ajouté le</th>
               <th />
@@ -224,19 +232,17 @@ const ListEmploymentsHospital = ({ currentUser }) => {
             {hospitals.map((hospital) => (
               <Link key={hospital.id} href="/employments/[[...hid]]" as={`/employments/${hospital?.id}`}>
                 <tr key={hospital.id}>
-                  <td title={!isUpToDate(hospital) ? "Certains mois de l'année précédente sont manquants." : ""}>
+                  <td>
                     <span>{hospital.name}</span>
                   </td>
                   <td>
-                    {!isUpToDate(hospital) ? (
-                      <div className="d-flex justify-content-left">
-                        <WarningRoundedIcon style={{ color: "tomato" }} fontSize="small" />
-                        &nbsp;Année {now().year() - 1} incomplète
-                      </div>
+                    {getStatusHospital(hospital) === "UNCOMPLETED" ? (
+                      <div style={{ color: "tomato" }}>{buildLabelMissingMonths(hospital)}</div>
                     ) : (
-                      lastEdits[hospital.id]?.lastAddedMonth
+                      getStatusHospital(hospital) === "COMPLETED" && "Complète"
                     )}
                   </td>
+                  <td>{lastEdits[hospital.id]?.lastAddedMonth}</td>
                   <td>{lastEdits[hospital.id]?.lastUpdated}</td>
                   <td>
                     <Link href="/employments/[[...hid]]" as={`/employments/${hospital?.id}`}>

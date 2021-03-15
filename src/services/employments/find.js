@@ -1,4 +1,5 @@
 import knex from "../../knex/knex"
+import { extractMonthYear } from "../../utils/date"
 import { APIError } from "../../utils/errors"
 import { STATUS_400_BAD_REQUEST } from "../../utils/http"
 import { isValid } from "./common"
@@ -28,10 +29,22 @@ export const findLastEdit = async (hospitalId) => {
     })
   }
 
+  const { year } = extractMonthYear()
+
+  const previousYear = year - 1
+
   const [results] = await knex("employments")
     .where("hospital_id", hospitalId)
     .orderByRaw("year desc, month desc")
     .select(knex.raw("year, month, coalesce(updated_at, created_at) as lastupdated"))
 
-  return results || {}
+  const [nbMonths] = await knex("employments")
+    .whereNull("deleted_at")
+    .where("year", previousYear)
+    .where("hospital_id", hospitalId)
+    .count()
+
+  const nbMonthsPreviousYear = isNaN(nbMonths?.count) ? 0 : Number(nbMonths?.count)
+
+  return { lastEdit: results, nbMonthsPreviousYear, previousYear } || {}
 }
