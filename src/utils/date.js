@@ -55,3 +55,14 @@ export const isoToFr = (date) => {
   const [year, month] = parts
   return `${day}/${month}/${year}`
 }
+
+/**
+ * Return month and year parts
+ * @param {*} date in moment.js format
+ */
+export function extractMonthYear(date = now()) {
+  const month = date.format("MM")
+  const year = Number(date.format("YYYY"))
+
+  return { month, year }
+}

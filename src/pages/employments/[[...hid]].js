@@ -1,4 +1,5 @@
 import ListAltIcon from "@material-ui/icons/ListAlt"
+import WarningRoundedIcon from "@material-ui/icons/WarningRounded"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
@@ -14,7 +15,7 @@ import { Title1, Title2 } from "../../components/StyledComponents"
 import { START_YEAR_MEDLE } from "../../config"
 import { useDebounce } from "../../hooks/useDebounce"
 import { withAuthentication } from "../../utils/auth"
-import { isoToFr, NAME_MONTHS, now } from "../../utils/date"
+import { extractMonthYear, isoToFr, NAME_MONTHS, now } from "../../utils/date"
 import { getReferenceData } from "../../utils/init"
 import { castArrayInMap } from "../../utils/object"
 import { canAccessAllHospitals, EMPLOYMENT_CONSULTATION } from "../../utils/roles"
@@ -39,17 +40,6 @@ function buildEmploymentDataMonth({ currentYear, currentMonth, selectedYear, hos
     .map((_, index) => String(index + 1).padStart(2, "0"))
     .reverse()
     .map((month) => <PassedMonthEmployments key={month} month={month} year={selectedYear} hospitalId={hospitalId} />)
-}
-
-/**
- * Return month and year parts
- * @param {*} date in moment.js format
- */
-function decomposeDate(date) {
-  const currentMonth = date.format("MM")
-  const currentYear = Number(date.format("YYYY"))
-
-  return { currentMonth, currentYear }
 }
 
 function formatMonthYear({ month, year }) {
@@ -121,8 +111,11 @@ function computeYearsOptions(currentYear) {
     .map((current) => ({ label: current, value: current }))
 }
 
+/**
+ * Composant lisant les établissements de son périmètre, pour voir les ETP
+ */
 const ListEmploymentsHospital = ({ currentUser }) => {
-  const { currentYear } = decomposeDate(now())
+  const { year: currentYear } = extractMonthYear()
   const [selectedYear, setSelectedYear] = React.useState(currentYear)
 
   const [hospitals, setHospitals] = React.useState([])
@@ -232,9 +225,18 @@ const ListEmploymentsHospital = ({ currentUser }) => {
               <Link key={hospital.id} href="/employments/[[...hid]]" as={`/employments/${hospital?.id}`}>
                 <tr key={hospital.id}>
                   <td title={!isUpToDate(hospital) ? "Certains mois de l'année précédente sont manquants." : ""}>
-                    <span className={!isUpToDate(hospital) ? "mark" : ""}>{hospital.name}</span>
+                    <span>{hospital.name}</span>
                   </td>
-                  <td>{lastEdits[hospital.id]?.lastAddedMonth}</td>
+                  <td>
+                    {!isUpToDate(hospital) ? (
+                      <div className="d-flex justify-content-left">
+                        <WarningRoundedIcon style={{ color: "tomato" }} fontSize="small" />
+                        &nbsp;Année {now().year() - 1} incomplète
+                      </div>
+                    ) : (
+                      lastEdits[hospital.id]?.lastAddedMonth
+                    )}
+                  </td>
                   <td>{lastEdits[hospital.id]?.lastUpdated}</td>
                   <td>
                     <Link href="/employments/[[...hid]]" as={`/employments/${hospital?.id}`}>
@@ -265,8 +267,11 @@ const ListEmploymentsHospital = ({ currentUser }) => {
   )
 }
 
+/**
+ * Composant détaillant les ETP d'un établissement
+ */
 const EmploymentsHospital = ({ currentUser, hospitalId }) => {
-  const { currentMonth, currentYear } = decomposeDate(now())
+  const { month: currentMonth, year: currentYear } = extractMonthYear()
   const [selectedYear, setSelectedYear] = React.useState(currentYear)
 
   const [employmentDataMonths, setEmploymentDataMonths] = React.useState()

@@ -1,6 +1,7 @@
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos"
 import EditOutlinedIcon from "@material-ui/icons/Edit"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import WarningRoundedIcon from "@material-ui/icons/WarningRounded"
 import PropTypes from "prop-types"
 import React, { useEffect, useState } from "react"
 import { Alert, Button, Col, Form, Input, Row } from "reactstrap"
@@ -9,7 +10,7 @@ import { findEmployment, updateEmployment } from "../clients/employments"
 import { searchReferenceForMonth } from "../clients/employments-references"
 import { AnchorButton, Label, ValidationButton } from "../components/StyledComponents"
 import { useUser } from "../hooks/useUser"
-import { NAME_MONTHS } from "../utils/date"
+import { extractMonthYear, NAME_MONTHS } from "../utils/date"
 import { isEmpty, pluralize } from "../utils/misc"
 import { EMPLOYMENT_MANAGEMENT, isAllowed } from "../utils/roles"
 import Badge from "./Badge"
@@ -198,6 +199,10 @@ export const CurrentMonthEmployments = ({ month, year, hospitalId }) => {
 export const PassedMonthEmployments = ({ month, year, hospitalId, readOnly = false }) => {
   const currentUser = useUser()
 
+  const { year: currentYear } = extractMonthYear()
+
+  const warningEnabled = year < currentYear
+
   const { success, errors, handleChange, handleSubmit, dataMonth, reference } = useEmployments({
     hospitalId,
     month,
@@ -223,8 +228,16 @@ export const PassedMonthEmployments = ({ month, year, hospitalId, readOnly = fal
     >
       <Button outline color="secondary" block className="pt-2 pb-2 mb-2 pl-4 text-left" onClick={() => setOpen(!open)}>
         {monthName}
-        {!open && <ArrowForwardIosIcon className="float-right" width={24} />}
-        {open && <ExpandMoreIcon className="float-right" width={24} />}
+        <div className="float-right">
+          {warningEnabled && isEmpty(dataMonth) && (
+            <span className="mr-4">
+              À compléter&nbsp;
+              <WarningRoundedIcon width="24" className="align-top" />
+            </span>
+          )}
+          {!open && <ArrowForwardIosIcon width={24} />}
+          {open && <ExpandMoreIcon width={24} />}
+        </div>
       </Button>
       {open && (
         <div className="px-2">
