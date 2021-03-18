@@ -126,25 +126,30 @@ export const Footer = () => (
         </Col>
         <Col className="mt-4 mt-md-0">
           <ul className="pl-0 list-unstyled">
-            {/* <li>
-                     <Link href={"/conditions"}>
-                        <a>{"Conditions générales d'utilisation"}</a>
-                     </Link>
-                  </li> */}
-            <li>
-              <Link href={"/statistics"}>
-                <a>Statistiques</a>
+            <li className="mb-2">
+              <Link href={"/mentions"}>
+                <a>{"Mentions légales"}</a>
               </Link>
             </li>
-            <li>
-              {/* <Link> */}
-              <a href="mailto:contact.medle@fabrique.social.gouv.fr">Contactez&#8209;nous</a>
-              {/* </Link> */}
+            <li className="mb-2">
+              <Link href={"/politique-confidentialite"}>
+                <a>{"Politique de confidentialité"}</a>
+              </Link>
             </li>
-            <li>
+            <li className="mb-2">
+              <Link href={"/cgu"}>
+                <a>{"Conditions générales d'utilisation"}</a>
+              </Link>
+            </li>
+            <li className="mb-2">
               <Link href={"/faq"}>
                 <a>FAQ</a>
               </Link>
+            </li>
+            <li className="mb-2">
+              {/* <Link> */}
+              <a href="mailto:contact.medle@fabrique.social.gouv.fr">Contactez&#8209;nous</a>
+              {/* </Link> */}
             </li>
           </ul>
         </Col>
