@@ -23,9 +23,9 @@ exports.up = async function (knex) {
     }
   })
 
-  return Promise.resolve(42)
+  return Promise.resolve("Fin de la mise à jour des données.")
 }
 
 exports.down = function (knex) {
-  return Promise.resolve(42)
+  return Promise.resolve("Nothing to do.")
 }
