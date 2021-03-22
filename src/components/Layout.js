@@ -55,7 +55,11 @@ const Header = ({ currentUser }) => {
     <header className="border-bottom">
       <Navbar expand="md" light>
         <NavbarBrand>
-          <img src={"/images/logo.png"} alt="Logo" title="Logo" width="100" />
+          <Link href="/">
+            <a>
+              <img src={"/images/logo.png"} alt="Logo" title="Logo" width="100" />
+            </a>
+          </Link>
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         {currentUser && (
