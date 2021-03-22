@@ -15,6 +15,7 @@ import ReceiptIcon from "@material-ui/icons/Receipt"
 import SettingsIcon from "@material-ui/icons/Settings"
 import WhatshotIcon from "@material-ui/icons/Whatshot"
 import Link from "next/link"
+import { useRouter } from "next/router"
 import PropTypes from "prop-types"
 import React, { useState } from "react"
 import {
@@ -47,6 +48,7 @@ import {
 } from "../utils/roles"
 
 const Header = ({ currentUser }) => {
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
 
   const toggle = () => setIsOpen(!isOpen)
@@ -54,12 +56,8 @@ const Header = ({ currentUser }) => {
   return (
     <header className="border-bottom">
       <Navbar expand="md" light>
-        <NavbarBrand>
-          <Link href="/">
-            <a>
-              <img src={"/images/logo.png"} alt="Logo" title="Logo" width="100" />
-            </a>
-          </Link>
+        <NavbarBrand onClick={() => router.push("/")}>
+          <img src={"/images/logo.png"} alt="Logo" title="Logo" width="100" />
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         {currentUser && (

@@ -12,6 +12,7 @@ exports[`should renders UserDetail unchanged 1`] = `
     >
       <a
         className="navbar-brand"
+        onClick={[Function]}
       >
         <img
           alt="Logo"
