@@ -25,15 +25,6 @@ const DeceasedEdit = ({ dispatch, state, errors, hospital }) => {
         state={state.examinationTypes || []}
         invalid={!!errors.examinationTypes}
       />
-      <ActBlock
-        type="isSuicide"
-        title="S'agit-il d'un suicide ?"
-        values={["Oui", "Non"]}
-        mode="toggle"
-        dispatch={dispatch}
-        state={state.isSuicide || ""}
-        invalid={!!errors.isSuicide}
-      />
       {state.examinationTypes && state.examinationTypes.includes("Levée de corps") && (
         <ActBlock
           type="distance"
@@ -62,6 +53,15 @@ const DeceasedEdit = ({ dispatch, state, errors, hospital }) => {
         dispatch={dispatch}
         state={state.periodOfDay || ""}
         invalid={!!errors.periodOfDay}
+      />
+      <ActBlock
+        type="deathCause"
+        title="Quelle est la cause présumée du décès ?"
+        values={["Suicide", "Autre"]}
+        mode="toggle"
+        dispatch={dispatch}
+        state={state.deathCause || ""}
+        invalid={!!errors.deathCause}
       />
       <Title2 className="mt-5 mb-2">{"Profil de la personne décédée"}</Title2>
       <ActBlock
@@ -114,7 +114,7 @@ const DeceasedRead = (act) => {
           <ColumnAct header={"Âge"} content={act && act.personAgeTag} />
         </Col>
         <Col className="mr-3">
-          <ColumnAct header={"Suicide"} content={act && act.isSuicide} />
+          <ColumnAct header={"Cause du décès"} content={act && act.deathCause} />
         </Col>
         <Col className="mr-3" />
       </Row>
@@ -139,8 +139,8 @@ const hasErrors = (state) => {
   if (!state.personAgeTag) {
     errors.personAgeTag = "Obligatoire"
   }
-  if (!state.isSuicide) {
-    errors.isSuicide = "Obligatoire"
+  if (!state.deathCause) {
+    errors.deathCause = "Obligatoire"
   }
 
   return errors
