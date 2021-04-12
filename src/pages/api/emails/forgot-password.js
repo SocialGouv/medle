@@ -4,25 +4,29 @@ import { sendMail } from "../../../services/email"
 import { sendAPIError, sendMethodNotAllowedError } from "../../../services/errorHelpers"
 import { METHOD_OPTIONS, METHOD_POST, STATUS_200_OK, STATUS_500_INTERNAL_SERVER_ERROR } from "../../../utils/http"
 
-const html = `
-Bonjour 👋,
+function buildHtml({ token }) {
+  const html = `
+    Bonjour 👋,
 
-<p>Vous avez oublié votre mot de passe Médlé ? Définissez-en un nouveau.</p>
+    <p>Vous avez oublié votre mot de passe Médlé ? Définissez-en un nouveau.</p>
 
-<p>Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte. <br/>
-Si vous ne souhaitez pas réinitialiser votre mot de passe, vous pouvez ignorer cet e-mail.</p>
+    <p>Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte. <br/>
+    Si vous ne souhaitez pas réinitialiser votre mot de passe, vous pouvez ignorer cet e-mail.</p>
 
-<p>Vous allez pouvoir le réinitialiser en cliquant sur ce lien mais attention, il n'est valable que 30 minutes :</p>
+    <p>Vous allez pouvoir le réinitialiser en cliquant sur ce lien mais attention, il n'est valable que 30 minutes :</p>
 
-<p><a href="https://medle.fabrique.social.gouv.fr/">https://medle.fabrique.social.gouv.fr/</a></p>
+    <p><a href="https://medle.fabrique.social.gouv.fr/reset-password?login_token=${token}">https://medle.fabrique.social.gouv.fr/reset-password?login_token=${token}</a></p>
 
-<p>Si le lien de réinitialisation ne s’affiche pas, copiez et collez-le dans votre navigateur.<br>
-Si votre lien de réinitialisation a expiré, demandez-en un nouveau.</p>
+    <p>Si le lien de réinitialisation ne s’affiche pas, copiez et collez-le dans votre navigateur.<br>
+    Si votre lien de réinitialisation a expiré, demandez-en un nouveau.</p>
 
-<p>A bientôt sur Médlé 🚀,</p>
+    <p>A bientôt sur Médlé 🚀,</p>
 
-<p>Des questions sur Médlé? La réponse se trouve peut-être dans la <a href="https://medle.fabrique.social.gouv.fr/faq">FAQ</a> 🤞.</p>
-`
+    <p>Des questions sur Médlé? La réponse se trouve peut-être dans la <a href="https://medle.fabrique.social.gouv.fr/faq">FAQ</a> 🤞.</p>
+    `
+
+  return html
+}
 
 const handler = async (req, res) => {
   res.setHeader("Content-Type", "application/json")
@@ -32,8 +36,8 @@ const handler = async (req, res) => {
       case METHOD_POST: {
         try {
           const info = await sendMail({
-            html,
-            subject: "Médlé : oubli de mot de passe",
+            html: buildHtml({ token: "jefziejnfjiez" }),
+            subject: "Demande de réinitialisation de mot de passe Médlé",
             to,
           })
 
