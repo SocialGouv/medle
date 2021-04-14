@@ -1,56 +1,40 @@
 import Link from "next/link"
 import { useRouter } from "next/router"
-import PropTypes from "prop-types"
-import React, { useState } from "react"
+import React from "react"
 import { useForm } from "react-hook-form"
-import { Alert, Button, Col, Container, Form, FormFeedback, FormGroup, Input, Label } from "reactstrap"
+import { Button, Col, Container, Form, FormFeedback, FormGroup, Input, Label } from "reactstrap"
 
-import { resetPasswordByAdmin } from "../../../../clients/users"
-import Layout from "../../../../components/Layout"
-import { Title1 } from "../../../../components/StyledComponents"
-import { withAuthentication } from "../../../../utils/auth"
-import { logDebug } from "../../../../utils/logger"
-import { isEmpty } from "../../../../utils/misc"
-import { ADMIN } from "../../../../utils/roles"
+import { resetPassword } from "../clients/users"
+import Layout from "../components/Layout"
+import StatusComponent from "../components/StatusComponent"
+import { Title1 } from "../components/StyledComponents"
+import { isEmpty } from "../utils/misc"
 
-const UserReset = ({ currentUser }) => {
+const UserReset = () => {
   const { handleSubmit, register, errors: formErrors, watch } = useForm()
-  const [error, setError] = useState("")
-  const [success, setsuccess] = useState("")
+  const [status, setStatus] = React.useState({ type: "idle" })
   const router = useRouter()
-  const { id } = router.query
+  const { loginToken } = router.query
 
   const onSubmit = async (data) => {
-    setError("")
+    setStatus({ type: "pending" })
 
     try {
       if (isEmpty(formErrors)) {
-        const { modified } = await resetPasswordByAdmin({ id, password: data.firstValue })
-        logDebug(`Nb modified rows: ${modified}`)
-        setsuccess("Mot de passe mis à jour.")
+        await resetPassword({ loginToken, password: data.firstValue })
+        setStatus({ message: "Mot de passe réinitialisé.", type: "success" })
       }
     } catch (error) {
-      setError("Erreur serveur")
+      setStatus({ message: "Erreur serveur", type: "error" })
     }
   }
 
   return (
-    <Layout currentUser={currentUser} admin={true}>
+    <Layout>
       <Container style={{ maxWidth: 720 }} className="mt-5 mb-4">
-        <Title1>{"Utilisateur"}</Title1>
+        <Title1>{"Changement de mot de passe"}</Title1>
 
-        {error && <Alert color="danger mt-4">{error}</Alert>}
-
-        {success && (
-          <Alert color="success" className="d-flex justify-content-between align-items-center mt-4">
-            {success}&nbsp;
-            <Link href="/administration/users">
-              <Button className="" outline color="success">
-                <a>Retour à la liste</a>
-              </Button>
-            </Link>
-          </Alert>
-        )}
+        {status?.message && <StatusComponent {...status} />}
 
         <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <FormGroup row>
@@ -102,7 +86,7 @@ const UserReset = ({ currentUser }) => {
               </Button>
             </Link>
             <Button className="px-4 mt-5 " color="primary" onClick={handleSubmit(onSubmit)}>
-              Mettre à jour
+              Appliquer
             </Button>
           </div>
         </Form>
@@ -111,9 +95,4 @@ const UserReset = ({ currentUser }) => {
   )
 }
 
-UserReset.propTypes = {
-  currentUser: PropTypes.object.isRequired,
-  initialUser: PropTypes.object,
-}
-
-export default withAuthentication(UserReset, ADMIN)
+export default UserReset

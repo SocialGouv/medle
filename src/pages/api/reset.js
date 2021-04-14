@@ -1,9 +1,10 @@
 import Cors from "micro-cors"
 
 import { sendAPIError, sendMethodNotAllowedError } from "../../services/errorHelpers"
-import { reset } from "../../services/users/reset"
+import { resetFromEmail, resetFromId } from "../../services/users/reset"
 import { checkValidUserWithPrivilege } from "../../utils/auth"
 import { METHOD_OPTIONS, METHOD_PATCH, STATUS_200_OK } from "../../utils/http"
+import { checkToken } from "../../utils/jwt"
 import { logDebug } from "../../utils/logger"
 import { ADMIN } from "../../utils/roles"
 
@@ -13,14 +14,21 @@ const handler = async (req, res) => {
   try {
     switch (req.method) {
       case METHOD_PATCH: {
-        const { id, password } = req.body
+        const { id, password, loginToken } = req.body
+        let modified
 
-        const currentUser = checkValidUserWithPrivilege(ADMIN, req, res)
+        // Usage by inputs id/password for admin.
+        if (id) {
+          const currentUser = checkValidUserWithPrivilege(ADMIN, req, res)
+          logDebug("Password reset by user ", currentUser)
 
-        logDebug("Password reset by user ", currentUser)
+          modified = await resetFromId({ id, password })
+        } else {
+          // Usage by inputs loginToken/password for user which wants to change its own password.
+          const user = checkToken(loginToken)
 
-        const modified = await reset(id, password)
-
+          modified = await resetFromEmail({ email: user.email, password })
+        }
         return res.status(STATUS_200_OK).json({ modified })
       }
       default:
