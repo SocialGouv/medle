@@ -88,12 +88,6 @@ const Login = ({ authentication, error }) => {
             </Alert>
           </Form>
         </div>
-        <div className="encadre shadow border m-4 px-3 py-2 rounded">
-          Vous êtes nouveau sur Medlé&nbsp;?{" "}
-          <Link href="createAccount">
-            <a>Créer un compte</a>
-          </Link>
-        </div>
       </div>
       <style jsx>{`
         .encadre {
