@@ -6,6 +6,7 @@ import { forgotPassword } from "../clients/users"
 import Layout from "../components/Layout"
 import StatusComponent from "../components/StatusComponent"
 import { Title1 } from "../components/StyledComponents"
+import { ACTION, CATEGORY, trackEvent } from "../utils/matomo"
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = React.useState()
@@ -18,9 +19,13 @@ const ForgotPasswordPage = () => {
 
     try {
       await forgotPassword(email)
+
+      trackEvent(CATEGORY.auth, ACTION.auth.oubliMdp, `${email} : OK`)
       setStatus({ message: `Un courriel vous a été envoyé.`, type: "success" })
     } catch (error) {
-      console.error(`Error when trying to send email to ${email}`)
+      console.error(`Error when trying to send email to ${email}`, error)
+
+      trackEvent(CATEGORY.auth, ACTION.auth.oubliMdp, `${email} : Error (${error?.status})`)
 
       setStatus({
         message: error.status === 404 ? "Le courriel ne semble pas exister 😕." : "Erreur lors de l'envoi du courriel",

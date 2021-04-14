@@ -8,6 +8,7 @@ import { resetPassword } from "../clients/users"
 import Layout from "../components/Layout"
 import StatusComponent from "../components/StatusComponent"
 import { Title1 } from "../components/StyledComponents"
+import { ACTION, CATEGORY, trackEvent } from "../utils/matomo"
 import { isEmpty } from "../utils/misc"
 
 const UserReset = () => {
@@ -22,9 +23,15 @@ const UserReset = () => {
     try {
       if (isEmpty(formErrors)) {
         await resetPassword({ loginToken, password: data.firstValue })
+
+        trackEvent(CATEGORY.auth, ACTION.auth.resetMdp, `: OK`)
+
         setStatus({ message: "Mot de passe réinitialisé.", type: "success" })
       }
     } catch (error) {
+      console.error(`Error when trying to reset password`, error)
+
+      trackEvent(CATEGORY.auth, ACTION.auth.resetMdp, `: Error (${error?.status})`)
       setStatus({ message: "Erreur serveur", type: "error" })
     }
   }
