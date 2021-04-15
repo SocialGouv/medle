@@ -18,17 +18,17 @@ function buildHtml({ token }) {
   const html = `
     Bonjour 👋,
 
-    <p>Vous avez oublié votre mot de passe Médlé ? Définissez-en un nouveau.</p>
+    <p>Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte.</p>
 
-    <p>Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte. <br/>
-    Si vous ne souhaitez pas réinitialiser votre mot de passe, vous pouvez ignorer cet e-mail.</p>
-
-    <p>Vous allez pouvoir le réinitialiser en cliquant sur ce lien mais attention, il n'est valable que 1 heure.    </p>
+    <p>Modifiez-le en cliquant sur ce lien (valide pendant 1 heure) :</p>
 
     <p><a href="${APP_URL}/reset-password?loginToken=${token}">${APP_URL}/reset-password?loginToken=${token}</a></p>
 
-    <p>Si le lien de réinitialisation ne s’affiche pas, copiez et collez-le dans votre navigateur.<br>
-    Si votre lien de réinitialisation a expiré, demandez-en un nouveau.</p>
+    <p>Si le lien de réinitialisation ne s’affiche pas, copiez et collez-le dans votre navigateur.</p>
+
+    <p>Si votre lien de réinitialisation a expiré, demandez-en un nouveau.</p>
+
+    <p>Si vous ne souhaitez pas réinitialiser votre mot de passe, vous pouvez ignorer cet e-mail.</p>
 
     <p>A bientôt sur Médlé 🚀,</p>
 
