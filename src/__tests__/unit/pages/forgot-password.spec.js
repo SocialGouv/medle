@@ -63,7 +63,7 @@ it("should show an error if no email is given", () => {
 
   userEvent.click(screen.getByRole("button", { name: /envoyer un email/i }))
 
-  expect(screen.getByText(/Veuillez renseigner le champ Courriel/i)).toBeInTheDocument()
+  expect(screen.getByRole("alert")).toHaveTextContent(/Veuillez renseigner le champ Courriel/i)
 })
 
 it("should render error if no user with this email is found in db", async () => {
@@ -74,7 +74,7 @@ it("should render error if no user with this email is found in db", async () => 
   userEvent.click(screen.getByRole("button", { name: /envoyer un email/i }))
 
   await waitFor(() => {
-    expect(screen.getByText(/Le courriel ne semble pas exister/i)).toBeInTheDocument()
+    expect(screen.getByRole("alert")).toHaveTextContent(/Le courriel ne semble pas exister/i)
   })
 })
 
@@ -86,6 +86,6 @@ it("should render correctly if user email is found", async () => {
   userEvent.click(screen.getByRole("button", { name: /envoyer un email/i }))
 
   await waitFor(() => {
-    expect(screen.getByText(/Un courriel vous a été envoyé/i)).toBeInTheDocument()
+    expect(screen.getByRole("alert")).toHaveTextContent(/Un courriel vous a été envoyé/i)
   })
 })
