@@ -4,7 +4,7 @@ import { Button, Col, Container, Form, FormGroup, Input, Label } from "reactstra
 
 import { forgotPassword } from "../clients/users"
 import Layout from "../components/Layout"
-import StatusComponent from "../components/StatusComponent"
+import StatusAlert from "../components/StatusAlert"
 import { Title1 } from "../components/StyledComponents"
 import { ACTION, CATEGORY, trackEvent } from "../utils/matomo"
 
@@ -56,7 +56,7 @@ const ForgotPasswordPage = () => {
       <Container style={{ maxWidth: 700 }}>
         <span>&nbsp;</span>
 
-        {status?.message && <StatusComponent {...status} />}
+        {status?.message && <StatusAlert {...status} />}
 
         <Form onSubmit={handleSubmit} className="mt-4">
           <FormGroup row>

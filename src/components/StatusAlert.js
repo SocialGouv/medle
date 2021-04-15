@@ -13,7 +13,7 @@ import { Alert } from "reactstrap"
  * @param {string} [status.message]    - Message (optionnal).
  * @param {string} [status.className]  - CSS classnames (optionnal).
  */
-export default function StatusComponent({ type, message = "", className }) {
+export default function StatusAlert({ type, message = "", className }) {
   const color = type === "error" ? "danger" : type === "success" ? "success" : "info"
 
   return (
@@ -23,7 +23,7 @@ export default function StatusComponent({ type, message = "", className }) {
   )
 }
 
-StatusComponent.propTypes = {
+StatusAlert.propTypes = {
   className: PropTypes.string,
   message: PropTypes.string,
   type: PropTypes.string.isRequired,

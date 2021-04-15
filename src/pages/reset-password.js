@@ -6,7 +6,7 @@ import { Button, Col, Container, Form, FormFeedback, FormGroup, Input, Label } f
 
 import { resetPassword } from "../clients/users"
 import Layout from "../components/Layout"
-import StatusComponent from "../components/StatusComponent"
+import StatusAlert from "../components/StatusAlert"
 import { Title1 } from "../components/StyledComponents"
 import { ACTION, CATEGORY, trackEvent } from "../utils/matomo"
 import { isEmpty } from "../utils/misc"
@@ -41,7 +41,7 @@ const UserReset = () => {
       <Container style={{ maxWidth: 720 }} className="mt-5 mb-4">
         <Title1>{"Changement de mot de passe"}</Title1>
 
-        {status?.message && <StatusComponent {...status} />}
+        {status?.message && <StatusAlert {...status} />}
 
         <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <FormGroup row>
