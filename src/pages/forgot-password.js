@@ -15,6 +15,15 @@ const ForgotPasswordPage = () => {
 
   async function handleSubmit(event) {
     event.preventDefault()
+
+    if (!email) {
+      setStatus({
+        message: "Veuillez renseigner le champ Courriel.",
+        type: "error",
+      })
+      return
+    }
+
     setStatus({ type: "pending" })
 
     try {
