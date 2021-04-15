@@ -20,7 +20,7 @@ export const isOpenFeature = (feature) => {
 
 export const LOGIN_ENDPOINT = "/login"
 export const LOGOUT_ENDPOINT = "/logout"
-export const RESET_PWD_ENDPOINT = "/reset"
+export const RESET_PWD_ENDPOINT = "/reset-password"
 export const FORGOT_PWD_ENDPOINT = "/forgot-password"
 
 export const ACTS_ENDPOINT = "/acts"

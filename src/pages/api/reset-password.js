@@ -1,7 +1,7 @@
 import Cors from "micro-cors"
 
 import { sendAPIError, sendMethodNotAllowedError } from "../../services/errorHelpers"
-import { resetFromEmail, resetFromId } from "../../services/users/reset"
+import { resetFromEmail, resetFromId } from "../../services/users/reset-password"
 import { checkValidUserWithPrivilege } from "../../utils/auth"
 import { METHOD_OPTIONS, METHOD_PATCH, STATUS_200_OK } from "../../utils/http"
 import { checkToken } from "../../utils/jwt"
@@ -29,7 +29,9 @@ const handler = async (req, res) => {
 
           modified = await resetFromEmail({ email: user.email, password })
         }
-        return res.status(STATUS_200_OK).json({ modified })
+        console.debug("Nb user modified " + modified)
+
+        return res.status(STATUS_200_OK).json({})
       }
       default:
         if (req.method !== METHOD_OPTIONS) return sendMethodNotAllowedError(res)
