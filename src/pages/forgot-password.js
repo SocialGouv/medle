@@ -83,4 +83,9 @@ const ForgotPasswordPage = () => {
   )
 }
 
+// This page need to call getInitialProps to have acess to variable like API_URL (see next.config.js for detail)
+ForgotPasswordPage.getInitialProps = async () => {
+  return {}
+}
+
 export default ForgotPasswordPage
