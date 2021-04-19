@@ -10,8 +10,36 @@ import { ACTION, CATEGORY, trackEvent } from "../utils/matomo"
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = React.useState()
+  const [showForm, setShowForm] = React.useState(true)
 
   const [status, setStatus] = React.useState({ type: "idle" })
+
+  React.useEffect(() => {
+    async function sendEmail() {
+      if (status?.type !== "pending") {
+        return
+      }
+
+      try {
+        await forgotPassword(email)
+
+        trackEvent(CATEGORY.auth, ACTION.auth.oubliMdp, `${email} : OK`)
+        setStatus({ message: `Un courriel vous a été envoyé à ${email}.`, type: "success" })
+        setShowForm(false)
+      } catch (error) {
+        console.error(`Error when trying to send email to ${email}`, error)
+
+        trackEvent(CATEGORY.auth, ACTION.auth.oubliMdp, `${email} : Error (${error?.status})`)
+
+        setStatus({
+          message:
+            error.status === 404 ? "Le courriel ne semble pas exister 😕." : "Erreur lors de l'envoi du courriel",
+          type: "error",
+        })
+      }
+    }
+    sendEmail()
+  }, [status, email])
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -25,22 +53,6 @@ const ForgotPasswordPage = () => {
     }
 
     setStatus({ type: "pending" })
-
-    try {
-      await forgotPassword(email)
-
-      trackEvent(CATEGORY.auth, ACTION.auth.oubliMdp, `${email} : OK`)
-      setStatus({ message: `Un courriel vous a été envoyé.`, type: "success" })
-    } catch (error) {
-      console.error(`Error when trying to send email to ${email}`, error)
-
-      trackEvent(CATEGORY.auth, ACTION.auth.oubliMdp, `${email} : Error (${error?.status})`)
-
-      setStatus({
-        message: error.status === 404 ? "Le courriel ne semble pas exister 😕." : "Erreur lors de l'envoi du courriel",
-        type: "error",
-      })
-    }
   }
 
   function handleChange(event) {
@@ -58,26 +70,46 @@ const ForgotPasswordPage = () => {
 
         {status?.message && <StatusAlert {...status} />}
 
-        <Form onSubmit={handleSubmit} className="mt-4">
-          <FormGroup row>
-            <Label for="email" sm={4}>
-              Courriel
-            </Label>
-            <Col sm={8}>
-              <Input type="email" name="email" id="email" onChange={handleChange} />
-            </Col>
-          </FormGroup>
-          <div className="justify-content-center d-flex mt-4">
-            <Link href="/">
-              <Button className="px-4 mt-5 mr-3" outline color="primary">
-                Annuler
+        {showForm ? (
+          <Form onSubmit={handleSubmit} className="mt-4">
+            <FormGroup row>
+              <Label for="email" sm={4}>
+                Courriel
+              </Label>
+              <Col sm={8}>
+                <Input type="email" name="email" id="email" onChange={handleChange} />
+              </Col>
+            </FormGroup>
+            <div className="justify-content-center d-flex mt-4">
+              <Link href="/">
+                <Button className="px-4 mt-5 mr-3" outline color="primary">
+                  Annuler
+                </Button>
+              </Link>
+              <Button className="px-4 mt-5 " color="primary" disabled={status?.type === "pending"}>
+                Envoyer un email
               </Button>
-            </Link>
-            <Button className="px-4 mt-5 " color="primary" disabled={status?.type === "pending"}>
-              Envoyer un email
-            </Button>
-          </div>
-        </Form>
+            </div>
+          </Form>
+        ) : (
+          <>
+            <div className="justify-content-center d-flex mt-4">
+              <Link href="/">
+                <Button className="px-4 mt-5 mr-3" outline color="primary">
+                  {"Retour à l'accueil"}
+                </Button>
+              </Link>
+              <Button
+                className="px-4 mt-5 "
+                color="primary"
+                disabled={status?.type === "pending"}
+                onClick={() => setStatus({ type: "pending" })}
+              >
+                Envoyer à nouveau
+              </Button>
+            </div>
+          </>
+        )}
       </Container>
     </Layout>
   )
