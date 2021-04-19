@@ -30,9 +30,9 @@ function buildHtml({ token }) {
 
     <p>Si vous ne souhaitez pas réinitialiser votre mot de passe, vous pouvez ignorer cet e-mail.</p>
 
-    <p>A bientôt sur Médlé 🚀,</p>
+    <p>A bientôt sur Medlé 🚀,</p>
 
-    <p>Des questions sur Médlé? La réponse se trouve peut-être dans la <a href="${APP_URL}/faq">FAQ</a> 🤞.</p>
+    <p>Des questions sur Medlé? La réponse se trouve peut-être dans la <a href="${APP_URL}/faq">FAQ</a> 🤞.</p>
     `
 
   return html
@@ -58,7 +58,7 @@ const handler = async (req, res) => {
 
           const info = await sendMail({
             html: buildHtml({ token }),
-            subject: "Demande de réinitialisation de mot de passe Médlé",
+            subject: "Demande de réinitialisation de mot de passe Medlé",
             to,
           })
 
