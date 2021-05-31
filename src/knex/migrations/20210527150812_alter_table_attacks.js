@@ -4,87 +4,38 @@ exports.up = async function(knex) {
     table.integer("year").unsigned();
   });
   
-  await knex('attacks').update({
-          year: 2015,
-          name: "Bataclan"
-        })
-    .where("id", 1);
+  const rows = await knex("attacks").select("id", "name", "year");
 
-    await knex('attacks').update({
-          year: 2015,
-          name: "Hyper Cacher"
-        })
-    .where("id", 2);
+  rows.forEach(async (row) => {
+    if (typeof row.name === "string") {
+      var splitedName = row.name.split(" ");
 
-    await knex('attacks').update({
-          year: 2015,
-          name: "Les terrasses Paris"
+      if(splitedName.length > 1 && parseInt(splitedName[0])) {
+        await knex('attacks').update({
+          year: parseInt(splitedName[0]),
+          name: row.name.substring(splitedName[0].length+1)
         })
-    .where("id", 3);
-
-    await knex('attacks').update({
-          year: 2016,
-          name: "Nice"
-        })
-    .where("id", 4);
-
-    await knex('attacks').update({
-          year: 2020,
-          name: "Villejuif"
-        })
-    .where("id", 5);
-
-    await knex('attacks').update({
-          year: 2012,
-          name: "École Ozar Hatorah Toulouse"
-        })
-    .where("id", 6);
-
-    await knex('attacks').update({
-          year: 2015,
-          name: "Charlie Hebdo"
-        })
-    .where("id", 7);
+        .where("id", row.id);
+      }
+    }
+  });
 }
 
 exports.down = async function(knex) {
+  const rows = await knex("attacks").select("id", "name", "year");
+  rows.forEach(async (row) => {
+    if(row.year != undefined) {
+      await knex('attacks').update({
+          year: undefined,
+          name: row.year + " " + row.name
+        })
+      .where("id", row.id);
+    }
+  });
+
+
   await knex.schema.table('attacks', function (table) {
     table.dropColumn("year");
   });
 
-
-    await knex('attacks').update({
-          name: "2015 Bataclan"
-        })
-    .where("id", 1);
-
-    await knex('attacks').update({
-          name: "2015 Hyper Cacher"
-        })
-    .where("id", 2);
-
-   await knex('attacks').update({
-          name: "2015 Les terrasses Paris"
-        })
-    .where("id", 3);
-
-   await knex('attacks').update({
-          name: "2016 Nice"
-        })
-    .where("id", 4);
-
-    await knex('attacks').update({
-          name: "2020 Villejuif"
-        })
-    .where("id", 5);
-
-    await knex('attacks').update({
-          name: "2012 École Ozar Hatorah Toulouse"
-        })
-    .where("id", 6);
-
-    await knex('attacks').update({
-          name: "2015 Charlie Hebdo"
-        })
-    .where("id", 7);
 }
