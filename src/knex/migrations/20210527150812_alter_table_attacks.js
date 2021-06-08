@@ -7,17 +7,14 @@ exports.up = async function(knex) {
   const rows = await knex("attacks").select("id", "name", "year");
 
   rows.forEach(async (row) => {
-    if (typeof row.name === "string") {
-      var splitedName = row.name.split(" ");
-
-      if(splitedName.length > 1 && parseInt(splitedName[0])) {
-        await knex('attacks').update({
-          year: parseInt(splitedName[0]),
-          name: row.name.substring(splitedName[0].length+1)
+  var splitedName = row.name.split(" ");
+   	if(splitedName.length > 1 && Number(splitedName[0])) {
+       	await knex('attacks').update({
+        	year: Number(splitedName[0]),
+          	name: row.name.substring(splitedName[0].length+1)
         })
         .where("id", row.id);
       }
-    }
   });
 }
 

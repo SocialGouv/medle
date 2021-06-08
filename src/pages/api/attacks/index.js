@@ -36,7 +36,7 @@ const handler = async (req, res) => {
 }
 
 const cors = Cors({
-  allowMethods: [METHOD_GET, METHOD_OPTIONS],
+  allowMethods: [METHOD_GET, METHOD_POST, METHOD_OPTIONS],
 })
 
 export default cors(handler)

@@ -25,7 +25,7 @@ const handler = async (req, res) => {
 
         checkIsSuperAdmin(currentUser)
 
-        const deleted = await del(req.query, currentUser)
+        const deleted = await del(req.query)
 
         if (!deleted) return sendNotFoundError(res)
 
@@ -52,7 +52,7 @@ const handler = async (req, res) => {
 }
 
 const cors = Cors({
-  allowMethods: [METHOD_GET, METHOD_OPTIONS],
+  allowMethods: [METHOD_GET, METHOD_PUT, METHOD_DELETE, METHOD_OPTIONS],
 })
 
 export default cors(handler)
