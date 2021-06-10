@@ -10,11 +10,11 @@ export const search = async ({ fuzzy, requestedPage }) => {
     .whereNull("deleted_at")
     .where((builder) => {
       if (fuzzy) {
-       if(/^\d+$/.test(fuzzy)) {
-          builder.where("name", "ilike", `%${fuzzy}%`).orWhere("year", fuzzy);
+        if (/^\d+$/.test(fuzzy)) {
+          builder.where("name", "ilike", `%${fuzzy}%`).orWhere("year", fuzzy)
         } else {
-          builder.where("name", "ilike", `%${fuzzy}%`);
-        } 
+          builder.where("name", "ilike", `%${fuzzy}%`)
+        }
       }
     })
     .count()
@@ -32,17 +32,20 @@ export const search = async ({ fuzzy, requestedPage }) => {
     .whereNull("deleted_at")
     .where((builder) => {
       if (fuzzy) {
-       if(/^\d+$/.test(fuzzy)) {
-          builder.where("name", "ilike", `%${fuzzy}%`).orWhere("year", fuzzy);
+        if (/^\d+$/.test(fuzzy)) {
+          builder.where("name", "ilike", `%${fuzzy}%`).orWhere("year", fuzzy)
         } else {
-          builder.where("name", "ilike", `%${fuzzy}%`);
+          builder.where("name", "ilike", `%${fuzzy}%`)
         }
       }
     })
     .limit(LIMIT)
     .offset(offset)
-    .orderBy("year")
+    .orderBy([
+      { column: "year", order: "desc" },
+      { column: "created_at", order: "desc" },
+    ])
     .select("id", "name", "year")
 
-  return { attacks: attacks?.length ? transformAll(attacks) : [], totalCount, currentPage, maxPage, byPage: LIMIT }
+  return { attacks: attacks?.length ? transformAll(attacks) : [], byPage: LIMIT, currentPage, maxPage, totalCount }
 }

@@ -1,23 +1,21 @@
 import fetch from "isomorphic-unfetch"
-import moize from "moize"
 
 import { API_URL, ATTACKS_ENDPOINT } from "../config"
 import { handleAPIResponse2 } from "../utils/errors"
 import { METHOD_DELETE, METHOD_POST, METHOD_PUT } from "../utils/http"
 
-
 export const searchAttacksFuzzy = async ({ search, requestedPage, headers }) => {
-  const arr = [];
+  const arr = []
   if (search) {
-    arr.push(`fuzzy=${search}`);
+    arr.push(`fuzzy=${search}`)
   }
   if (requestedPage) {
-    arr.push(`requestedPage=${requestedPage}`);
+    arr.push(`requestedPage=${requestedPage}`)
   }
-  const bonus = arr.length ? "?" + arr.join("&") : "";
+  const bonus = arr.length ? "?" + arr.join("&") : ""
 
-  const response = await fetch(`${API_URL}${ATTACKS_ENDPOINT}${bonus}`, { headers });
-  return handleAPIResponse2(response);
+  const response = await fetch(`${API_URL}${ATTACKS_ENDPOINT}${bonus}`, { headers })
+  return handleAPIResponse2(response)
 }
 
 export const findAttack = async ({ id, headers }) => {
@@ -30,12 +28,11 @@ export const findAllAttacks = async ({ headers } = {}) => {
   return handleAPIResponse2(response)
 }
 
-
 export const createAttack = async ({ attack, headers }) => {
   const response = await fetch(`${API_URL}${ATTACKS_ENDPOINT}`, {
-    method: METHOD_POST,
-    headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify(attack),
+    headers: { ...headers, "Content-Type": "application/json" },
+    method: METHOD_POST,
   })
 
   return handleAPIResponse2(response)
@@ -43,14 +40,14 @@ export const createAttack = async ({ attack, headers }) => {
 
 export const updateAttack = async ({ attack, headers }) => {
   const response = await fetch(`${API_URL}${ATTACKS_ENDPOINT}/${attack.id}`, {
-    method: METHOD_PUT,
-    headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify(attack),
+    headers: { ...headers, "Content-Type": "application/json" },
+    method: METHOD_PUT,
   })
   return handleAPIResponse2(response)
 }
 
 export const deleteAttack = async ({ id, headers }) => {
-  const response = await fetch(`${API_URL}${ATTACKS_ENDPOINT}/${id}`, { method: METHOD_DELETE, headers })
+  const response = await fetch(`${API_URL}${ATTACKS_ENDPOINT}/${id}`, { headers, method: METHOD_DELETE })
   return handleAPIResponse2(response)
 }
