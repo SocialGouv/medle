@@ -80,7 +80,7 @@
         "next-transpile-modules": "^4.1.0",
         "prettier": "^2.2.1",
         "prop-types": "^15.7.2",
-        "react-test-renderer": "^16.14.0",
+        "react-test-renderer": "^17.0.2",
         "url-loader": "^4.1.1"
     }
 }
