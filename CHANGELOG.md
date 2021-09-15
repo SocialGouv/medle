@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/SocialGouv/medle/compare/v1.12.2...v1.12.3) (2021-09-15)
+
+
+### Bug Fixes
+
+* **ci:** upgrade gitlab-ci-yml ([#178](https://github.com/SocialGouv/medle/issues/178)) ([bc73c19](https://github.com/SocialGouv/medle/commit/bc73c19dd2f25e978370e5fb7a0e8a95daa279df))
+
 ## [1.12.2](https://github.com/SocialGouv/medle/compare/v1.12.1...v1.12.2) (2021-06-24)
 
 
