@@ -1,4 +1,4 @@
-include:
+#include:
     # - project: SocialGouv/gitlab-ci-yml
     #   file: /autodevops.yml
     #   ref: v23.3.0
@@ -152,6 +152,6 @@ Create seeds DB (dev):
   environment:
     name: ${AUTO_DEVOPS_PROD_ENVIRONMENT_NAME}
     url: https://${CI_PROJECT_NAME}.${KUBE_INGRESS_BASE_DOMAIN}
-    
+
 Production:
   extends: .autodevops_production
