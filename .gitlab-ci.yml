@@ -54,7 +54,7 @@ Create seeds DB (dev):
 # extracted from gitlab-ci for tmp fix on the ingress annotations
 .base_deploy_kosko_stage:
   stage: Deploy
-  image: ghcr.io/socialgouv/docker/no-k8s:6.48.0
+  image: ghcr.io/socialgouv/docker/no-k8s:6.48.1
   dependencies: []
   cache:
     key:
@@ -66,7 +66,6 @@ Create seeds DB (dev):
       - ${K8S_FOLDER}/node_modules
   script:
     - |
-      apk add --update --no-cache sed
       if [[ -d "${CI_PROJECT_DIR}/.socialgouv" ]]; then
         echo "Use .socialgouv config."
         rm -rf /k8s/.socialgouv
