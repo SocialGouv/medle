@@ -66,6 +66,7 @@ Create seeds DB (dev):
       - ${K8S_FOLDER}/node_modules
   script:
     - |
+      apk add --update --no-cache sed
       if [[ -d "${CI_PROJECT_DIR}/.socialgouv" ]]; then
         echo "Use .socialgouv config."
         rm -rf /k8s/.socialgouv
