@@ -20,7 +20,7 @@
         "seed:run:staging": "node -r dotenv/config ./node_modules/knex/bin/cli seed:run --env staging"
     },
     "dependencies": {
-        "@hookform/resolvers": "^0.1.1",
+        "@hookform/resolvers": "^2.0.0",
         "@material-ui/core": "^4.11.3",
         "@material-ui/icons": "^4.11.2",
         "@mdx-js/loader": "^1.6.22",
