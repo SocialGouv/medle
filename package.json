@@ -54,7 +54,7 @@
         "react-switch": "^5.0.1",
         "reactstrap": "^8.9.0",
         "recharts": "^2.0.8",
-        "remark-emoji": "^2.1.0",
+        "remark-emoji": "^3.0.0",
         "remark-images": "^2.0.0",
         "styled-components": "^5.2.1",
         "yup": "^0.32.9"
