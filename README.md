@@ -1,5 +1,7 @@
 # Medle
 
+## Moved to : https://github.com/DNUM-SocialGouv/medle
+
 MedLé is a platform for french hospitals to declare their medico-legal activity.
 
 ## 👔 Install
